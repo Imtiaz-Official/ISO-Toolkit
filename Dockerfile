@@ -20,13 +20,16 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # Copy backend files
 COPY backend/ ./backend/
+
+# Copy frontend build from previous stage to correct location
+# Must be at /app/frontend/dist because FastAPI looks for it there
+# from Path(__file__).parent.parent.parent / "frontend" / "dist"
+COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+
 WORKDIR /app/backend
 
 # Install Python dependencies
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Copy frontend build from previous stage
-COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
 
 # Set environment variables
 ENV PORT=8000

@@ -31,15 +31,12 @@ async def lifespan(app: FastAPI):
     # Startup
     logger.info("Starting ISO Toolkit API...")
     init_database()
-    logger.info("Database initialized")
-
-    # Setup frontend static files
     frontend_dist = Path(__file__).parent.parent.parent / "frontend" / "dist"
     if frontend_dist.exists():
-        app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
-        logger.info(f"Serving frontend static files from {frontend_dist}")
+        logger.info(f"Frontend dist found at {frontend_dist}")
     else:
         logger.warning(f"Frontend dist folder not found at {frontend_dist}")
+    logger.info("Database initialized")
 
     yield
 
@@ -128,15 +125,31 @@ async def root():
 async def catch_all(request: Request, full_path: str):
     """
     Catch-all route for SPA support.
-    Serves index.html for all non-API routes.
+    Serves static assets and index.html for non-API routes.
     """
+    frontend_dist = Path(__file__).parent.parent.parent / "frontend" / "dist"
+
+    # Serve static assets (CSS, JS, images)
+    # Handle both "assets/" and "/assets/" formats (index.html uses leading slashes)
+    asset_path_relative = full_path.lstrip("/")
+    if asset_path_relative.startswith("assets/"):
+        asset_path = frontend_dist / asset_path_relative
+        if asset_path.exists() and asset_path.is_file():
+            return FileResponse(str(asset_path))
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Asset not found")
+
+    # Skip websocket routes
+    if full_path.startswith("api/ws/"):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="Not found")
+
     # If it's an API route, let it 404 naturally
     if full_path.startswith("api/"):
         from fastapi import HTTPException
         raise HTTPException(status_code=404, detail="API endpoint not found")
 
     # For all other routes, serve index.html for SPA routing
-    frontend_dist = Path(__file__).parent.parent.parent / "frontend" / "dist"
     index_path = frontend_dist / "index.html"
     if index_path.exists():
         return FileResponse(str(index_path))
