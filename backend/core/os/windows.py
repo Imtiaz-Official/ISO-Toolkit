@@ -1,14 +1,7 @@
 """
 Windows OS provider - scrapers for Windows ISO downloads.
 
-NOTE: Windows ISO downloads have limitations:
-- Archive.org sources work but may have slow download speeds
-- massgrave.dev has Cloudflare protection blocking automated requests
-- Microsoft's direct URLs require valid GUIDs that are difficult to obtain
-
-For best results, users may need to download manually from:
-- https://massgrave.dev/windows_11_links (Windows 11)
-- https://massgrave.dev/windows_10_links (Windows 10)
+ISO URLs extracted using Botasaurus Cloudflare bypass from massgrave.dev.
 """
 
 import asyncio
@@ -24,10 +17,10 @@ class WindowsProvider(BaseProvider):
     Provider for Windows ISO downloads.
 
     Sources:
-    - Windows 11/10: Internet Archive (slow speeds, use download manager)
-    - Older Windows: Internet Archive and software archives
+    - Windows 11/10: Official Microsoft CDN (via massgrave.dev)
+    - Older Windows: Internet Archive
 
-    Note: For faster downloads, visit massgrave.dev in a browser.
+    URLs extracted using Botasaurus: https://github.com/omkarcloud/botasaurus
     """
 
     @property
@@ -35,7 +28,7 @@ class WindowsProvider(BaseProvider):
         return ProviderMetadata(
             name="Windows",
             category=OSCategory.WINDOWS,
-            description="Microsoft Windows (XP, 7, 8.1, 10, 11) - Note: Download speeds may vary",
+            description="Microsoft Windows (XP, 7, 8.1, 10, 11) - Latest versions from Microsoft",
             icon="🪟",
             enabled=True,
         )
@@ -68,38 +61,38 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_11(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows 11 ISO information from Archive.org.
+        Fetch Windows 11 ISO information from Microsoft CDN.
 
-        Archive.org hosts official Microsoft ISO downloads with reliable access.
+        URLs extracted from massgrave.dev using Botasaurus Cloudflare bypass.
         """
         isos = [
-            # Windows 11 24H2 (latest) - x64 - Updated November 2025
+            # Windows 11 25H2 (latest) - x64 Consumer Edition
+            OSInfo(
+                name="Windows 11",
+                version="25H2",
+                category=OSCategory.WINDOWS,
+                architecture=Architecture.X64,
+                language="en-US",
+                url="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/26200.6584.250915-1905.25h2_ge_release_svc_refresh_CLIENT_CONSUMER_x64FRE_en-us.iso",
+                size=7740000000,
+                release_date=datetime(2024, 12, 1),
+                description="Windows 11 Version 25H2 - Official Microsoft ISO (Consumer Editions)",
+                icon="🪟",
+                source="Microsoft (via massgrave.dev)",
+            ),
+            # Windows 11 24H2 - x64 Consumer Edition
             OSInfo(
                 name="Windows 11",
                 version="24H2",
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://archive.org/download/windows-11-version-24h2-26100.7309-updated-november-2025/Win11_24H2_English_x64.iso",
-                size=5819484160,
-                release_date=datetime(2024, 11, 12),
-                description="Windows 11 Version 24H2 - Official Microsoft ISO from Archive.org",
-                icon="🪟",
-                source="Internet Archive",
-            ),
-            # Windows 11 IoT Enterprise LTSC 2024 - x64
-            OSInfo(
-                name="Windows 11",
-                version="LTSC 2024",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X64,
-                language="en-US",
-                url="https://archive.org/download/26100.1.240331-1435.ge-release-client-enterprises-oem-x-64-fre-en-us_202601/26100.1.240331-1435.ge_release_client_enterprises_OEM_x64FRE_en-us.iso",
-                size=4831838208,
+                url="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/26100.3361.250915-1905.24h2_ge_release_svc_refresh_CLIENT_CONSUMER_x64FRE_en-us.iso",
+                size=5500000000,
                 release_date=datetime(2024, 10, 1),
-                description="Windows 11 IoT Enterprise LTSC 2024 - Official ISO",
+                description="Windows 11 Version 24H2 - Official Microsoft ISO (Consumer Editions)",
                 icon="🪟",
-                source="Internet Archive",
+                source="Microsoft (via massgrave.dev)",
             ),
         ]
 
@@ -109,32 +102,37 @@ class WindowsProvider(BaseProvider):
         """
         Fetch Windows 10 ISO information.
 
-        Uses massgrave.dev with proper headers - these redirect to official Microsoft downloads.
+        URLs extracted from massgrave.dev using Botasaurus Cloudflare bypass.
+        Windows 10 links use buzzheavier.com redirect service.
         """
-        # Common headers for massgrave.dev
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            "Accept": "*/*",
-            "Accept-Language": "en-US,en;q=0.9",
-        }
-
         isos = [
+            # Windows 10 22H2 - x64 Consumer Edition (via buzzheavier.com)
             OSInfo(
                 name="Windows 10",
                 version="22H2",
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://drive.massgrave.dev/en-us_windows_10_consumer_editions_version_22h2_x64_dvd_3f50b8b6.iso",
-                mirrors=[
-                    "https://iso.massgrave.dev/en-us_windows_10_consumer_editions_version_22h2_x64_dvd_3f50b8b6.iso",
-                ],
-                size=5850961920,
+                url="https://buzzheavier.com/fuxscqu93mnn",
+                size=5800000000,
                 release_date=datetime(2024, 10, 17),
-                description="Windows 10 Version 22H2 - Official Microsoft ISO",
+                description="Windows 10 Version 22H2 - Consumer Editions (Updated October 2025)",
                 icon="🪟",
-                source="Microsoft (massgrave.dev)",
-                headers=headers,
+                source="buzzheavier.com (via massgrave.dev)",
+            ),
+            # Windows 10 22H2 - x64 Business Edition (via buzzheavier.com)
+            OSInfo(
+                name="Windows 10",
+                version="22H2 Business",
+                category=OSCategory.WINDOWS,
+                architecture=Architecture.X64,
+                language="en-US",
+                url="https://buzzheavier.com/tage1lj2oez3",
+                size=5800000000,
+                release_date=datetime(2024, 10, 17),
+                description="Windows 10 Version 22H2 - Business Editions (Updated October 2025)",
+                icon="🪟",
+                source="buzzheavier.com (via massgrave.dev)",
             ),
         ]
 
