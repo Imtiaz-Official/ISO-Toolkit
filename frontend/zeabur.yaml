@@ -1,0 +1,5 @@
+type: "node"
+build:
+  - npm ci
+  - npm run build
+run: "npx serve dist -l $PORT"
