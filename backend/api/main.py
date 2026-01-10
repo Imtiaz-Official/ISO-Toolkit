@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 import logging
+import os as os_module
 
 from api.database.session import init_database
 from api.routes import os, downloads, ws
@@ -44,8 +45,7 @@ app = FastAPI(
 
 # Configure CORS
 # Allow environment variable for deployed frontend, with localhost fallback
-import os
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "").split(",") if os.getenv("ALLOWED_ORIGINS") else []
+allowed_origins = os_module.getenv("ALLOWED_ORIGINS", "").split(",") if os_module.getenv("ALLOWED_ORIGINS") else []
 allowed_origins.extend([
     "http://localhost:5173",  # Vite dev server
     "http://localhost:3000",  # Alternative dev server
