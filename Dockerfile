@@ -1,5 +1,6 @@
 # ISO Toolkit - Backend Service
 # This Dockerfile builds the FastAPI backend
+# Version: 2.0
 FROM python:3.11-slim
 
 WORKDIR /app
