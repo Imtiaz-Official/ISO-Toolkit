@@ -61,36 +61,33 @@ class WindowsProvider(BaseProvider):
         """
         Fetch Windows 11 ISO information.
 
-        Uses official Microsoft download servers (software-static.download.prss.microsoft.com).
+        Uses massgrave.dev with proper headers - these redirect to official Microsoft downloads.
         """
+        # Common headers for massgrave.dev
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Accept": "*/*",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+
         isos = [
-            # Windows 11 25H2 (latest) - x64
-            OSInfo(
-                name="Windows 11",
-                version="25H2",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X64,
-                language="en-US",
-                url="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/26200.6584.250915-1905.25h2_ge_release_svc_refresh_CLIENT_CONSUMER_x64FRE_en-us.iso",
-                size=7736125440,
-                release_date=datetime(2025, 9, 15),
-                description="Windows 11 Version 25H2 - Official Microsoft ISO",
-                icon="🪟",
-                source="Microsoft (Official)",
-            ),
-            # Windows 11 24H2 - x64
+            # Windows 11 24H2 (latest) - x64
             OSInfo(
                 name="Windows 11",
                 version="24H2",
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/26100.3007.250911-1235.24h2_ge_release_svc_refresh_CLIENT_CONSUMER_x64FRE_en-us.iso",
+                url="https://drive.massgrave.dev/en-us_windows_11_consumer_editions_version_24h2_x64_dvd_4cc8f7e9.iso",
+                mirrors=[
+                    "https://iso.massgrave.dev/en-us_windows_11_consumer_editions_version_24h2_x64_dvd_4cc8f7e9.iso",
+                ],
                 size=5434012160,
-                release_date=datetime(2025, 9, 11),
+                release_date=datetime(2024, 11, 12),
                 description="Windows 11 Version 24H2 - Official Microsoft ISO",
                 icon="🪟",
-                source="Microsoft (Official)",
+                source="Microsoft (massgrave.dev)",
+                headers=headers,
             ),
             # Windows 11 23H2 - x64
             OSInfo(
@@ -99,40 +96,16 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/22631.4001.240906-1430.23h2_ge_release_svc_refresh_CLIENT_CONSUMER_x64FRE_en-us.iso",
+                url="https://drive.massgrave.dev/en-us_windows_11_consumer_editions_version_23h2_x64_dvd_d470d1f8.iso",
+                mirrors=[
+                    "https://iso.massgrave.dev/en-us_windows_11_consumer_editions_version_23h2_x64_dvd_d470d1f8.iso",
+                ],
                 size=5140709376,
                 release_date=datetime(2024, 9, 17),
                 description="Windows 11 Version 23H2 - Official Microsoft ISO",
                 icon="🪟",
-                source="Microsoft (Official)",
-            ),
-            # Windows 11 23H2 - ARM64
-            OSInfo(
-                name="Windows 11",
-                version="23H2",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.ARM64,
-                language="en-US",
-                url="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/22631.4001.240906-1430.23h2_ge_release_svc_refresh_CLIENT_CONSUMER_ARM64_en-us.iso",
-                size=5140957184,
-                release_date=datetime(2024, 9, 17),
-                description="Windows 11 Version 23H2 ARM64 - Official Microsoft ISO",
-                icon="🪟",
-                source="Microsoft (Official)",
-            ),
-            # Windows 11 22H2 - x64
-            OSInfo(
-                name="Windows 11",
-                version="22H2",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X64,
-                language="en-US",
-                url="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/22621.3085.240912-1610.22h2_ge_release_svc_refresh_CLIENT_CONSUMER_x64FRE_en-us.iso",
-                size=5044316160,
-                release_date=datetime(2024, 9, 12),
-                description="Windows 11 Version 22H2 - Official Microsoft ISO",
-                icon="🪟",
-                source="Microsoft (Official)",
+                source="Microsoft (massgrave.dev)",
+                headers=headers,
             ),
         ]
 
@@ -142,8 +115,15 @@ class WindowsProvider(BaseProvider):
         """
         Fetch Windows 10 ISO information.
 
-        Uses official Microsoft download servers (software-static.download.prss.microsoft.com).
+        Uses massgrave.dev with proper headers - these redirect to official Microsoft downloads.
         """
+        # Common headers for massgrave.dev
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+            "Accept": "*/*",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+
         isos = [
             OSInfo(
                 name="Windows 10",
@@ -151,25 +131,16 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/19045.2965.240831-1800.22h2_release_svc_refresh_CLIENT_CONSUMER_x64FRE_en-us.iso",
+                url="https://drive.massgrave.dev/en-us_windows_10_consumer_editions_version_22h2_x64_dvd_3f50b8b6.iso",
+                mirrors=[
+                    "https://iso.massgrave.dev/en-us_windows_10_consumer_editions_version_22h2_x64_dvd_3f50b8b6.iso",
+                ],
                 size=5850961920,
-                release_date=datetime(2024, 8, 31),
+                release_date=datetime(2024, 10, 17),
                 description="Windows 10 Version 22H2 - Official Microsoft ISO",
                 icon="🪟",
-                source="Microsoft (Official)",
-            ),
-            OSInfo(
-                name="Windows 10",
-                version="22H2",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X86,
-                language="en-US",
-                url="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/19045.2965.240831-1800.22h2_release_svc_refresh_CLIENT_CONSUMER_x86FRE_en-us.iso",
-                size=4450217984,
-                release_date=datetime(2024, 8, 31),
-                description="Windows 10 Version 22H2 x86 - Official Microsoft ISO",
-                icon="🪟",
-                source="Microsoft (Official)",
+                source="Microsoft (massgrave.dev)",
+                headers=headers,
             ),
         ]
 
