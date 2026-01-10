@@ -1,27 +1,40 @@
-# ISO Toolkit - Backend Service
-# This Dockerfile builds the FastAPI backend
-# Version: 2.0
-FROM python:3.11-slim
+# ISO Toolkit - Frontend Service
+# This Dockerfile builds the React/Vite frontend
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Copy package files
+COPY frontend/package*.json ./
 
-# Copy requirements and install Python dependencies
-COPY backend/requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Install dependencies
+RUN npm ci
 
-# Copy backend code
-COPY backend/ .
+# Copy source code
+COPY frontend/ .
 
-# Create downloads directory
-RUN mkdir -p /app/downloads
+# Build the application with backend URL
+ARG VITE_API_URL=https://iso-toolkit.zeabur.app
+ENV VITE_API_URL=${VITE_API_URL}
+RUN npm run build
+
+# Production stage
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Install serve globally
+RUN npm install -g serve
+
+# Copy built files from builder
+COPY --from=builder /app/dist /app/dist
 
 # Expose port
-EXPOSE 8000
+EXPOSE 80
 
-# Run the application
-CMD ["python", "main.py"]
+# Health check
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
+
+# Serve the application
+CMD ["sh", "-c", "serve -s dist -l ${PORT:-80}"]
