@@ -57,7 +57,7 @@ const defaultSettings: Settings = {
   lowPriorityMode: false,
 
   // Appearance
-  theme: 'dark',
+  theme: 'auto',  // Auto-detects device theme (dark/light)
   accentColor: 'blue',
   fontSize: 'md',
   showFileSizes: true,

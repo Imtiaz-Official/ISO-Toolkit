@@ -3,7 +3,22 @@
  */
 
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
-import { lazy, Suspense, useState } from 'react';
+import { lazy, Suspense, useState, useEffect } from 'react';
+
+// Apply theme from localStorage or default to auto
+function applyTheme() {
+  const settings = localStorage.getItem('iso-toolkit-settings');
+  const theme = settings ? JSON.parse(settings).theme : 'auto';
+
+  const isDark = theme === 'dark' || (theme === 'auto' && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  const root = document.documentElement;
+
+  if (isDark) {
+    root.classList.add('dark');
+  } else {
+    root.classList.remove('dark');
+  }
+}
 
 // Lazy load pages for better performance
 const HomePage = lazy(() => import('./pages/Home'));
@@ -105,6 +120,22 @@ function Navigation() {
 }
 
 function App() {
+  // Apply theme on mount and listen for system theme changes
+  useEffect(() => {
+    applyTheme();
+
+    // Listen for system theme changes when in auto mode
+    const settings = localStorage.getItem('iso-toolkit-settings');
+    const theme = settings ? JSON.parse(settings).theme : 'auto';
+
+    if (theme === 'auto') {
+      const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+      const handleChange = () => applyTheme();
+      mediaQuery.addEventListener('change', handleChange);
+      return () => mediaQuery.removeEventListener('change', handleChange);
+    }
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
       <Navigation />
