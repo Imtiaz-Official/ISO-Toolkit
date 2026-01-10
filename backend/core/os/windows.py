@@ -1,7 +1,14 @@
 """
 Windows OS provider - scrapers for Windows ISO downloads.
 
-Updated with working URLs and proper headers for 2025.
+NOTE: Windows ISO downloads have limitations:
+- Archive.org sources work but may have slow download speeds
+- massgrave.dev has Cloudflare protection blocking automated requests
+- Microsoft's direct URLs require valid GUIDs that are difficult to obtain
+
+For best results, users may need to download manually from:
+- https://massgrave.dev/windows_11_links (Windows 11)
+- https://massgrave.dev/windows_10_links (Windows 10)
 """
 
 import asyncio
@@ -17,8 +24,10 @@ class WindowsProvider(BaseProvider):
     Provider for Windows ISO downloads.
 
     Sources:
-    - Windows 11/10: Official Microsoft downloads via massgrave.dev
+    - Windows 11/10: Internet Archive (slow speeds, use download manager)
     - Older Windows: Internet Archive and software archives
+
+    Note: For faster downloads, visit massgrave.dev in a browser.
     """
 
     @property
@@ -26,7 +35,7 @@ class WindowsProvider(BaseProvider):
         return ProviderMetadata(
             name="Windows",
             category=OSCategory.WINDOWS,
-            description="Microsoft Windows (XP, 7, 8.1, 10, 11)",
+            description="Microsoft Windows (XP, 7, 8.1, 10, 11) - Note: Download speeds may vary",
             icon="🪟",
             enabled=True,
         )
@@ -59,53 +68,38 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_11(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows 11 ISO information.
+        Fetch Windows 11 ISO information from Archive.org.
 
-        Uses massgrave.dev with proper headers - these redirect to official Microsoft downloads.
+        Archive.org hosts official Microsoft ISO downloads with reliable access.
         """
-        # Common headers for massgrave.dev
-        headers = {
-            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
-            "Accept": "*/*",
-            "Accept-Language": "en-US,en;q=0.9",
-        }
-
         isos = [
-            # Windows 11 24H2 (latest) - x64
+            # Windows 11 24H2 (latest) - x64 - Updated November 2025
             OSInfo(
                 name="Windows 11",
                 version="24H2",
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://drive.massgrave.dev/en-us_windows_11_consumer_editions_version_24h2_x64_dvd_4cc8f7e9.iso",
-                mirrors=[
-                    "https://iso.massgrave.dev/en-us_windows_11_consumer_editions_version_24h2_x64_dvd_4cc8f7e9.iso",
-                ],
-                size=5434012160,
+                url="https://archive.org/download/windows-11-version-24h2-26100.7309-updated-november-2025/Win11_24H2_English_x64.iso",
+                size=5819484160,
                 release_date=datetime(2024, 11, 12),
-                description="Windows 11 Version 24H2 - Official Microsoft ISO",
+                description="Windows 11 Version 24H2 - Official Microsoft ISO from Archive.org",
                 icon="🪟",
-                source="Microsoft (massgrave.dev)",
-                headers=headers,
+                source="Internet Archive",
             ),
-            # Windows 11 23H2 - x64
+            # Windows 11 IoT Enterprise LTSC 2024 - x64
             OSInfo(
                 name="Windows 11",
-                version="23H2",
+                version="LTSC 2024",
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://drive.massgrave.dev/en-us_windows_11_consumer_editions_version_23h2_x64_dvd_d470d1f8.iso",
-                mirrors=[
-                    "https://iso.massgrave.dev/en-us_windows_11_consumer_editions_version_23h2_x64_dvd_d470d1f8.iso",
-                ],
-                size=5140709376,
-                release_date=datetime(2024, 9, 17),
-                description="Windows 11 Version 23H2 - Official Microsoft ISO",
+                url="https://archive.org/download/26100.1.240331-1435.ge-release-client-enterprises-oem-x-64-fre-en-us_202601/26100.1.240331-1435.ge_release_client_enterprises_OEM_x64FRE_en-us.iso",
+                size=4831838208,
+                release_date=datetime(2024, 10, 1),
+                description="Windows 11 IoT Enterprise LTSC 2024 - Official ISO",
                 icon="🪟",
-                source="Microsoft (massgrave.dev)",
-                headers=headers,
+                source="Internet Archive",
             ),
         ]
 
