@@ -1,0 +1,226 @@
+/* ISO Toolkit - TUI Styles */
+
+/* Main Container */
+#main-container {
+    layout: vertical;
+    padding: 2 4;
+    align: center middle;
+    height: 100%;
+}
+
+#welcome-text {
+    text-align: center;
+    padding: 1;
+    margin-bottom: 2;
+}
+
+#menu-buttons {
+    layout: grid;
+    grid-size: 2 3;
+    grid-gutter: 1 2;
+    padding: 1;
+    width: 60;
+}
+
+/* Button Styles */
+Button {
+    min-width: 25;
+    height: 3;
+}
+
+Button:hover {
+    background: $surface-lighten-3;
+}
+
+Button.-primary {
+    background: $primary;
+    text-style: bold;
+}
+
+Button.-success {
+    background: $success;
+    text-style: bold;
+}
+
+Button.-error {
+    background: $error;
+    text-style: bold;
+}
+
+/* OS List Screen */
+#os-list-container {
+    layout: vertical;
+    padding: 1 2;
+}
+
+#screen-title {
+    text-align: center;
+    padding: 1;
+    margin-bottom: 1;
+    border-bottom: solid $primary;
+}
+
+#os-table {
+    height: 1fr;
+    margin: 1 0;
+}
+
+DataTable {
+    border: solid $panel;
+}
+
+DataTable > DataRow {
+    height: 1;
+}
+
+DataTable > DataRow:hover {
+    background: $surface-lighten-3;
+}
+
+DataTable > DataRow.-selected {
+    background: $primary-darken-1;
+}
+
+#list-buttons {
+    layout: horizontal;
+    height: 3;
+    padding-top: 1;
+    align: center middle;
+}
+
+#list-buttons > Button {
+    margin-right: 2;
+}
+
+/* Download Screen */
+#download-container {
+    layout: vertical;
+    padding: 2 4;
+    align: center middle;
+}
+
+#download-title {
+    text-align: center;
+    padding: 1;
+    margin-bottom: 1;
+}
+
+#download-info {
+    text-align: center;
+    padding: 0 1 1 1;
+}
+
+#download-url {
+    text-align: center;
+    padding: 0 1 2 1;
+    text-style: dim;
+}
+
+#progress-container {
+    layout: vertical;
+    width: 70;
+    padding: 2;
+    border: round $panel;
+    background: $panel;
+}
+
+#progress-label {
+    text-align: left;
+    padding-bottom: 1;
+}
+
+#progress-bar {
+    width: 1fr;
+    height: 1;
+}
+
+#download-stats {
+    margin-top: 1;
+    padding: 1;
+    text-align: left;
+}
+
+#download-buttons {
+    layout: horizontal;
+    height: 3;
+    margin-top: 2;
+    align: center middle;
+}
+
+#download-buttons > Button {
+    margin-right: 2;
+}
+
+/* Downloads Screen */
+#downloads-container {
+    layout: vertical;
+    padding: 1 2;
+}
+
+#downloads-title {
+    text-align: center;
+    padding: 1;
+    margin-bottom: 1;
+    border-bottom: solid $primary;
+}
+
+#downloads-table {
+    height: 1fr;
+    margin: 1 0;
+}
+
+#downloads-buttons {
+    layout: horizontal;
+    height: 3;
+    padding-top: 1;
+    align: center middle;
+}
+
+#downloads-buttons > Button {
+    margin-right: 2;
+}
+
+/* Settings Screen */
+#settings-container {
+    layout: vertical;
+    padding: 2 4;
+}
+
+#settings-title {
+    text-align: center;
+    padding: 1;
+    margin-bottom: 1;
+    border-bottom: solid $primary;
+}
+
+#settings-dir-container {
+    layout: vertical;
+    padding: 1;
+    margin-bottom: 1;
+}
+
+#settings-dir-label {
+    text-style: bold;
+}
+
+#settings-dir-value {
+    margin-top: 1;
+}
+
+#settings-buttons {
+    layout: horizontal;
+    height: 3;
+    margin-top: 2;
+}
+
+/* Header and Footer */
+Header {
+    background: $background;
+    text-style: bold;
+}
+
+Footer {
+    background: $background;
+}
+
+/* Scrollbar styles - handled by Textual automatically */
