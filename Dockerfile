@@ -1,40 +1,43 @@
-# ISO Toolkit - Frontend Service
-# This Dockerfile builds the React/Vite frontend
-FROM node:20-alpine AS builder
+# Multi-stage build for ISO Toolkit
+# Stage 1: Build frontend
+FROM node:22-alpine AS frontend-builder
 
-WORKDIR /app
-
-# Copy package files
+WORKDIR /app/frontend
 COPY frontend/package*.json ./
-
-# Install dependencies
-RUN npm ci
-
-# Copy source code
-COPY frontend/ .
-
-# Build the application with backend URL
-ARG VITE_API_URL=https://iso-toolkit.zeabur.app
-ENV VITE_API_URL=${VITE_API_URL}
+RUN npm install
+COPY frontend/ ./
 RUN npm run build
 
-# Production stage
-FROM node:20-alpine
+# Stage 2: Run backend with frontend static files
+FROM python:3.11-slim
 
 WORKDIR /app
 
-# Install serve globally
-RUN npm install -g serve
+# Install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
 
-# Copy built files from builder
-COPY --from=builder /app/dist /app/dist
+# Copy backend files
+COPY backend/ ./backend/
+WORKDIR /app/backend
+
+# Install Python dependencies
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copy frontend build from previous stage
+COPY --from=frontend-builder /app/frontend/dist ./frontend/dist
+
+# Set environment variables
+ENV PORT=8000
+ENV HOST=0.0.0.0
 
 # Expose port
-EXPOSE 80
+EXPOSE 8000
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD wget --quiet --tries=1 --spider http://localhost/ || exit 1
+    CMD curl -f http://localhost:8000/health || exit 1
 
-# Serve the application
-CMD ["sh", "-c", "serve -s dist -l ${PORT:-80}"]
+# Run the application
+CMD ["python", "main.py"]
