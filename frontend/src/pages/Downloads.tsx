@@ -31,7 +31,7 @@ export default function DownloadsPage() {
               eta: update.data.eta,
               eta_formatted: update.data.eta_formatted,
               error_message: update.data.error_message ?? null,
-              checksum_verified: update.data.checksum_verified,
+              checksum_verified: update.data.checksum_verified ?? null,
             }
           : dl
       )
