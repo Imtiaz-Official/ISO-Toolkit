@@ -2,7 +2,7 @@
  * Main App component with routing and mobile-responsive navigation.
  */
 
-import { BrowserRouter, Routes, Route, Link, useLocation } from 'react-router-dom';
+import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { lazy, Suspense, useState } from 'react';
 
 // Lazy load pages for better performance

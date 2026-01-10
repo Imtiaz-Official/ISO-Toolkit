@@ -30,7 +30,7 @@ export default function DownloadsPage() {
               speed_formatted: update.data.speed_formatted,
               eta: update.data.eta,
               eta_formatted: update.data.eta_formatted,
-              error_message: update.data.error_message,
+              error_message: update.data.error_message ?? null,
               checksum_verified: update.data.checksum_verified,
             }
           : dl

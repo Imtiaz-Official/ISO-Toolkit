@@ -4,7 +4,7 @@
  */
 
 import { useEffect, useState } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams } from 'react-router-dom';
 import { osAPI } from '../services/api';
 import type { OSInfo, OSCategory, LinuxSubcategory } from '../types';
 import { DistroLogo } from '../components/LogoImage';
@@ -156,18 +156,6 @@ export default function BrowsePage() {
       setFilteredOss(filtered);
     }
   }, [searchQuery, oss]);
-
-  function formatBytes(bytes: number): string {
-    if (!bytes) return 'Unknown';
-    const units = ['B', 'KB', 'MB', 'GB', 'TB'];
-    let size = bytes;
-    let unitIndex = 0;
-    while (size >= 1024 && unitIndex < units.length - 1) {
-      size /= 1024;
-      unitIndex++;
-    }
-    return `${size.toFixed(1)} ${units[unitIndex]}`;
-  }
 
   function handleCategoryClick(category: OSCategory | null) {
     setSelectedCategory(category);
