@@ -283,7 +283,7 @@ class LinuxProvider(BaseProvider):
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://cdimage.ubuntu.com/ubuntustudio/releases/24.04/release/ubuntustudio-24.04.3-desktop-amd64.iso",
+                url="https://cdimage.ubuntu.com/ubuntustudio/releases/24.04/release/ubuntustudio-24.04.3-dvd-amd64.iso",
                 size=5368709120,
                 release_date=datetime(2024, 8, 15),
                 description="Ubuntu Studio 24.04 LTS - For content creation",
@@ -336,23 +336,9 @@ class LinuxProvider(BaseProvider):
 
     async def _fetch_ubuntu_cinnamon(self, **filters) -> List[OSInfo]:
         """Fetch Ubuntu Cinnamon ISO information."""
-        isos = [
-            OSInfo(
-                name="Ubuntu Cinnamon",
-                version="24.04 LTS",
-                category=OSCategory.LINUX,
-                architecture=Architecture.X64,
-                language="Multi",
-                url="https://cdimage.ubuntu.com/ubuntu-cinnamon/releases/24.04/release/ubuntu-cinnamon-24.04.3-desktop-amd64.iso",
-                size=4026531840,
-                release_date=datetime(2024, 8, 15),
-                description="Ubuntu Cinnamon 24.04 LTS - Ubuntu with Cinnamon desktop",
-                icon="🎄",
-                source="Ubuntu Cinnamon",
-                subcategory="Ubuntu Cinnamon",
-            ),
-        ]
-        return self._apply_filters(isos, **filters)
+        # Ubuntu Cinnamon is not available on official Ubuntu servers
+        # It's an unofficial remix that may not have regular releases
+        return []
 
     async def _fetch_fedora(self, **filters) -> List[OSInfo]:
         """Fetch Fedora ISO information."""
@@ -455,28 +441,28 @@ class LinuxProvider(BaseProvider):
         isos = [
             OSInfo(
                 name="Debian",
-                version="12.8 Bookworm",
+                version="13.2 Trixie",
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-12.8.0-amd64-netinst.iso",
+                url="https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.2.0-amd64-netinst.iso",
                 size=419430400,
                 release_date=datetime(2024, 11, 9),
-                description="Debian 12.8 Bookworm - Network install",
+                description="Debian 13.2 Trixie - Network install",
                 icon="🔴",
                 source="Debian",
                 subcategory="Debian",
             ),
             OSInfo(
                 name="Debian",
-                version="12.8 Bookworm",
+                version="13.2 Trixie",
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://cdimage.debian.org/debian-cd/current/amd64/iso-dvd/debian-12.8.0-amd64-DVD-1.iso",
+                url="https://cdimage.debian.org/debian-cd/current/amd64/iso-dvd/debian-13.2.0-amd64-DVD-1.iso",
                 size=4194304000,
                 release_date=datetime(2024, 11, 9),
-                description="Debian 12.8 Bookworm - Full DVD",
+                description="Debian 13.2 Trixie - Full DVD",
                 icon="🔴",
                 source="Debian",
                 subcategory="Debian",
@@ -609,13 +595,13 @@ class LinuxProvider(BaseProvider):
         isos = [
             OSInfo(
                 name="Arch Linux",
-                version="2024.12.01",
+                version="2026.01.01",
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://archlinux.org/iso/2024.12.01/archlinux-2024.12.01-x86_64.iso",
+                url="https://archlinux.org/iso/2026.01.01/archlinux-2026.01.01-x86_64.iso",
                 size=996147200,
-                release_date=datetime(2024, 12, 1),
+                release_date=datetime(2026, 1, 1),
                 description="Arch Linux - Rolling release, simple and lightweight",
                 icon="🏔️",
                 source="Arch Linux",
@@ -626,71 +612,15 @@ class LinuxProvider(BaseProvider):
 
     async def _fetch_manjaro(self, **filters) -> List[OSInfo]:
         """Fetch Manjaro Linux ISO information."""
-        isos = [
-            OSInfo(
-                name="Manjaro GNOME",
-                version="24.1.1",
-                category=OSCategory.LINUX,
-                architecture=Architecture.X64,
-                language="Multi",
-                url="https://github.com/manjaro/download/releases/download/24.1.1/manjaro-gnome-2412-linux612.iso",
-                size=3221225472,
-                release_date=datetime(2024, 12, 1),
-                description="Manjaro 24.1.1 GNOME - User-friendly Arch-based distro",
-                icon="💚",
-                source="Manjaro",
-                subcategory="Manjaro",
-            ),
-            OSInfo(
-                name="Manjaro KDE",
-                version="24.1.1",
-                category=OSCategory.LINUX,
-                architecture=Architecture.X64,
-                language="Multi",
-                url="https://github.com/manjaro/download/releases/download/24.1.1/manjaro-kde-2412-linux612.iso",
-                size=3221225472,
-                release_date=datetime(2024, 12, 1),
-                description="Manjaro 24.1.1 KDE Plasma - User-friendly Arch-based distro",
-                icon="💚",
-                source="Manjaro",
-                subcategory="Manjaro",
-            ),
-            OSInfo(
-                name="Manjaro XFCE",
-                version="24.1.1",
-                category=OSCategory.LINUX,
-                architecture=Architecture.X64,
-                language="Multi",
-                url="https://github.com/manjaro/download/releases/download/24.1.1/manjaro-xfce-2412-linux612.iso",
-                size=2899102924,
-                release_date=datetime(2024, 12, 1),
-                description="Manjaro 24.1.1 XFCE - User-friendly Arch-based distro",
-                icon="💚",
-                source="Manjaro",
-                subcategory="Manjaro",
-            ),
-        ]
-        return self._apply_filters(isos, **filters)
+        # Manjaro download URLs have changed - GitHub releases moved
+        # Visit https://download.manjaro.org for official downloads
+        return []
 
     async def _fetch_endeavour(self, **filters) -> List[OSInfo]:
         """Fetch EndeavourOS ISO information."""
-        isos = [
-            OSInfo(
-                name="EndeavourOS",
-                version="Galileo",
-                category=OSCategory.LINUX,
-                architecture=Architecture.X64,
-                language="Multi",
-                url="https://github.com/EndeavourOS-Community-editions/releases/download/24.9/EndeavourOS_Galileo_2024.09.07.iso",
-                size=2576980377,
-                release_date=datetime(2024, 9, 7),
-                description="EndeavourOS Galileo - Arch-based with Xfce",
-                icon="🚀",
-                source="EndeavourOS",
-                subcategory="EndeavourOS",
-            ),
-        ]
-        return self._apply_filters(isos, **filters)
+        # EndeavourOS GitHub release URLs have changed
+        # Visit https://endeavouros.com for official downloads
+        return []
 
     async def _fetch_garuda(self, **filters) -> List[OSInfo]:
         """Fetch Garuda Linux ISO information."""
