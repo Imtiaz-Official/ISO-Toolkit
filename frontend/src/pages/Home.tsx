@@ -6,11 +6,11 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { downloadsAPI, osAPI } from '../services/api';
-import type { Stats, OSCategory } from '../types';
+import type { Stats, OSCategoryResponse } from '../types';
 
 export default function HomePage() {
   const [stats, setStats] = useState<Stats | null>(null);
-  const [categories, setCategories] = useState<OSCategory[]>([]);
+  const [categories, setCategories] = useState<OSCategoryResponse[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

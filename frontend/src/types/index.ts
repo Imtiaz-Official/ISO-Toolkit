@@ -79,7 +79,7 @@ export interface WebSocketMessage {
   data?: any;
 }
 
-export interface OSCategory {
+export interface OSCategoryResponse {
   category: OSCategory;
   name: string;
   icon: string;

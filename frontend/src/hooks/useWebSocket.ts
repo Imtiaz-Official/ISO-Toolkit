@@ -23,7 +23,7 @@ export function useWebSocket(onProgress?: (update: DownloadProgressUpdate) => vo
   const [clientId, setClientId] = useState<string | null>(null);
   const wsRef = useRef<WebSocket | null>(null);
   const progressUpdatesRef = useRef(new Map<number, DownloadProgressUpdate['data']>());
-  const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const reconnectTimeoutRef = useRef<number | null>(null);
   const onProgressRef = useRef(onProgress);
 
   // Keep callback updated

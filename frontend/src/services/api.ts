@@ -3,7 +3,7 @@
  */
 
 import axios from 'axios';
-import type { OSInfo, DownloadStatus, OSCategory, Stats, LinuxSubcategory } from '../types';
+import type { OSInfo, DownloadStatus, OSCategory, OSCategoryResponse, Stats, LinuxSubcategory } from '../types';
 
 const API_BASE_URL = import.meta.env.VITE_API_URL || '/api';
 
@@ -21,7 +21,7 @@ export const osAPI = {
   /**
    * Get all OS categories
    */
-  getCategories: async (): Promise<OSCategory[]> => {
+  getCategories: async (): Promise<OSCategoryResponse[]> => {
     const response = await api.get<{ name: string; icon: string; count: number }[]>('/os/categories');
     return response.data.map((cat, index) => ({
       category: ['windows', 'linux', 'macos', 'bsd'][index] as OSCategory,
