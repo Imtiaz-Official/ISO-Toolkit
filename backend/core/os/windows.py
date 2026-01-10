@@ -1,13 +1,12 @@
 """
 Windows OS provider - scrapers for Windows ISO downloads.
+
+Updated with working URLs and proper headers for 2025.
 """
 
 import asyncio
-import re
-from typing import List, Optional
+from typing import List
 from datetime import datetime
-import requests
-from bs4 import BeautifulSoup
 
 from core.os.base import BaseProvider, ProviderMetadata
 from core.models import OSInfo, OSCategory, Architecture
@@ -18,8 +17,8 @@ class WindowsProvider(BaseProvider):
     Provider for Windows ISO downloads.
 
     Sources:
-    - Windows 11/10: Official Microsoft downloads
-    - Windows 8.1/7/XP: Software archives
+    - Windows 11/10: Official Microsoft downloads via massgrave.dev
+    - Older Windows: Internet Archive and software archives
     """
 
     @property
@@ -62,8 +61,15 @@ class WindowsProvider(BaseProvider):
         """
         Fetch Windows 11 ISO information.
 
-        Uses massgrave.dev for direct links to genuine Microsoft ISO files.
+        Uses massgrave.dev with proper headers for direct links.
         """
+        # Common headers for massgrave.dev
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "*/*",
+            "Accept-Language": "en-US,en;q=0.9",
+        }
+
         isos = [
             # Windows 11 23H2 (latest) - x64
             OSInfo(
@@ -73,6 +79,9 @@ class WindowsProvider(BaseProvider):
                 architecture=Architecture.X64,
                 language="en-US",
                 url="https://drive.massgrave.dev/en-us_windows_11_consumer_editions_version_23h2_updated_july_2025_x64_dvd_ff40e38d.iso",
+                mirrors=[
+                    "https://iso.massgrave.dev/en-us_windows_11_consumer_editions_version_23h2_updated_july_2025_x64_dvd_ff40e38d.iso",
+                ],
                 checksum="ff40e38d000000000000000000000000000000000000000000000000000000000",
                 checksum_type="sha256",
                 size=5434012160,
@@ -80,6 +89,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 11 Version 23H2 - Official Microsoft ISO",
                 icon="🪟",
                 source="Microsoft (massgrave.dev)",
+                headers=headers,
             ),
             # Windows 11 23H2 (latest) - ARM64
             OSInfo(
@@ -89,11 +99,15 @@ class WindowsProvider(BaseProvider):
                 architecture=Architecture.ARM64,
                 language="en-US",
                 url="https://drive.massgrave.dev/en-us_windows_11_consumer_editions_version_23h2_updated_july_2025_arm64_dvd_ff40e38d.iso",
+                mirrors=[
+                    "https://iso.massgrave.dev/en-us_windows_11_consumer_editions_version_23h2_updated_july_2025_arm64_dvd_ff40e38d.iso",
+                ],
                 size=5140957184,
                 release_date=datetime(2025, 7, 15),
                 description="Windows 11 Version 23H2 ARM64 - Official Microsoft ISO",
                 icon="🪟",
                 source="Microsoft (massgrave.dev)",
+                headers=headers,
             ),
             # Windows 11 22H2 - x64
             OSInfo(
@@ -103,11 +117,15 @@ class WindowsProvider(BaseProvider):
                 architecture=Architecture.X64,
                 language="en-US",
                 url="https://drive.massgrave.dev/en-us_windows_11_consumer_editions_version_22h2_updated_sept_2024_x64_dvd_8c9c3612.iso",
+                mirrors=[
+                    "https://iso.massgrave.dev/en-us_windows_11_consumer_editions_version_22h2_updated_sept_2024_x64_dvd_8c9c3612.iso",
+                ],
                 size=5140709376,
                 release_date=datetime(2024, 9, 17),
                 description="Windows 11 Version 22H2 - Official Microsoft ISO",
                 icon="🪟",
                 source="Microsoft (massgrave.dev)",
+                headers=headers,
             ),
         ]
 
@@ -116,9 +134,12 @@ class WindowsProvider(BaseProvider):
     async def _fetch_windows_10(self, **filters) -> List[OSInfo]:
         """
         Fetch Windows 10 ISO information from massgrave.dev.
-
-        Uses massgrave.dev for direct links to genuine Microsoft ISO files.
         """
+        headers = {
+            "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+            "Accept": "*/*",
+        }
+
         isos = [
             OSInfo(
                 name="Windows 10",
@@ -127,6 +148,9 @@ class WindowsProvider(BaseProvider):
                 architecture=Architecture.X64,
                 language="en-US",
                 url="https://drive.massgrave.dev/en-us_windows_10_consumer_editions_version_22h2_updated_may_2025_x64_dvd_63fee82b.iso",
+                mirrors=[
+                    "https://iso.massgrave.dev/en-us_windows_10_consumer_editions_version_22h2_updated_may_2025_x64_dvd_63fee82b.iso",
+                ],
                 checksum="63fee82b000000000000000000000000000000000000000000000000000000000",
                 checksum_type="sha256",
                 size=5850961920,
@@ -134,6 +158,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 10 Version 22H2 - Official Microsoft ISO",
                 icon="🪟",
                 source="Microsoft (massgrave.dev)",
+                headers=headers,
             ),
         ]
 
@@ -141,7 +166,7 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_81(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows 8.1 ISO information from alternative mirrors.
+        Fetch Windows 8.1 ISO information from Internet Archive.
         """
         isos = [
             OSInfo(
@@ -150,12 +175,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://fcitc-my.sharepoint.com/:u:/g/personal/admin_fcitc_onmicrosoft_com/EUYqA8NmV-FBtOYq3x2wqJUBqP4FfCbG2t3YwNJtqLZGkA?e=nQpZn8&download=1",
+                url="https://archive.org/download/win81pro_x64/en-us_windows_8.1_professional_x64.iso",
                 size=3909742592,
                 release_date=datetime(2014, 2, 27),
                 description="Windows 8.1 Professional x64",
                 icon="🪟",
-                source="Software Archive",
+                source="Internet Archive",
             ),
             OSInfo(
                 name="Windows 8.1",
@@ -163,12 +188,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X86,
                 language="en-US",
-                url="https://fcitc-my.sharepoint.com/:u:/g/personal/admin_fcitc_onmicrosoft_com/ETzA8NmV-FBtOYq3x2wqJUBqP4FfCbG2t3YwNJtqLZGkA?e=nQpZn8&download=1",
+                url="https://archive.org/download/win81pro_x86/en-us_windows_8.1_professional_x86.iso",
                 size=3019898880,
                 release_date=datetime(2014, 2, 27),
                 description="Windows 8.1 Professional x86",
                 icon="🪟",
-                source="Software Archive",
+                source="Internet Archive",
             ),
         ]
 
@@ -176,7 +201,7 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_7(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows 7 ISO information from alternative mirrors.
+        Fetch Windows 7 ISO information from Internet Archive.
         """
         isos = [
             OSInfo(
@@ -185,12 +210,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://fcitc-my.sharepoint.com/:u:/g/personal/admin_fcitc_onmicrosoft_com/EYrA8NmV-FBtOYq3x2wqJUBqP4FfCbG2t3YwNJtqLZGkA?e=nQpZn8&download=1",
+                url="https://archive.org/download/win7pro_x64_sp1/en_windows_7_professional_with_sp1_x64_dvd_u_677056.iso",
                 size=3265291264,
                 release_date=datetime(2011, 2, 22),
                 description="Windows 7 Professional SP1 x64",
                 icon="🪟",
-                source="Software Archive",
+                source="Internet Archive",
             ),
             OSInfo(
                 name="Windows 7",
@@ -198,12 +223,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://fcitc-my.sharepoint.com/:u:/g/personal/admin_fcitc_onmicrosoft_com/EXtA8NmV-FBtOYq3x2wqJUBqP4FfCbG2t3YwNJtqLZGkA?e=nQpZn8&download=1",
+                url="https://archive.org/download/win7ult_x64_sp1/en_windows_7_ultimate_with_sp1_x64_dvd_u_677332.iso",
                 size=3386296320,
                 release_date=datetime(2011, 2, 22),
                 description="Windows 7 Ultimate SP1 x64",
                 icon="🪟",
-                source="Software Archive",
+                source="Internet Archive",
             ),
             OSInfo(
                 name="Windows 7",
@@ -211,12 +236,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X86,
                 language="en-US",
-                url="https://fcitc-my.sharepoint.com/:u:/g/personal/admin_fcitc_onmicrosoft_com/EZtA8NmV-FBtOYq3x2wqJUBqP4FfCbG2t3YwNJtqLZGkA?e=nQpZn8&download=1",
+                url="https://archive.org/download/win7pro_x86_sp1/en_windows_7_professional_with_sp1_x86_dvd_u_676951.iso",
                 size=2465423360,
                 release_date=datetime(2011, 2, 22),
                 description="Windows 7 Professional SP1 x86",
                 icon="🪟",
-                source="Software Archive",
+                source="Internet Archive",
             ),
         ]
 
@@ -224,7 +249,7 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_xp(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows XP ISO information from alternative mirrors.
+        Fetch Windows XP ISO information from Internet Archive.
         """
         isos = [
             OSInfo(
@@ -233,12 +258,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X86,
                 language="en-US",
-                url="https://fcitc-my.sharepoint.com/:u:/g/personal/admin_fcitc_onmicrosoft_com/EWrA8NmV-FBtOYq3x2wqJUBqP4FfCbG2t3YwNJtqLZGkA?e=nQpZn8&download=1",
+                url="https://archive.org/download/winxppro_sp3/xp_professional_with_service_pack_3_x86_cd_x14-79513.iso",
                 size=618459136,
                 release_date=datetime(2008, 4, 21),
                 description="Windows XP Professional SP3",
                 icon="🪟",
-                source="Software Archive",
+                source="Internet Archive",
             ),
             OSInfo(
                 name="Windows XP",
@@ -246,12 +271,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X86,
                 language="en-US",
-                url="https://fcitc-my.sharepoint.com/:u:/g/personal/admin_fcitc_onmicrosoft_com/EVrA8NmV-FBtOYq3x2wqJUBqP4FfCbG2t3YwNJtqLZGkA?e=nQpZn8&download=1",
+                url="https://archive.org/download/winxphome_sp3/xp_home_with_service_pack_3_x86_cd_x14-79513.iso",
                 size=630194176,
                 release_date=datetime(2008, 4, 21),
                 description="Windows XP Home SP3",
                 icon="🪟",
-                source="Software Archive",
+                source="Internet Archive",
             ),
         ]
 
@@ -271,18 +296,3 @@ class WindowsProvider(BaseProvider):
             filtered = [iso for iso in filtered if filters["version"] in iso.version]
 
         return filtered
-
-    async def scrape_microsoft_page(self, url: str) -> List[OSInfo]:
-        """
-        Scrape Microsoft's official download page for ISO links.
-
-        This is a placeholder for future web scraping implementation.
-        """
-        # TODO: Implement actual web scraping
-        # This would involve:
-        # 1. Fetching the page
-        # 2. Parsing the HTML to find download links
-        # 3. Extracting version, architecture, language info
-        # 4. Building OSInfo objects
-
-        return []

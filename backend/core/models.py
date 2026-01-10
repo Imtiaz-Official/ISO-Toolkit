@@ -49,6 +49,7 @@ class OSInfo:
     architecture: Architecture
     language: str  # e.g., "en-US", "Multi"
     url: str
+    mirrors: list[str] = field(default_factory=list)  # Alternative download URLs
     checksum: Optional[str] = None
     checksum_type: Optional[str] = None  # "sha256", "md5"
     size: Optional[int] = None  # in bytes
@@ -57,6 +58,7 @@ class OSInfo:
     icon: Optional[str] = None  # emoji or icon identifier
     source: Optional[str] = None  # e.g., "Microsoft", "Ubuntu", "Internet Archive"
     subcategory: Optional[str] = None  # e.g., "Ubuntu", "Fedora" for Linux distros
+    headers: dict[str, str] = field(default_factory=dict)  # Custom HTTP headers needed for download
 
     @property
     def display_name(self) -> str:

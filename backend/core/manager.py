@@ -1,5 +1,5 @@
 """
-Download manager for handling ISO downloads with resume support.
+Download manager for handling ISO downloads with resume support, mirrors, and robust error handling.
 """
 
 import os
@@ -8,6 +8,7 @@ import threading
 import hashlib
 import ssl
 import urllib3
+import logging
 from pathlib import Path
 from typing import Optional, List
 from datetime import datetime
@@ -21,6 +22,8 @@ from core.models import (
     DownloadProgress,
     OSInfo,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def _has_rust_extension() -> bool:
@@ -44,21 +47,31 @@ def _create_download_session() -> requests.Session:
     # Disable SSL warnings for self-signed certs (some archives use them)
     urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-    # Configure retry strategy
+    # Configure retry strategy - expanded to handle more cases
     retry_strategy = Retry(
-        total=5,
+        total=8,  # Increased from 5
         backoff_factor=2,
-        status_forcelist=[429, 500, 502, 503, 504],
-        allowed_methods=["HEAD", "GET", "OPTIONS"]
+        status_forcelist=[403, 408, 429, 500, 502, 503, 504],  # Added 403, 408
+        allowed_methods=["HEAD", "GET", "OPTIONS"],
+        raise_on_status=False  # Don't raise immediately, handle errors manually
     )
 
     adapter = HTTPAdapter(
         max_retries=retry_strategy,
-        pool_connections=10,
-        pool_maxsize=10
+        pool_connections=15,  # Increased from 10
+        pool_maxsize=15
     )
     session.mount("http://", adapter)
     session.mount("https://", adapter)
+
+    # Default headers for all requests
+    session.headers.update({
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Accept": "*/*",
+        "Accept-Language": "en-US,en;q=0.9",
+        "Accept-Encoding": "gzip, deflate",
+        "Connection": "keep-alive",
+    })
 
     return session
 
@@ -69,7 +82,8 @@ _download_session = _create_download_session()
 
 class DownloadManager:
     """
-    Manages ISO downloads with resume support, progress tracking, and checksum verification.
+    Manages ISO downloads with resume support, progress tracking, checksum verification,
+    mirror support, and robust error handling.
     """
 
     def __init__(self, download_dir: Optional[str] = None):
@@ -160,7 +174,7 @@ class DownloadManager:
             file_size = Path(task.output_path).stat().st_size
             if task.os_info.size and file_size < task.os_info.size:
                 resume = True
-                print(f"Resuming download from {self._format_bytes(file_size)}")
+                logger.info(f"Resuming download from {self._format_bytes(file_size)}")
             elif task.os_info.size and file_size >= task.os_info.size:
                 # File already complete, just verify
                 task.state = DownloadState.COMPLETED
@@ -182,25 +196,53 @@ class DownloadManager:
         return True
 
     def _download_worker(self, task: DownloadTask, resume: bool) -> None:
-        """Worker thread that handles the actual download."""
-        try:
-            if HAS_RUST:
-                self._download_with_rust(task, resume)
-            else:
-                self._download_with_python(task, resume)
+        """Worker thread that handles the actual download with mirror support."""
+        last_error = None
 
-        except Exception as e:
+        # Try main URL first, then mirrors
+        urls_to_try = [task.os_info.url] + task.os_info.mirrors
+
+        for i, url in enumerate(urls_to_try):
+            if task.is_cancelled():
+                return
+
+            logger.info(f"Attempting download from source {i+1}/{len(urls_to_try)}: {url}")
+
+            try:
+                if HAS_RUST:
+                    self._download_with_rust(task, resume, url)
+                else:
+                    self._download_with_python(task, resume, url)
+
+                # If successful, return
+                if task.state == DownloadState.COMPLETED:
+                    logger.info(f"Download completed from source {i+1}")
+                    return
+
+            except Exception as e:
+                last_error = e
+                logger.warning(f"Download failed from source {i+1}: {e}")
+
+                # If not the last source, continue to next mirror
+                if i < len(urls_to_try) - 1:
+                    logger.info(f"Trying next mirror...")
+                    time.sleep(1)  # Brief pause before trying next mirror
+                    continue
+
+        # All sources failed
+        if task.state not in (DownloadState.COMPLETED, DownloadState.CANCELLED):
             task.state = DownloadState.FAILED
-            task.error_message = str(e)
+            task.error_message = f"All download sources failed. Last error: {last_error}"
+            logger.error(f"Download failed completely: {task.error_message}")
             if task.on_complete:
-                task.on_complete(False, str(e))
+                task.on_complete(False, task.error_message)
 
         finally:
             if task.state in (DownloadState.COMPLETED, DownloadState.FAILED, DownloadState.CANCELLED):
                 if task not in self._completed_tasks:
                     self._completed_tasks.append(task)
 
-    def _download_with_rust(self, task: DownloadTask, resume: bool) -> None:
+    def _download_with_rust(self, task: DownloadTask, resume: bool, url: str) -> None:
         """Download using Rust extension (faster)."""
         from core import _core
 
@@ -212,7 +254,7 @@ class DownloadManager:
             return True
 
         result = _core.download_file(
-            task.os_info.url,
+            url,
             task.output_path,
             resume,
             progress_callback
@@ -228,11 +270,10 @@ class DownloadManager:
         else:
             task.state = DownloadState.FAILED
             task.error_message = result.error_message or "Download failed"
-            if task.on_complete:
-                task.on_complete(False, task.error_message)
+            raise Exception(task.error_message)
 
-    def _download_with_python(self, task: DownloadTask, resume: bool) -> None:
-        """Download using pure Python (fallback)."""
+    def _download_with_python(self, task: DownloadTask, resume: bool, url: str) -> None:
+        """Download using pure Python with robust error handling."""
         path = Path(task.output_path)
         start_pos = 0
 
@@ -244,31 +285,25 @@ class DownloadManager:
         if start_pos > 0:
             headers["Range"] = f"bytes={start_pos}-"
 
-        # Use the configured session with retry and SSL handling
+        # Add custom headers from OSInfo if available
+        if task.os_info.headers:
+            headers.update(task.os_info.headers)
+
+        # Try with SSL verification first
         try:
-            response = _download_session.get(
-                task.os_info.url,
-                headers=headers,
-                stream=True,
-                timeout=30,
-                verify=True  # Enable SSL verification
-            )
-        except requests.exceptions.SSLError as e:
-            # Fall back to no SSL verification if SSL fails
-            response = _download_session.get(
-                task.os_info.url,
-                headers=headers,
-                stream=True,
-                timeout=30,
-                verify=False
-            )
+            response = self._make_request(url, headers, verify_ssl=True, timeout=30)
+        except (requests.exceptions.SSLError, requests.exceptions.RequestException) as e:
+            logger.warning(f"Request with SSL failed: {e}, trying without SSL...")
+            response = self._make_request(url, headers, verify_ssl=False, timeout=30)
 
         if response.status_code not in (200, 206):
+            error_msg = f"HTTP error: {response.status_code} for {url}"
+            logger.error(error_msg)
             task.state = DownloadState.FAILED
-            task.error_message = f"HTTP error: {response.status_code}"
+            task.error_message = error_msg
             if task.on_complete:
                 task.on_complete(False, task.error_message)
-            return
+            raise Exception(error_msg)
 
         # Get total size
         total_size = start_pos
@@ -279,23 +314,62 @@ class DownloadManager:
 
         mode = "ab" if resume and start_pos > 0 else "wb"
 
-        with open(path, mode) as f:
-            downloaded = start_pos
-            chunk_size = 8192
+        downloaded = start_pos
+        chunk_size = 65536  # Increased from 8192 for better performance
+        last_progress_time = time.time()
 
-            for chunk in response.iter_content(chunk_size=chunk_size):
-                if task.is_cancelled():
-                    task.state = DownloadState.CANCELLED
-                    return
+        try:
+            with open(path, mode) as f:
+                for chunk in response.iter_content(chunk_size=chunk_size):
+                    if task.is_cancelled():
+                        task.state = DownloadState.CANCELLED
+                        return
 
-                if chunk:
-                    f.write(chunk)
-                    downloaded += len(chunk)
-                    self._update_task_progress(task, downloaded, total_size)
+                    if chunk:
+                        f.write(chunk)
+                        downloaded += len(chunk)
+
+                        # Update progress throttling (not every chunk)
+                        current_time = time.time()
+                        if current_time - last_progress_time >= 0.5:  # Every 0.5 seconds
+                            self._update_task_progress(task, downloaded, total_size)
+                            last_progress_time = current_time
+
+        except IOError as e:
+            task.state = DownloadState.FAILED
+            task.error_message = f"File write error: {e}"
+            logger.error(task.error_message)
+            raise
 
         if not task.is_cancelled():
+            # Final progress update
+            self._update_task_progress(task, downloaded, total_size)
             task.state = DownloadState.VERIFYING
             self._verify_and_complete(task)
+
+    def _make_request(self, url: str, headers: dict, verify_ssl: bool, timeout: int) -> requests.Response:
+        """
+        Make HTTP request with proper error handling.
+
+        Args:
+            url: The URL to request
+            headers: Request headers
+            verify_ssl: Whether to verify SSL certificates
+            timeout: Request timeout in seconds
+
+        Returns:
+            Response object
+
+        Raises:
+            requests.RequestException: If request fails
+        """
+        return _download_session.get(
+            url,
+            headers=headers,
+            stream=True,
+            timeout=timeout,
+            verify=verify_ssl
+        )
 
     def _update_task_progress(self, task: DownloadTask, downloaded: int, total: int) -> None:
         """Update task progress and trigger callbacks."""
@@ -324,13 +398,16 @@ class DownloadManager:
         if task.on_progress:
             try:
                 task.on_progress(task.progress)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning(f"Progress callback error: {e}")
 
     def _verify_and_complete(self, task: DownloadTask) -> None:
         """Verify checksum and mark task as complete."""
         try:
-            if task.os_info.checksum and task.os_info.checksum_type:
+            # Only verify if we have a valid checksum (not placeholder zeros)
+            if (task.os_info.checksum and task.os_info.checksum_type and
+                not task.os_info.checksum.startswith("00000000")):
+
                 task.state = DownloadState.VERIFYING
 
                 if HAS_RUST:
@@ -350,25 +427,32 @@ class DownloadManager:
                 if not valid:
                     task.state = DownloadState.FAILED
                     task.error_message = f"Checksum verification failed"
+                    logger.error(task.error_message)
                     if task.on_complete:
                         task.on_complete(False, task.error_message)
                     return
+            else:
+                logger.info("No valid checksum available, skipping verification")
 
             task.state = DownloadState.COMPLETED
             task.completed_at = datetime.now()
+
+            actual_size = Path(task.output_path).stat().st_size
             task.progress = DownloadProgress(
-                downloaded=task.os_info.size or Path(task.output_path).stat().st_size,
-                total=task.os_info.size or Path(task.output_path).stat().st_size,
+                downloaded=actual_size,
+                total=task.os_info.size or actual_size,
                 speed=0,
                 eta=0
             )
 
+            logger.info(f"Download completed: {Path(task.output_path).name}")
             if task.on_complete:
                 task.on_complete(True, None)
 
         except Exception as e:
             task.state = DownloadState.FAILED
             task.error_message = f"Verification failed: {e}"
+            logger.error(task.error_message)
             if task.on_complete:
                 task.on_complete(False, task.error_message)
 
@@ -391,7 +475,7 @@ class DownloadManager:
             raise ValueError(f"Unsupported algorithm: {algorithm}")
 
         with open(path, "rb") as f:
-            while chunk := f.read(8192):
+            while chunk := f.read(65536):  # Read in larger chunks
                 hasher.update(chunk)
 
         calculated = hasher.hexdigest()
@@ -433,7 +517,7 @@ class DownloadManager:
         else:
             # Pure Python fallback with SSL handling
             try:
-                response = _download_session.head(url, timeout=10, verify=True)
+                response = _download_session.head(url, timeout=15, verify=True)
                 return {
                     "size": int(response.headers.get("content-length", 0)),
                     "supports_resume": response.headers.get("accept-ranges", "").lower() == "bytes",
@@ -441,13 +525,14 @@ class DownloadManager:
                 }
             except requests.exceptions.SSLError:
                 # Fall back to no SSL verification
-                response = _download_session.head(url, timeout=10, verify=False)
+                response = _download_session.head(url, timeout=15, verify=False)
                 return {
                     "size": int(response.headers.get("content-length", 0)),
                     "supports_resume": response.headers.get("accept-ranges", "").lower() == "bytes",
                     "content_type": response.headers.get("content-type", "application/octet-stream"),
                 }
-            except Exception:
+            except Exception as e:
+                logger.error(f"Failed to get file info: {e}")
                 return {
                     "size": 0,
                     "supports_resume": False,

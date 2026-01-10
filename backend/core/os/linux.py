@@ -485,7 +485,10 @@ class LinuxProvider(BaseProvider):
         return self._apply_filters(isos, **filters)
 
     async def _fetch_linux_mint(self, **filters) -> List[OSInfo]:
-        """Fetch Linux Mint ISO information."""
+        """Fetch Linux Mint ISO information.
+
+        Using reliable mirror sources for Linux Mint downloads.
+        """
         isos = [
             # Linux Mint 22 Cinnamon
             OSInfo(
@@ -494,7 +497,11 @@ class LinuxProvider(BaseProvider):
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://linuxmint.com/iso/stable/22/linuxmint-22-cinnamon-64bit.iso",
+                url="https://mirrors.kernel.org/linuxmint/stable/22/linuxmint-22-cinnamon-64bit.iso",
+                mirrors=[
+                    "https://ftp.heanet.ie/mirrors/linuxmint.com/stable/22/linuxmint-22-cinnamon-64bit.iso",
+                    "https://mirror.math.princeton.edu/pub/linuxmint-stable/22/linuxmint-22-cinnamon-64bit.iso",
+                ],
                 size=3221225472,
                 release_date=datetime(2024, 7, 25),
                 description="Linux Mint 22 Cinnamon Edition - Based on Ubuntu 24.04 LTS",
@@ -509,7 +516,11 @@ class LinuxProvider(BaseProvider):
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://linuxmint.com/iso/stable/22/linuxmint-22-mate-64bit.iso",
+                url="https://mirrors.kernel.org/linuxmint/stable/22/linuxmint-22-mate-64bit.iso",
+                mirrors=[
+                    "https://ftp.heanet.ie/mirrors/linuxmint.com/stable/22/linuxmint-22-mate-64bit.iso",
+                    "https://mirror.math.princeton.edu/pub/linuxmint-stable/22/linuxmint-22-mate-64bit.iso",
+                ],
                 size=3061841920,
                 release_date=datetime(2024, 7, 25),
                 description="Linux Mint 22 MATE Edition - Based on Ubuntu 24.04 LTS",
@@ -524,7 +535,11 @@ class LinuxProvider(BaseProvider):
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://linuxmint.com/iso/stable/22/linuxmint-22-xfce-64bit.iso",
+                url="https://mirrors.kernel.org/linuxmint/stable/22/linuxmint-22-xfce-64bit.iso",
+                mirrors=[
+                    "https://ftp.heanet.ie/mirrors/linuxmint.com/stable/22/linuxmint-22-xfce-64bit.iso",
+                    "https://mirror.math.princeton.edu/pub/linuxmint-stable/22/linuxmint-22-xfce-64bit.iso",
+                ],
                 size=2894069760,
                 release_date=datetime(2024, 7, 25),
                 description="Linux Mint 22 XFCE Edition - Based on Ubuntu 24.04 LTS",
@@ -539,7 +554,10 @@ class LinuxProvider(BaseProvider):
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://linuxmint.com/iso/stable/21.3/linuxmint-21.3-cinnamon-64bit.iso",
+                url="https://mirrors.kernel.org/linuxmint/stable/21.3/linuxmint-21.3-cinnamon-64bit.iso",
+                mirrors=[
+                    "https://ftp.heanet.ie/mirrors/linuxmint.com/stable/21.3/linuxmint-21.3-cinnamon-64bit.iso",
+                ],
                 size=3145728000,
                 release_date=datetime(2024, 1, 15),
                 description="Linux Mint 21.3 Cinnamon Edition - Based on Ubuntu 22.04 LTS",
@@ -554,7 +572,10 @@ class LinuxProvider(BaseProvider):
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://linuxmint.com/iso/stable/21.3/linuxmint-21.3-mate-64bit.iso",
+                url="https://mirrors.kernel.org/linuxmint/stable/21.3/linuxmint-21.3-mate-64bit.iso",
+                mirrors=[
+                    "https://ftp.heanet.ie/mirrors/linuxmint.com/stable/21.3/linuxmint-21.3-mate-64bit.iso",
+                ],
                 size=2988446720,
                 release_date=datetime(2024, 1, 15),
                 description="Linux Mint 21.3 MATE Edition - Based on Ubuntu 22.04 LTS",
@@ -569,7 +590,10 @@ class LinuxProvider(BaseProvider):
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://linuxmint.com/iso/stable/21.3/linuxmint-21.3-xfce-64bit.iso",
+                url="https://mirrors.kernel.org/linuxmint/stable/21.3/linuxmint-21.3-xfce-64bit.iso",
+                mirrors=[
+                    "https://ftp.heanet.ie/mirrors/linuxmint.com/stable/21.3/linuxmint-21.3-xfce-64bit.iso",
+                ],
                 size=2810183680,
                 release_date=datetime(2024, 1, 15),
                 description="Linux Mint 21.3 XFCE Edition - Based on Ubuntu 22.04 LTS",
