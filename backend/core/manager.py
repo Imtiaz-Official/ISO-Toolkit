@@ -199,43 +199,44 @@ class DownloadManager:
         """Worker thread that handles the actual download with mirror support."""
         last_error = None
 
-        # Try main URL first, then mirrors
-        urls_to_try = [task.os_info.url] + task.os_info.mirrors
+        try:
+            # Try main URL first, then mirrors
+            urls_to_try = [task.os_info.url] + task.os_info.mirrors
 
-        for i, url in enumerate(urls_to_try):
-            if task.is_cancelled():
-                return
-
-            logger.info(f"Attempting download from source {i+1}/{len(urls_to_try)}: {url}")
-
-            try:
-                if HAS_RUST:
-                    self._download_with_rust(task, resume, url)
-                else:
-                    self._download_with_python(task, resume, url)
-
-                # If successful, return
-                if task.state == DownloadState.COMPLETED:
-                    logger.info(f"Download completed from source {i+1}")
+            for i, url in enumerate(urls_to_try):
+                if task.is_cancelled():
                     return
 
-            except Exception as e:
-                last_error = e
-                logger.warning(f"Download failed from source {i+1}: {e}")
+                logger.info(f"Attempting download from source {i+1}/{len(urls_to_try)}: {url}")
 
-                # If not the last source, continue to next mirror
-                if i < len(urls_to_try) - 1:
-                    logger.info(f"Trying next mirror...")
-                    time.sleep(1)  # Brief pause before trying next mirror
-                    continue
+                try:
+                    if HAS_RUST:
+                        self._download_with_rust(task, resume, url)
+                    else:
+                        self._download_with_python(task, resume, url)
 
-        # All sources failed
-        if task.state not in (DownloadState.COMPLETED, DownloadState.CANCELLED):
-            task.state = DownloadState.FAILED
-            task.error_message = f"All download sources failed. Last error: {last_error}"
-            logger.error(f"Download failed completely: {task.error_message}")
-            if task.on_complete:
-                task.on_complete(False, task.error_message)
+                    # If successful, return
+                    if task.state == DownloadState.COMPLETED:
+                        logger.info(f"Download completed from source {i+1}")
+                        return
+
+                except Exception as e:
+                    last_error = e
+                    logger.warning(f"Download failed from source {i+1}: {e}")
+
+                    # If not the last source, continue to next mirror
+                    if i < len(urls_to_try) - 1:
+                        logger.info(f"Trying next mirror...")
+                        time.sleep(1)  # Brief pause before trying next mirror
+                        continue
+
+            # All sources failed
+            if task.state not in (DownloadState.COMPLETED, DownloadState.CANCELLED):
+                task.state = DownloadState.FAILED
+                task.error_message = f"All download sources failed. Last error: {last_error}"
+                logger.error(f"Download failed completely: {task.error_message}")
+                if task.on_complete:
+                    task.on_complete(False, task.error_message)
 
         finally:
             if task.state in (DownloadState.COMPLETED, DownloadState.FAILED, DownloadState.CANCELLED):
