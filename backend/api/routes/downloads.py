@@ -3,6 +3,7 @@ API routes for download management.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, BackgroundTasks
+from fastapi.responses import RedirectResponse
 from sqlalchemy.orm import Session
 from typing import List
 
@@ -84,6 +85,47 @@ async def start_download(
     record = await download_service.start_download(os_info, db)
 
     return _record_to_response(record)
+
+
+@router.get("/direct/{os_id}")
+async def direct_download(os_id: str) -> RedirectResponse:
+    """
+    Direct download - redirects to the ISO URL so browser downloads it externally.
+
+    This works like os.click - clicking download starts the ISO download directly
+    from the source, not through the server.
+
+    Args:
+        os_id: OS ID (format: category_name_version_architecture)
+
+    Returns:
+        Redirect to the ISO URL
+    """
+    # Parse OS ID
+    parts = os_id.split("_")
+    if len(parts) < 4:
+        raise HTTPException(status_code=400, detail="Invalid OS ID format")
+
+    category_str = parts[0]
+    try:
+        category = OSCategory(category_str)
+    except ValueError:
+        raise HTTPException(status_code=400, detail=f"Invalid category: {category_str}")
+
+    # Get all OS for category and find matching one
+    all_os = await os_routes.get_os_by_category(category)
+    os_response = None
+    for os_item in all_os:
+        if os_item.id == os_id:
+            os_response = os_item
+            break
+
+    if not os_response:
+        raise HTTPException(status_code=404, detail="OS not found")
+
+    # Redirect to the ISO URL directly
+    # Browser will download from the source (like os.click)
+    return RedirectResponse(url=os_response.url, status_code=302)
 
 
 @router.get("", response_model=List[DownloadStatusResponse])

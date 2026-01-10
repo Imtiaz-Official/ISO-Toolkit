@@ -405,45 +405,16 @@ export default function BrowsePage() {
 }
 
 function DownloadButton({ os }: { os: OSInfo }) {
-  const [starting, setStarting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-
-  async function handleClick() {
-    setStarting(true);
-    setError(null);
-
-    try {
-      const response = await fetch('/api/downloads/start', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ os_id: os.id }),
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to start download');
-      }
-
-      // Redirect to downloads page
-      window.location.href = '/downloads';
-    } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to start download');
-      setStarting(false);
-    }
-  }
-
+  // Direct download - redirects to ISO URL (like os.click)
+  // Browser downloads directly from source, not through server
   return (
-    <>
-      <button
-        onClick={handleClick}
-        disabled={starting}
-        className="btn btn-primary w-full sm:flex-1 text-sm sm:text-base"
-      >
-        {starting ? 'Starting...' : 'Download'}
-      </button>
-      {error && (
-        <div className="mt-2 text-xs sm:text-sm text-red-600">{error}</div>
-      )}
-    </>
+    <a
+      href={`/api/downloads/direct/${os.id}`}
+      className="btn btn-primary w-full sm:flex-1 text-sm sm:text-base inline-flex items-center justify-center"
+      download
+    >
+      Download
+    </a>
   );
 }
 
