@@ -163,6 +163,49 @@ VITE_WS_URL=ws://localhost:8000/api/ws/downloads
 docker-compose up --build
 ```
 
+## Zeabur Deployment (Free Hosting)
+
+This project is configured for deployment on [Zeabur](https://zeabur.com) with a free tier that doesn't spin down.
+
+### Quick Deploy
+
+1. Push your code to GitHub
+2. Create an account at [Zeabur](https://zeabur.com)
+3. Create a new project and import your repository
+4. Zeabur will detect the `zeabur.yaml` configuration and deploy both services
+
+### Deployment Files
+
+- `Dockerfile.backend` - Backend container
+- `Dockerfile.frontend` - Frontend container
+- `nginx.conf` - Nginx configuration for frontend
+- `zeabur.yaml` - Zeabur deployment configuration
+- `.dockerignore` - Files to exclude from Docker builds
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed instructions.
+
+## Features
+
+### Browse OS
+- Windows (11, 10, 8.1, 7, XP)
+- Linux (Ubuntu, Fedora, Debian, Mint, Arch, and more)
+- macOS
+- BSD
+
+### Download Manager
+- Real-time progress tracking via WebSocket
+- Pause, resume, cancel downloads
+- Checksum verification (SHA256)
+- Download history and statistics
+
+### Settings & Appearance
+- Theme: Light, Dark, Auto
+- Accent color customization
+- Font size adjustment
+- Compact mode
+- Show/hide file sizes
+- Language & Region settings
+
 ## License
 
 MIT License
@@ -170,4 +213,3 @@ MIT License
 ## Support
 
 For issues and questions, please open a GitHub issue.
-# ISO-Toolkit
