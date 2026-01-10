@@ -2,7 +2,7 @@ services:
   # Type of service
   - type: web
     name: backend
-    env: node
+    env: python
     buildCommand: cd backend && pip install -r requirements.txt
     startCommand: cd backend && python main.py
     envVars:
