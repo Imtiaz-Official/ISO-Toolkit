@@ -55,7 +55,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         return;
       }
 
-      const response = await axios.get(`${API_BASE}/api/auth/me`);
+      const response = await axios.get(`${API_BASE}/auth/me`);
       setUser(response.data);
     } catch (error) {
       console.error('Auth check failed:', error);
@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     formData.append('password', password);
 
     try {
-      const response = await axios.post(`${API_BASE}/api/auth/login`, formData, {
+      const response = await axios.post(`${API_BASE}/auth/login`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -107,7 +107,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
 
     try {
-      const response = await axios.post(`${API_BASE}/api/auth/refresh`, {
+      const response = await axios.post(`${API_BASE}/auth/refresh`, {
         refresh_token,
       });
 

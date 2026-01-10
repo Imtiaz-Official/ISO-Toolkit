@@ -89,7 +89,7 @@ export default function AdminDashboard() {
 
   const fetchAnalytics = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/api/analytics/detailed`);
+      const response = await axios.get(`${API_BASE}/analytics/detailed`);
       setAnalytics(response.data);
     } catch (error) {
       console.error('Failed to fetch analytics:', error);
@@ -98,7 +98,7 @@ export default function AdminDashboard() {
 
   const fetchSystemHealth = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/api/analytics/system-health`);
+      const response = await axios.get(`${API_BASE}/analytics/system-health`);
       setSystemHealth(response.data);
     } catch (error) {
       console.error('Failed to fetch system health:', error);
@@ -107,7 +107,7 @@ export default function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/api/auth/admin/users`);
+      const response = await axios.get(`${API_BASE}/auth/admin/users`);
       setUsers(response.data);
     } catch (error) {
       console.error('Failed to fetch users:', error);
@@ -118,7 +118,7 @@ export default function AdminDashboard() {
 
   const toggleAdmin = async (userId: number) => {
     try {
-      await axios.post(`${API_BASE}/api/auth/admin/users/${userId}/toggle-admin`);
+      await axios.post(`${API_BASE}/auth/admin/users/${userId}/toggle-admin`);
       await fetchUsers();
     } catch (error: any) {
       alert(error.response?.data?.detail || 'Failed to toggle admin status');
@@ -130,7 +130,7 @@ export default function AdminDashboard() {
       return;
     }
     try {
-      await axios.delete(`${API_BASE}/api/auth/admin/users/${userId}`);
+      await axios.delete(`${API_BASE}/auth/admin/users/${userId}`);
       await fetchUsers();
     } catch (error: any) {
       alert(error.response?.data?.detail || 'Failed to delete user');
