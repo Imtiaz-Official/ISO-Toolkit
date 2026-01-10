@@ -4,6 +4,7 @@
 
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { lazy, Suspense, useState, useEffect } from 'react';
+import { AuthProvider, withAuth } from './contexts/AuthContext';
 
 // Apply theme from localStorage or default to auto
 function applyTheme() {
@@ -25,6 +26,11 @@ const HomePage = lazy(() => import('./pages/Home'));
 const BrowsePage = lazy(() => import('./pages/BrowseOS'));
 const DownloadsPage = lazy(() => import('./pages/Downloads'));
 const SettingsPage = lazy(() => import('./pages/Settings'));
+const LoginPage = lazy(() => import('./pages/Login'));
+
+// Load AdminDashboard and wrap with auth
+const AdminDashboardPageLazy = lazy(() => import('./pages/AdminDashboard'));
+const AdminDashboardPage = withAuth(AdminDashboardPageLazy, true);
 
 function Navigation() {
   const location = useLocation();
@@ -36,6 +42,7 @@ function Navigation() {
     { path: '/browse', label: 'Browse', icon: '🔍' },
     { path: '/downloads', label: 'Downloads', icon: '📥' },
     { path: '/settings', label: 'Settings', icon: '⚙️' },
+    { path: '/admin/login', label: 'Admin', icon: '🔐' },
   ];
 
   return (
@@ -137,42 +144,46 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
-      <Navigation />
+    <AuthProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex flex-col">
+        <Navigation />
 
-      {/* Main Content */}
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-        <Suspense
-          fallback={
-            <div className="flex items-center justify-center h-64">
-              <div className="flex flex-col items-center space-y-4">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
+        {/* Main Content */}
+        <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+          <Suspense
+            fallback={
+              <div className="flex items-center justify-center h-64">
+                <div className="flex flex-col items-center space-y-4">
+                  <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">Loading...</p>
+                </div>
               </div>
-            </div>
-          }
-        >
-          <Routes>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/browse" element={<BrowsePage />} />
-            <Route path="/downloads" element={<DownloadsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-          </Routes>
-        </Suspense>
-      </main>
+            }
+          >
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/browse" element={<BrowsePage />} />
+              <Route path="/downloads" element={<DownloadsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/admin/login" element={<LoginPage />} />
+              <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
+            </Routes>
+          </Suspense>
+        </main>
 
-      {/* Footer */}
-      <footer className="mt-auto py-6 border-t border-gray-200 dark:border-gray-800">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            💿 ISO Toolkit - Multi-OS ISO Downloader
-          </p>
-          <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">
-            Available for Windows, Linux, macOS, and BSD
-          </p>
-        </div>
-      </footer>
-    </div>
+        {/* Footer */}
+        <footer className="mt-auto py-6 border-t border-gray-200 dark:border-gray-800">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <p className="text-center text-sm text-gray-500 dark:text-gray-400">
+              💿 ISO Toolkit - Multi-OS ISO Downloader
+            </p>
+            <p className="text-center text-xs text-gray-400 dark:text-gray-500 mt-2">
+              Available for Windows, Linux, macOS, and BSD
+            </p>
+          </div>
+        </footer>
+      </div>
+    </AuthProvider>
   );
 }
 

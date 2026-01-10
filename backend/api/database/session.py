@@ -41,6 +41,9 @@ engine = create_engine(
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# Export database URL for use in scripts
+DATABASE_URL = get_database_url()
+
 
 def init_database():
     """Initialize database tables."""

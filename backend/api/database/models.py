@@ -3,13 +3,41 @@ SQLAlchemy database models for ISO Toolkit web application.
 """
 
 from datetime import datetime
-from sqlalchemy import Column, Integer, String, DateTime, Float, BigInteger, Text, Enum as SQLEnum
+from sqlalchemy import Column, Integer, String, DateTime, Float, BigInteger, Text, Enum as SQLEnum, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 
 # Import enums from core to avoid duplication
 from core.models import DownloadState
 
 Base = declarative_base()
+
+
+class User(Base):
+    """
+    User model for admin authentication.
+    """
+    __tablename__ = "users"
+
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String(50), unique=True, nullable=False, index=True)
+    email = Column(String(100), unique=True, nullable=False, index=True)
+    hashed_password = Column(String(255), nullable=False)
+    is_admin = Column(Boolean, default=False, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    last_login = Column(DateTime, nullable=True)
+
+    def to_dict(self):
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "id": self.id,
+            "username": self.username,
+            "email": self.email,
+            "is_admin": self.is_admin,
+            "is_active": self.is_active,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "last_login": self.last_login.isoformat() if self.last_login else None,
+        }
 
 
 class DownloadRecord(Base):

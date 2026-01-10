@@ -13,7 +13,7 @@ import os as os_module
 from pathlib import Path
 
 from api.database.session import init_database
-from api.routes import os, downloads, ws
+from api.routes import os, downloads, ws, auth, analytics
 
 # Configure logging
 logging.basicConfig(
@@ -74,6 +74,8 @@ app.add_middleware(
 app.include_router(os.router)
 app.include_router(downloads.router)
 app.include_router(ws.router)
+app.include_router(auth.router)
+app.include_router(analytics.router)
 
 
 @app.get("/health")
