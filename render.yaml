@@ -1,19 +1,12 @@
 services:
-  # Type of service
   - type: web
-    name: backend
+    name: iso-toolkit
     env: python
-    buildCommand: cd backend && pip install -r requirements.txt
+    buildCommand: |
+      cd frontend && npm install && npm run build && cd .. && cd backend && pip install -r requirements.txt
     startCommand: cd backend && python main.py
     envVars:
       - key: PORT
         value: 8000
-
-  - type: web
-    name: frontend
-    env: node
-    buildCommand: cd frontend && npm install && npm run build
-    startCommand: cd frontend && npx serve dist -l 80
-    envVars:
-      - key: VITE_API_URL
-        value: https://iso-toolkit-backend.onrender.com
+      - key: PYTHON_VERSION
+        value: 3.11

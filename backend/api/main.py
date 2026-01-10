@@ -1,12 +1,16 @@
 """
 FastAPI application for ISO Toolkit web interface.
+Serves both API endpoints and the frontend React app.
 """
 
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
+from fastapi.responses import FileResponse
 from contextlib import asynccontextmanager
 import logging
 import os as os_module
+from pathlib import Path
 
 from api.database.session import init_database
 from api.routes import os, downloads, ws
@@ -28,6 +32,14 @@ async def lifespan(app: FastAPI):
     logger.info("Starting ISO Toolkit API...")
     init_database()
     logger.info("Database initialized")
+
+    # Setup frontend static files
+    frontend_dist = Path(__file__).parent.parent.parent / "frontend" / "dist"
+    if frontend_dist.exists():
+        app.mount("/assets", StaticFiles(directory=str(frontend_dist / "assets")), name="assets")
+        logger.info(f"Serving frontend static files from {frontend_dist}")
+    else:
+        logger.warning(f"Frontend dist folder not found at {frontend_dist}")
 
     yield
 
@@ -67,9 +79,18 @@ app.include_router(downloads.router)
 app.include_router(ws.router)
 
 
-@app.get("/")
-async def root():
-    """Root endpoint - API info."""
+@app.get("/health")
+async def health():
+    """Health check endpoint."""
+    return {
+        "status": "healthy",
+        "service": "iso-toolkit",
+    }
+
+
+@app.get("/api")
+async def api_info():
+    """API info endpoint."""
     return {
         "name": "ISO Toolkit API",
         "version": "1.0.0",
@@ -83,13 +104,44 @@ async def root():
     }
 
 
-@app.get("/health")
-async def health():
-    """Health check endpoint."""
+@app.get("/")
+async def root():
+    """Root endpoint - serve frontend or return API info."""
+    frontend_dist = Path(__file__).parent.parent.parent / "frontend" / "dist"
+    index_path = frontend_dist / "index.html"
+    if index_path.exists():
+        return FileResponse(str(index_path))
     return {
-        "status": "healthy",
-        "service": "iso-toolkit-api",
+        "name": "ISO Toolkit API",
+        "version": "1.0.0",
+        "description": "Multi-OS ISO Downloader Toolkit",
+        "docs": "/docs",
+        "endpoints": {
+            "os": "/api/os",
+            "downloads": "/api/downloads",
+            "websocket": "/api/ws/downloads",
+        },
     }
+
+
+@app.api_route("/{full_path:path}", methods=["GET", "POST", "PUT", "DELETE", "PATCH"])
+async def catch_all(request: Request, full_path: str):
+    """
+    Catch-all route for SPA support.
+    Serves index.html for all non-API routes.
+    """
+    # If it's an API route, let it 404 naturally
+    if full_path.startswith("api/"):
+        from fastapi import HTTPException
+        raise HTTPException(status_code=404, detail="API endpoint not found")
+
+    # For all other routes, serve index.html for SPA routing
+    frontend_dist = Path(__file__).parent.parent.parent / "frontend" / "dist"
+    index_path = frontend_dist / "index.html"
+    if index_path.exists():
+        return FileResponse(str(index_path))
+
+    return {"error": "Frontend not built. Run: cd frontend && npm run build"}
 
 
 if __name__ == "__main__":

@@ -5,7 +5,17 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import type { WebSocketMessage, DownloadProgressUpdate } from '../types';
 
-const WS_URL = import.meta.env.VITE_WS_URL || 'ws://127.0.0.1:8000/api/ws/downloads';
+// Dynamic WebSocket URL - converts http(s):// to ws(s):// for current origin
+const getWebSocketURL = () => {
+  if (import.meta.env.VITE_WS_URL) {
+    return import.meta.env.VITE_WS_URL;
+  }
+  // For production, use the same origin as the page
+  const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+  const host = window.location.host;
+  return `${protocol}//${host}/api/ws/downloads`;
+};
+const WS_URL = getWebSocketURL();
 
 interface UseWebSocketReturn {
   connected: boolean;
