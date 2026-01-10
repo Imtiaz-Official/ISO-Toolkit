@@ -523,7 +523,7 @@ export default function AdminDashboard() {
                       {getCategoryIcon(dl.os_category)} {dl.os_category}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className={getStateColor(dl.state)} capitalize">{dl.state}</span>
+                      <span className={`${getStateColor(dl.state)} capitalize`}>{dl.state}</span>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">
                       {dl.created_at ? new Date(dl.created_at).toLocaleString() : '-'}
