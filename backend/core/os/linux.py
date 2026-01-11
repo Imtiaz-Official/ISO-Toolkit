@@ -89,6 +89,16 @@ class LinuxProvider(BaseProvider):
             self._fetch_arcolinux(**filters),
             self._fetch_biglinux(**filters),
             self._fetch_rebecca(**filters),
+            self._fetch_raspberry_pi_os(**filters),
+            self._fetch_alpine(**filters),
+            self._fetch_dietpi(**filters),
+            self._fetch_libreelec(**filters),
+            self._fetch_fedora_arm(**filters),
+            self._fetch_ubuntu_mate_arm(**filters),
+            self._fetch_oracle(**filters),
+            self._fetch_amazon(**filters),
+            self._fetch_clear(**filters),
+            self._fetch_mageia(**filters),
             return_exceptions=True
         )
 
@@ -1295,6 +1305,261 @@ class LinuxProvider(BaseProvider):
                 icon="🎬",
                 source="RebeccaBlackOS",
                 subcategory="RebeccaBlackOS",
+            ),
+        ]
+        return self._apply_filters(isos, **filters)
+
+    async def _fetch_raspberry_pi_os(self, **filters) -> List[OSInfo]:
+        """Fetch Raspberry Pi OS ISO information."""
+        isos = [
+            OSInfo(
+                name="Raspberry Pi OS",
+                version="Bookworm (64-bit)",
+                category=OSCategory.LINUX,
+                architecture=Architecture.ARM64,
+                language="en-GB",
+                url="https://downloads.raspberrypi.com/raspios_lite_arm64/images/raspios_lite_arm64-2024-03-15/2024-03-15-raspios-bookworm-arm64-lite.img.xz",
+                size=482344960,
+                release_date=datetime(2024, 3, 15),
+                description="Raspberry Pi OS Lite 64-bit - Debian-based for Raspberry Pi 4/5",
+                icon="🍓",
+                source="Raspberry Pi Foundation",
+                subcategory="Raspberry Pi OS",
+            ),
+            OSInfo(
+                name="Raspberry Pi OS",
+                version="Bookworm (32-bit)",
+                category=OSCategory.LINUX,
+                architecture=Architecture.ARM,
+                language="en-GB",
+                url="https://downloads.raspberrypi.com/raspios_lite_armhf/images/raspios_lite_armhf-2024-03-15/2024-03-15-raspios-bookworm-armhf-lite.img.xz",
+                size=445644800,
+                release_date=datetime(2024, 3, 15),
+                description="Raspberry Pi OS Lite 32-bit - For all Raspberry Pi models",
+                icon="🍓",
+                source="Raspberry Pi Foundation",
+                subcategory="Raspberry Pi OS",
+            ),
+            OSInfo(
+                name="Raspberry Pi OS",
+                version="Bookworm Desktop (64-bit)",
+                category=OSCategory.LINUX,
+                architecture=Architecture.ARM64,
+                language="en-GB",
+                url="https://downloads.raspberrypi.com/raspios_arm64/images/raspios_arm64-2024-03-15/2024-03-15-raspios-bookworm-arm64.img.xz",
+                size=3103784960,
+                release_date=datetime(2024, 3, 15),
+                description="Raspberry Pi OS Desktop 64-bit - With PIXEL desktop",
+                icon="🍓",
+                source="Raspberry Pi Foundation",
+                subcategory="Raspberry Pi OS",
+            ),
+        ]
+        return self._apply_filters(isos, **filters)
+
+    async def _fetch_alpine(self, **filters) -> List[OSInfo]:
+        """Fetch Alpine Linux ISO information."""
+        isos = [
+            OSInfo(
+                name="Alpine Linux",
+                version="3.20",
+                category=OSCategory.LINUX,
+                architecture=Architecture.X64,
+                language="Multi",
+                url="https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/x86_64/alpine-standard-3.20.0-x86_64.iso",
+                size=161061273,
+                release_date=datetime(2024, 7, 1),
+                description="Alpine Linux 3.20 - Security-oriented, lightweight",
+                icon="🏔️",
+                source="Alpine Linux",
+                subcategory="Alpine Linux",
+            ),
+            OSInfo(
+                name="Alpine Linux",
+                version="3.20",
+                category=OSCategory.LINUX,
+                architecture=Architecture.ARM64,
+                language="Multi",
+                url="https://dl-cdn.alpinelinux.org/alpine/v3.20/releases/aarch64/alpine-standard-3.20.0-aarch64.iso",
+                size=147456000,
+                release_date=datetime(2024, 7, 1),
+                description="Alpine Linux 3.20 ARM64 - For ARM devices",
+                icon="🏔️",
+                source="Alpine Linux",
+                subcategory="Alpine Linux",
+            ),
+        ]
+        return self._apply_filters(isos, **filters)
+
+    async def _fetch_dietpi(self, **filters) -> List[OSInfo]:
+        """Fetch DietPi ISO information."""
+        isos = [
+            OSInfo(
+                name="DietPi",
+                version="9.0",
+                category=OSCategory.LINUX,
+                architecture=Architecture.ARM64,
+                language="Multi",
+                url="https://dietpi.com/downloads/images/DietPi_RPi-ARMv8-Bullseye.img.xz",
+                size=524288000,
+                release_date=datetime(2024, 8, 1),
+                description="DietPi 9.0 - Minimal OS for SBCs (Raspberry Pi)",
+                icon="🥗",
+                source="DietPi",
+                subcategory="DietPi",
+            ),
+        ]
+        return self._apply_filters(isos, **filters)
+
+    async def _fetch_libreelec(self, **filters) -> List[OSInfo]:
+        """Fetch LibreELEC ISO information."""
+        isos = [
+            OSInfo(
+                name="LibreELEC",
+                version="12.0",
+                category=OSCategory.LINUX,
+                architecture=Architecture.ARM64,
+                language="Multi",
+                url="https://releases.libreelec.tv/LibreELEC-12.0.1/RPi4.arm/LibreELEC-RPi4.arm-12.0.1.img.gz",
+                size=471859200,
+                release_date=datetime(2024, 11, 1),
+                description="LibreELEC 12.0 - Kodi for Raspberry Pi 4/5",
+                icon="📺",
+                source="LibreELEC",
+                subcategory="LibreELEC",
+            ),
+        ]
+        return self._apply_filters(isos, **filters)
+
+    async def _fetch_fedora_arm(self, **filters) -> List[OSInfo]:
+        """Fetch Fedora ARM ISO information."""
+        isos = [
+            OSInfo(
+                name="Fedora ARM",
+                version="41",
+                category=OSCategory.LINUX,
+                architecture=Architecture.ARM64,
+                language="Multi",
+                url="https://download.fedoraproject.org/pub/fedora/linux/releases/41/Everything/aarch64/iso/Fedora-Everything-41-1.4-aarch64.iso",
+                size=3690987520,
+                release_date=datetime(2024, 10, 29),
+                description="Fedora 41 ARM64 - For Raspberry Pi 4/5 and other ARM",
+                icon="🔵",
+                source="Fedora Project",
+                subcategory="Fedora ARM",
+            ),
+            OSInfo(
+                name="Fedora Server ARM",
+                version="41",
+                category=OSCategory.LINUX,
+                architecture=Architecture.ARM64,
+                language="Multi",
+                url="https://download.fedoraproject.org/pub/fedora/linux/releases/41/Server/aarch64/iso/Fedora-Server-dvd-aarch64-41-1.4.iso",
+                size=3221225472,
+                release_date=datetime(2024, 10, 29),
+                description="Fedora 41 Server ARM64 - For ARM servers",
+                icon="🔵",
+                source="Fedora Project",
+                subcategory="Fedora ARM",
+            ),
+        ]
+        return self._apply_filters(isos, **filters)
+
+    async def _fetch_ubuntu_mate_arm(self, **filters) -> List[OSInfo]:
+        """Fetch Ubuntu MATE ARM ISO information."""
+        isos = [
+            OSInfo(
+                name="Ubuntu MATE",
+                version="24.04 LTS",
+                category=OSCategory.LINUX,
+                architecture=Architecture.ARM64,
+                language="Multi",
+                url="https://cdimage.ubuntu.com/ubuntu-mate/releases/24.04/release/ubuntu-mate-24.04-preinstalled-desktop-arm64+raspi.img.xz",
+                size=4194304000,
+                release_date=datetime(2024, 4, 25),
+                description="Ubuntu MATE 24.04 LTS ARM64 - For Raspberry Pi 4/5",
+                icon="💚",
+                source="Ubuntu MATE",
+                subcategory="Ubuntu MATE",
+            ),
+        ]
+        return self._apply_filters(isos, **filters)
+
+    async def _fetch_oracle(self, **filters) -> List[OSInfo]:
+        """Fetch Oracle Linux ISO information."""
+        isos = [
+            OSInfo(
+                name="Oracle Linux",
+                version="9.4",
+                category=OSCategory.LINUX,
+                architecture=Architecture.X64,
+                language="Multi",
+                url="https://yum.oracle.com/ISOS/OracleLinux-R9-U4-x86_64-dvd.iso",
+                size=11596411699,
+                release_date=datetime(2024, 11, 1),
+                description="Oracle Linux 9.4 - Free, enterprise-grade",
+                icon="🔴",
+                source="Oracle",
+                subcategory="Oracle Linux",
+            ),
+        ]
+        return self._apply_filters(isos, **filters)
+
+    async def _fetch_amazon(self, **filters) -> List[OSInfo]:
+        """Fetch Amazon Linux ISO information."""
+        isos = [
+            OSInfo(
+                name="Amazon Linux",
+                version="2023.5",
+                category=OSCategory.LINUX,
+                architecture=Architecture.X64,
+                language="en-US",
+                url="https://cdn.amazonlinux.com/os-images/2023.5.20241004/kvm/amzn2-kvm-2.0.20241004-x86_64.xfs.gpt.iso",
+                size=1048576000,
+                release_date=datetime(2024, 10, 4),
+                description="Amazon Linux 2023.5 - For AWS",
+                icon="📦",
+                source="AWS",
+                subcategory="Amazon Linux",
+            ),
+        ]
+        return self._apply_filters(isos, **filters)
+
+    async def _fetch_clear(self, **filters) -> List[OSInfo]:
+        """Fetch Clear Linux ISO information."""
+        isos = [
+            OSInfo(
+                name="Clear Linux OS",
+                version="Latest",
+                category=OSCategory.LINUX,
+                architecture=Architecture.X64,
+                language="Multi",
+                url="https://cdn.download.clearlinux.org/releases/current/clear-latest-live-desktop.iso.xz",
+                size=1887436800,
+                description="Clear Linux OS - Intel-optimized",
+                icon="💧",
+                source="Clear Linux",
+                subcategory="Clear Linux",
+            ),
+        ]
+        return self._apply_filters(isos, **filters)
+
+    async def _fetch_mageia(self, **filters) -> List[OSInfo]:
+        """Fetch Mageia ISO information."""
+        isos = [
+            OSInfo(
+                name="Mageia",
+                version="9",
+                category=OSCategory.LINUX,
+                architecture=Architecture.X64,
+                language="Multi",
+                url="https://mirrors.kernel.org/mageia/distrib/9/iso/Mageia-9-x86_64.iso",
+                size=3690987520,
+                release_date=datetime(2024, 8, 1),
+                description="Mageia 9 - Community Linux",
+                icon="🧙",
+                source="Mageia",
+                subcategory="Mageia",
             ),
         ]
         return self._apply_filters(isos, **filters)

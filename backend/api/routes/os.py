@@ -132,19 +132,32 @@ async def get_linux_subcategories() -> List[LinuxSubcategoryResponse]:
 
     # Popularity ranking for Linux distributions (most popular first)
     popularity_order = [
-        "Ubuntu", "Linux Mint", "Fedora", "Debian", "Kubuntu",
-        "Xubuntu", "Pop!_OS", "Manjaro", "elementary OS", "Zorin OS",
-        "Linux Mint Cinnamon", "Linux Mint MATE", "Linux Mint XFCE",
-        "KDE neon", "Lubuntu", "Ubuntu MATE", "Ubuntu Studio",
-        "Ubuntu Budgie", "Ubuntu Cinnamon", "MX Linux", "EndeavourOS",
-        "Arch Linux", "Fedora Workstation", "Fedora KDE Plasma",
-        "Fedora XFCE", "Fedora Server", "Fedora Cinnamon", "Fedora LXQt",
-        "openSUSE", "Garuda Linux", "deepin", "Solus", "NixOS",
-        "Kali Linux", "Parrot OS", "Tails", "Rocky Linux", "AlmaLinux",
-        "CentOS Stream", "RHEL", "Gentoo", "Void Linux", "Slackware",
-        "Puppy Linux", "antiX", "Bodhi Linux", "Q4OS", "PCLinuxOS",
-        "Artix Linux", "ArcoLinux", "BigLinux", "RebeccaBlackOS",
-        "Edubuntu",
+        # Ubuntu Family
+        "Ubuntu", "Linux Mint", "Linux Mint Cinnamon", "Linux Mint MATE", "Linux Mint XFCE",
+        "Kubuntu", "Xubuntu", "Lubuntu", "Pop!_OS", "Ubuntu MATE",
+        "Ubuntu Studio", "Ubuntu Budgie", "Ubuntu Cinnamon", "Edubuntu", "KDE neon",
+        # Fedora & RHEL Family
+        "Fedora", "Fedora Workstation", "Fedora KDE Plasma", "Fedora XFCE",
+        "Fedora Server", "Fedora Cinnamon", "Fedora LXQt", "Fedora ARM",
+        "Rocky Linux", "AlmaLinux", "CentOS Stream", "RHEL", "Oracle Linux",
+        # Debian Family
+        "Debian", "Raspberry Pi OS",
+        # Arch Family
+        "Arch Linux", "Manjaro", "EndeavourOS", "Garuda Linux", "Artix Linux", "ArcoLinux",
+        # Major Independent Distros
+        "elementary OS", "Zorin OS", "MX Linux", "Solus", "NixOS",
+        "openSUSE", "deepin", "antiX", "Void Linux", "Gentoo", "Slackware",
+        # Security/Privacy
+        "Kali Linux", "Parrot OS", "Tails",
+        # Light/Minimal
+        "Puppy Linux", "Bodhi Linux", "Q4OS", "PCLinuxOS", "Alpine Linux",
+        "DietPi", "Clear Linux", "Mageia",
+        # ARM/SBC
+        "LibreELEC",
+        # Cloud/Enterprise
+        "Amazon Linux",
+        # Others
+        "BigLinux", "RebeccaBlackOS",
     ]
 
     # Sort by popularity, with unknown distributions at the end (sorted alphabetically)
