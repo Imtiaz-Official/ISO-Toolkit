@@ -4,7 +4,7 @@
 
 import { Routes, Route, Link, useLocation } from 'react-router-dom';
 import { lazy, Suspense, useState, useEffect } from 'react';
-import { AuthProvider, withAuth } from './contexts/AuthContext';
+import { AuthProvider, withAuth, useAuth } from './contexts/AuthContext';
 
 // Apply theme from localStorage or default to auto
 function applyTheme() {
@@ -36,15 +36,21 @@ const AdminDashboardPage = withAuth(AdminDashboardPageLazy, true);
 function Navigation() {
   const location = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const { user } = useAuth();
   const isActive = (path: string) => location.pathname === path;
 
-  // Admin link is hidden from navigation - access via direct URL only
+  // Base navigation items
   const navItems = [
     { path: '/', label: 'Home', icon: '🏠' },
     { path: '/browse', label: 'Browse', icon: '🔍' },
     { path: '/downloads', label: 'Downloads', icon: '📥' },
     { path: '/settings', label: 'Settings', icon: '⚙️' },
   ];
+
+  // Add admin link if user is logged in and is admin
+  if (user && user.is_admin) {
+    navItems.push({ path: '/admin/dashboard', label: 'Admin', icon: '🔐' });
+  }
 
   return (
     <header className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 sticky top-0 z-50">
