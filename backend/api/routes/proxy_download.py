@@ -198,15 +198,9 @@ async def direct_download(
                 ) as response:
                     response.raise_for_status()
 
-                    # Get content length from response
-                    content_length = response.headers.get("content-length")
-
                     # Stream content in chunks
                     async for chunk in response.aiter_bytes(chunk_size=CHUNK_SIZE):
                         yield chunk
-
-                    # Return content length at the end for final response headers
-                    return content_length
 
             except httpx.HTTPError as e:
                 raise HTTPException(
