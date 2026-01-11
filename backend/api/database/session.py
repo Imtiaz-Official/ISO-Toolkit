@@ -53,9 +53,35 @@ def init_database():
     """Initialize database tables and create default admin user if needed."""
     from api.database.models import User
     from api.auth.auth_utils import get_password_hash
+    import os
+    from sqlalchemy import text
 
     # Create tables
     Base.metadata.create_all(bind=engine)
+
+    # Drop and recreate downloads table if it has enum issues (PostgreSQL)
+    db = SessionLocal()
+    try:
+        # Check if downloads table has the old enum type
+        result = db.execute(text("""
+            SELECT column_name, data_type
+            FROM information_schema.columns
+            WHERE table_name = 'downloads'
+            AND column_name = 'state'
+        """))
+        for row in result:
+            if 'USER-DEFINED' in str(row[1]).upper() or 'downloadstate' in str(row[1]).lower():
+                print("Detected old enum type in downloads table, recreating...")
+                db.execute(text("DROP TABLE IF EXISTS downloads CASCADE"))
+                db.execute(text("DROP TYPE IF EXISTS downloadstate CASCADE"))
+                db.commit()
+                # Recreate the table
+                Base.metadata.create_all(bind=engine)
+                break
+    except Exception as e:
+        print(f"Error checking/downloads table: {e}")
+    finally:
+        db.close()
 
     # Create default admin user if it doesn't exist
     db = SessionLocal()
