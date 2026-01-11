@@ -59,8 +59,8 @@ class DownloadRecord(Base):
     # Download Details
     url = Column(String, nullable=False)
     output_path = Column(String, nullable=False)
-    # State
-    state = Column(SQLEnum(DownloadState), default=DownloadState.PENDING, nullable=False)
+    # State - use String for PostgreSQL compatibility (validated at app level)
+    state = Column(String, default=DownloadState.PENDING.value, nullable=False)
     # Progress
     progress = Column(Float, default=0.0)
     downloaded_bytes = Column(BigInteger, default=0)
@@ -78,6 +78,16 @@ class DownloadRecord(Base):
     checksum_type = Column(String, nullable=True)
     checksum_verified = Column(Integer, default=0)  # 0=not checked, 1=passed, -1=failed
 
+    @property
+    def state_enum(self) -> DownloadState:
+        """Get state as DownloadState enum."""
+        return DownloadState(self.state)
+
+    @state_enum.setter
+    def state_enum(self, value: DownloadState):
+        """Set state from DownloadState enum."""
+        self.state = value.value
+
     def to_dict(self):
         """Convert to dictionary for JSON serialization."""
         return {
@@ -89,7 +99,7 @@ class DownloadRecord(Base):
             "os_language": self.os_language,
             "url": self.url,
             "output_path": self.output_path,
-            "state": self.state.value,
+            "state": self.state,
             "progress": self.progress,
             "downloaded_bytes": self.downloaded_bytes,
             "total_bytes": self.total_bytes,
