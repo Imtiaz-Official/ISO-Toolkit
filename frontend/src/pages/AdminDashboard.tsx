@@ -140,12 +140,24 @@ const LANGUAGES = ['en', 'en-US', 'en-GB', 'de', 'fr', 'es', 'it', 'pt', 'ru', '
 const CHECKSUM_TYPES = ['sha256', 'sha512', 'md5', 'sha1'];
 
 const TOKEN_KEY = 'access_token';
+const ACTIVE_TAB_KEY = 'admin_active_tab';
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<TabType>('overview');
+  // Load active tab from localStorage on mount
+  const [activeTab, setActiveTab] = useState<TabType>(() => {
+    const saved = localStorage.getItem(ACTIVE_TAB_KEY);
+    return (saved === 'overview' || saved === 'isos' || saved === 'users' || saved === 'settings' || saved === 'logs')
+      ? saved as TabType
+      : 'overview';
+  });
   const [, setLoading] = useState(true);
+
+  // Save active tab to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem(ACTIVE_TAB_KEY, activeTab);
+  }, [activeTab]);
 
   // Redirect to change password if user hasn't changed their password
   useEffect(() => {
@@ -210,6 +222,17 @@ export default function AdminDashboard() {
   useEffect(() => {
     loadDashboardData();
   }, []);
+
+  // Load data for the active tab on mount and when tab changes
+  useEffect(() => {
+    if (activeTab === 'users' && users.length === 0) fetchUsers();
+    if (activeTab === 'isos' && isos.length === 0) {
+      fetchISOs();
+      fetchISOStats();
+    }
+    if (activeTab === 'logs' && activityLogs.length === 0) fetchActivityLogs();
+    if (activeTab === 'settings' && !settings) fetchSettings();
+  }, [activeTab]);
 
   const loadDashboardData = async () => {
     await Promise.all([
