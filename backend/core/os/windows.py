@@ -102,7 +102,7 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_10(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows 10 ISO information from archive.isdn.network mirror.
+        Fetch Windows 10 ISO information from TrashBytes mirror.
         Build 19045.6456 (October 2025) - Final Windows 10 release.
         """
         isos = [
@@ -113,12 +113,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://archive.isdn.network/windows/en-us_windows_10_consumer_editions_version_22h2_updated_oct_2025_x64_dvd_38efd00d.iso",
+                url="https://trashbytes.net/dl/ako3j7Xa4laRBeh9yB8VBQuWm1aXVxeZi1-BN3PCWNrksJ1ZkGNGUWyH9Is68vpNY3gRgsJK0kZrynM_L0_1OvsoDkhvAog2_-3enPE2t8yn-ehb7zdYUFwKF2iaifUoaonQxv883ucirHVr2UXO38QCJvOEVx9_tdlD5W0zzY1uFPtal_WU12AYp8GfrQss4VcKiCuDk_C9",
                 size=5800000000,
                 release_date=datetime(2024, 10, 17),
                 description="Windows 10 Version 22H2 - Consumer Editions (Updated October 2025, Build 19045.6456)",
                 icon="🪟",
-                source="archive.isdn.network",
+                source="TrashBytes",
                 subcategory="Windows 10",
             ),
             # Windows 10 22H2 - x64 Business Edition
@@ -128,12 +128,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://archive.isdn.network/windows/en-us_windows_10_business_editions_version_22h2_updated_oct_2025_x64_dvd_d2eef4b0.iso",
+                url="https://trashbytes.net/dl/o3URyRIZ7zk8BUoa-r0XEFbiRhZo7a-11yzaMlU_qcVJ0XOOisLEBeTnInsFINwAzFgPgH-vbhkKGnYm9Ul3D1x3PdjgW_uRpeiN93EaRhjYNXun-Tz6EyEcNJ_xL69i2e-0aU5UH6O9vPuwO0KbiWcpQZgFgZ94LA-kpuB8mVPCv0Z1BU7t-mmqpmY9nPvcQ8S5coSRDKRk",
                 size=4900000000,
                 release_date=datetime(2024, 10, 17),
                 description="Windows 10 Version 22H2 - Business Editions (Enterprise/Professional/Education, Updated October 2025, Build 19045.6456)",
                 icon="🪟",
-                source="archive.isdn.network",
+                source="TrashBytes",
                 subcategory="Windows 10",
             ),
         ]
