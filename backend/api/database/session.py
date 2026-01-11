@@ -1,55 +1,58 @@
 """
 Database session management for ISO Toolkit web application.
+Supports PostgreSQL for production (Render) and SQLite for local development.
 """
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 from pathlib import Path
 from typing import Generator
+import os
 
 from api.database.models import Base
 
 
-# Default database path
-DEFAULT_DB_PATH = Path.home() / ".iso-toolkit" / "downloads.db"
-
-
-def get_database_url(db_path: str | None = None) -> str:
+def get_database_url() -> str:
     """
-    Get SQLite database URL.
+    Get database URL.
 
-    Args:
-        db_path: Custom database path (optional)
+    Priority:
+    1. DATABASE_URL environment variable (PostgreSQL from Render)
+    2. SQLite fallback for local development
 
     Returns:
-        SQLite database URL
+        Database URL for SQLAlchemy
     """
-    if db_path:
-        return f"sqlite:///{db_path}"
-    # Ensure directory exists
-    DEFAULT_DB_PATH.parent.mkdir(parents=True, exist_ok=True)
-    return f"sqlite:///{DEFAULT_DB_PATH}"
+    # Check for DATABASE_URL first (Render PostgreSQL)
+    database_url = os.getenv("DATABASE_URL")
+    if database_url:
+        # Render provides postgres:// but SQLAlchemy needs postgresql://
+        if database_url.startswith("postgres://"):
+            database_url = database_url.replace("postgres://", "postgresql://", 1)
+        return database_url
+
+    # Fallback to SQLite for local development
+    db_path = Path.home() / ".iso-toolkit" / "downloads.db"
+    db_path.parent.mkdir(parents=True, exist_ok=True)
+    return f"sqlite:///{db_path}"
 
 
 # Create engine
 engine = create_engine(
     get_database_url(),
-    connect_args={"check_same_thread": False},  # Needed for SQLite
+    connect_args={"check_same_thread": False} if "sqlite" in get_database_url() else {},
     echo=False,  # Set to True for SQL query logging
+    pool_pre_ping=True,  # Verify connections before using
 )
 
 # Create session factory
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
-
-# Export database URL for use in scripts
-DATABASE_URL = get_database_url()
 
 
 def init_database():
     """Initialize database tables and create default admin user if needed."""
     from api.database.models import User
     from api.auth.auth_utils import get_password_hash
-    import os
 
     # Create tables
     Base.metadata.create_all(bind=engine)
@@ -70,13 +73,18 @@ def init_database():
             )
             db.add(admin_user)
             db.commit()
-            print("Default admin user created successfully - PLEASE CHANGE THE PASSWORD IMMEDIATELY!")
+            print("=" * 60)
+            print("DEFAULT ADMIN USER CREATED")
+            print("=" * 60)
             print(f"Username: admin")
-            print(f"Default Password: {default_password}")
-            print("SECURITY WARNING: Change this password immediately after first login!")
+            print(f"Password: {default_password}")
+            print("SECURITY WARNING: Change this password immediately!")
+            print("=" * 60)
+        else:
+            print("Database initialized. Admin user exists.")
     except Exception as e:
         db.rollback()
-        print(f"Error creating default admin user: {e}")
+        print(f"Error initializing database: {e}")
     finally:
         db.close()
 
