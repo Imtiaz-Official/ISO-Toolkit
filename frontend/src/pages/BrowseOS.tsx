@@ -39,6 +39,7 @@ export default function BrowsePage() {
   const [selectedCategory, setSelectedCategory] = useState<OSCategory | null>(getInitialCategory);
   const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(getInitialSubcategory);
   const [linuxSubcategories, setLinuxSubcategories] = useState<LinuxSubcategory[]>([]);
+  const [windowsSubcategories, setWindowsSubcategories] = useState<LinuxSubcategory[]>([]);
   const [loadingSubcategories, setLoadingSubcategories] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -89,7 +90,7 @@ export default function BrowsePage() {
     }
   }, [selectedSubcategory]);
 
-  // Load Linux subcategories when Linux is selected
+  // Load Linux/Windows subcategories when category is selected
   useEffect(() => {
     async function loadSubcategories() {
       if (selectedCategory === 'linux') {
@@ -97,13 +98,26 @@ export default function BrowsePage() {
         try {
           const data = await osAPI.getLinuxSubcategories();
           setLinuxSubcategories(data);
+          setWindowsSubcategories([]);
         } catch (error) {
           console.error('Failed to load Linux subcategories:', error);
         } finally {
           setLoadingSubcategories(false);
         }
+      } else if (selectedCategory === 'windows') {
+        setLoadingSubcategories(true);
+        try {
+          const data = await osAPI.getWindowsSubcategories();
+          setWindowsSubcategories(data);
+          setLinuxSubcategories([]);
+        } catch (error) {
+          console.error('Failed to load Windows subcategories:', error);
+        } finally {
+          setLoadingSubcategories(false);
+        }
       } else {
         setLinuxSubcategories([]);
+        setWindowsSubcategories([]);
         setSelectedSubcategory(null);
       }
     }
@@ -120,8 +134,8 @@ export default function BrowsePage() {
         return;
       }
 
-      // For Linux, require subcategory selection
-      if (selectedCategory === 'linux' && !selectedSubcategory) {
+      // For Linux and Windows, require subcategory selection
+      if ((selectedCategory === 'linux' || selectedCategory === 'windows') && !selectedSubcategory) {
         setOss([]);
         setFilteredOss([]);
         setLoading(false);
@@ -252,6 +266,46 @@ export default function BrowsePage() {
         </div>
       )}
 
+      {/* Windows Subcategory Selector - Different Style (Cleaner, Fewer Options) */}
+      {selectedCategory === 'windows' && (
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white">
+              Select Windows Version
+            </h2>
+            <span className="text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+              {windowsSubcategories.length} versions
+            </span>
+          </div>
+          {loadingSubcategories ? (
+            <div className="flex items-center justify-center h-20">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 sm:gap-3">
+              {windowsSubcategories.map((sub) => (
+                <button
+                  key={sub.subcategory}
+                  onClick={() => handleSubcategoryClick(sub.subcategory)}
+                  className={`px-3 sm:px-4 py-3 sm:py-4 rounded-xl font-medium text-sm sm:text-base transition-all ${
+                    selectedSubcategory === sub.subcategory
+                      ? 'bg-blue-600 text-white shadow-lg scale-105'
+                      : 'bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700'
+                  }`}
+                  title={`${sub.name} (${sub.count} ISOs)`}
+                >
+                  <div className="flex flex-col items-center gap-1 sm:gap-2">
+                    <span className="text-xl sm:text-2xl">{sub.icon}</span>
+                    <span className="text-xs sm:text-sm font-semibold">{sub.name}</span>
+                    <span className="text-xs opacity-70">{sub.count} ISOs</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Search */}
       <div className="relative">
         <input
@@ -260,7 +314,7 @@ export default function BrowsePage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           className="input pl-10 w-full"
-          disabled={!selectedCategory || (selectedCategory === 'linux' && !selectedSubcategory)}
+          disabled={!selectedCategory || ((selectedCategory === 'linux' || selectedCategory === 'windows') && !selectedSubcategory)}
         />
         <svg
           className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400"

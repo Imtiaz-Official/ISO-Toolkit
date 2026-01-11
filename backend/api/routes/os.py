@@ -174,6 +174,60 @@ async def get_linux_subcategories() -> List[LinuxSubcategoryResponse]:
     return [LinuxSubcategoryResponse(**sc) for sc in sorted_subcategories]
 
 
+@router.get("/windows/subcategories", response_model=List[LinuxSubcategoryResponse])
+async def get_windows_subcategories() -> List[LinuxSubcategoryResponse]:
+    """
+    Get all Windows version subcategories.
+
+    Returns:
+        List of Windows version subcategories with counts
+    """
+    _init_providers()
+
+    registry = get_registry()
+    providers = registry.get_by_category(OSCategory.WINDOWS)
+
+    all_subcategories = {}
+
+    for provider in providers:
+        try:
+            os_list = await provider.fetch_available()
+            for os_info in os_list:
+                subcategory = os_info.subcategory or os_info.name
+                if subcategory not in all_subcategories:
+                    all_subcategories[subcategory] = {
+                        "subcategory": subcategory,
+                        "name": subcategory,
+                        "icon": os_info.icon or "🪟",
+                        "count": 0
+                    }
+                all_subcategories[subcategory]["count"] += 1
+        except Exception:
+            pass
+
+    # Windows versions in release order (newest first)
+    windows_order = [
+        "Windows 11",
+        "Windows 10",
+        "Windows 8.1",
+        "Windows 7",
+        "Windows XP",
+    ]
+
+    # Sort by Windows release order (newest first)
+    def get_windows_order(name: str) -> int:
+        try:
+            return windows_order.index(name)
+        except ValueError:
+            return 9999  # Unknown versions go to the end
+
+    sorted_subcategories = sorted(
+        all_subcategories.values(),
+        key=lambda x: get_windows_order(x["name"])
+    )
+    return [LinuxSubcategoryResponse(**sc) for sc in sorted_subcategories]
+
+
 @router.get("/{category}", response_model=List[OSInfoResponse])
 async def get_os_by_category(
     category: str,

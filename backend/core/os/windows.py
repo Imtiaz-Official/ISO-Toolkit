@@ -79,6 +79,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 11 Version 25H2 - Official Microsoft ISO (Consumer Editions)",
                 icon="🪟",
                 source="Microsoft (via massgrave.dev)",
+                subcategory="Windows 11",
             ),
             # Windows 11 24H2 - x64 Consumer Edition
             OSInfo(
@@ -93,6 +94,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 11 Version 24H2 - Official Microsoft ISO (Consumer Editions)",
                 icon="🪟",
                 source="Microsoft (via massgrave.dev)",
+                subcategory="Windows 11",
             ),
         ]
 
@@ -119,6 +121,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 10 Version 22H2 - Consumer Editions (Updated October 2025)",
                 icon="🪟",
                 source="buzzheavier.com (via massgrave.dev)",
+                subcategory="Windows 10",
             ),
             # Windows 10 22H2 - x64 Business Edition (via buzzheavier.com)
             OSInfo(
@@ -133,6 +136,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 10 Version 22H2 - Business Editions (Updated October 2025)",
                 icon="🪟",
                 source="buzzheavier.com (via massgrave.dev)",
+                subcategory="Windows 10",
             ),
         ]
 
@@ -155,6 +159,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 8.1 Professional x64",
                 icon="🪟",
                 source="Internet Archive",
+                subcategory="Windows 8.1",
             ),
             OSInfo(
                 name="Windows 8.1",
@@ -168,6 +173,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 8.1 Professional x86",
                 icon="🪟",
                 source="Internet Archive",
+                subcategory="Windows 8.1",
             ),
         ]
 
@@ -190,6 +196,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 7 Professional SP1 x64",
                 icon="🪟",
                 source="Internet Archive",
+                subcategory="Windows 7",
             ),
             OSInfo(
                 name="Windows 7",
@@ -203,6 +210,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 7 Ultimate SP1 x64",
                 icon="🪟",
                 source="Internet Archive",
+                subcategory="Windows 7",
             ),
             OSInfo(
                 name="Windows 7",
@@ -216,6 +224,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows 7 Professional SP1 x86",
                 icon="🪟",
                 source="Internet Archive",
+                subcategory="Windows 7",
             ),
         ]
 
@@ -238,6 +247,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows XP Professional SP3",
                 icon="🪟",
                 source="Internet Archive",
+                subcategory="Windows XP",
             ),
             OSInfo(
                 name="Windows XP",
@@ -251,6 +261,7 @@ class WindowsProvider(BaseProvider):
                 description="Windows XP Home SP3",
                 icon="🪟",
                 source="Internet Archive",
+                subcategory="Windows XP",
             ),
         ]
 

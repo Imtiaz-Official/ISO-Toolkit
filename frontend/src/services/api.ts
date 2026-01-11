@@ -40,6 +40,14 @@ export const osAPI = {
   },
 
   /**
+   * Get Windows subcategories
+   */
+  getWindowsSubcategories: async (): Promise<LinuxSubcategory[]> => {
+    const response = await api.get<LinuxSubcategory[]>('/os/windows/subcategories');
+    return response.data;
+  },
+
+  /**
    * Get OS by category
    */
   getByCategory: async (category: OSCategory, subcategory?: string): Promise<OSInfo[]> => {
