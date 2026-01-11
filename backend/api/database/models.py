@@ -12,6 +12,66 @@ from core.models import DownloadState
 Base = declarative_base()
 
 
+class ISOOverride(Base):
+    """
+    Database model for custom ISO entries and built-in ISO overrides.
+    Admins can add custom ISOs or override built-in ISO URLs.
+    """
+    __tablename__ = "iso_overrides"
+
+    id = Column(Integer, primary_key=True, index=True)
+    # ISO identifier (matches the built-in ID format: category_name_version_arch)
+    iso_id = Column(String(255), unique=True, nullable=False, index=True)
+
+    # ISO Information
+    name = Column(String(255), nullable=False)
+    version = Column(String(100), nullable=False)
+    category = Column(String(50), nullable=False)
+    architecture = Column(String(50), nullable=False)
+    language = Column(String(50), nullable=False)
+
+    # Download Details
+    url = Column(String(2048), nullable=False)
+    size = Column(BigInteger, nullable=True)
+    description = Column(Text, nullable=True)
+    icon = Column(String(50), nullable=True)
+
+    # Checksum
+    checksum = Column(String(255), nullable=True)
+    checksum_type = Column(String(50), nullable=True)
+
+    # Metadata
+    is_enabled = Column(Boolean, default=True, nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_by = Column(String(100), nullable=True)
+    updated_by = Column(String(100), nullable=True)
+
+    def to_dict(self):
+        """Convert to dictionary for JSON serialization."""
+        return {
+            "id": self.iso_id,
+            "name": self.name,
+            "version": self.version,
+            "category": self.category,
+            "architecture": self.architecture,
+            "language": self.language,
+            "url": self.url,
+            "size": self.size or 0,
+            "description": self.description,
+            "icon": self.icon,
+            "checksum": self.checksum,
+            "checksum_type": self.checksum_type,
+            "created_at": self.created_at.isoformat() if self.created_at else None,
+            "updated_at": self.updated_at.isoformat() if self.updated_at else None,
+            "created_by": self.created_by,
+            "updated_by": self.updated_by,
+            "is_custom": True,
+            "is_enabled": self.is_enabled,
+            "can_edit": True
+        }
+
+
 class User(Base):
     """
     User model for admin authentication.

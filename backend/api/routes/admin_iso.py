@@ -1,15 +1,17 @@
 """
 ISO Management routes for admin panel.
 Allows CRUD operations on ISO entries, including overriding built-in ISOs.
+Uses database storage for persistence across server restarts.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr
 from typing import List, Optional
 from datetime import datetime
+from sqlalchemy.orm import Session
 
 from api.database.session import get_db
-from api.database.models import User
+from api.database.models import User, ISOOverride
 from api.routes.auth import get_current_admin_user
 from core.models import OSInfo, OSCategory, Architecture
 from core.os.base import get_registry
@@ -84,13 +86,12 @@ class ISOResponse(BaseModel):
     checksum: Optional[str] = None
     checksum_type: Optional[str] = None
     created_at: Optional[str] = None
+    updated_at: Optional[str] = None
+    created_by: Optional[str] = None
+    updated_by: Optional[str] = None
     is_custom: bool
     can_edit: bool
-
-
-# In-memory storage for custom/overridden ISOs (in production, use database)
-# This includes both user-added ISOs and overrides of built-in ISOs
-custom_isos: List[dict] = []
+    is_enabled: bool = True
 
 
 def generate_iso_id(iso_data: ISOCreate) -> str:
@@ -102,35 +103,56 @@ def generate_iso_id(iso_data: ISOCreate) -> str:
     return f"{category}_{name}_{version}_{arch}"
 
 
-async def fetch_isos_from_category(category: OSCategory) -> List[dict]:
+async def fetch_isos_from_category(category: OSCategory, db: Session) -> List[dict]:
     """Fetch all ISOs from a specific category using the provider registry."""
     _init_providers()
     registry = get_registry()
     providers = registry.get_by_category(category)
 
     all_isos = []
+
+    # Get database overrides for this category
+    overrides = db.query(ISOOverride).filter(
+        ISOOverride.category == category.value,
+        ISOOverride.is_enabled == True
+    ).all()
+
+    # Create a lookup dict for overrides
+    override_map = {override.iso_id: override for override in overrides}
+
     for provider in providers:
         try:
             os_list = await provider.fetch_available()
             for os_info in os_list:
                 iso_id = f"{os_info.category.value}_{os_info.name.lower()}_{os_info.version.lower()}_{os_info.architecture.value}"
-                all_isos.append({
-                    "id": iso_id,
-                    "name": os_info.name,
-                    "version": os_info.version,
-                    "category": os_info.category.value,
-                    "architecture": os_info.architecture.value,
-                    "language": os_info.language,
-                    "url": os_info.url,
-                    "size": os_info.size or 0,
-                    "description": os_info.description,
-                    "icon": os_info.icon,
-                    "checksum": os_info.checksum,
-                    "checksum_type": os_info.checksum_type,
-                    "created_at": None,
-                    "is_custom": False,
-                    "can_edit": True  # All ISOs can now be edited
-                })
+
+                # Check if there's a database override
+                if iso_id in override_map:
+                    override = override_map[iso_id]
+                    all_isos.append(override.to_dict())
+                else:
+                    # Use built-in data
+                    all_isos.append({
+                        "id": iso_id,
+                        "name": os_info.name,
+                        "version": os_info.version,
+                        "category": os_info.category.value,
+                        "architecture": os_info.architecture.value,
+                        "language": os_info.language,
+                        "url": os_info.url,
+                        "size": os_info.size or 0,
+                        "description": os_info.description,
+                        "icon": os_info.icon,
+                        "checksum": os_info.checksum,
+                        "checksum_type": os_info.checksum_type,
+                        "created_at": None,
+                        "updated_at": None,
+                        "created_by": None,
+                        "updated_by": None,
+                        "is_custom": False,
+                        "is_enabled": True,
+                        "can_edit": True
+                    })
         except Exception:
             pass
 
@@ -140,38 +162,28 @@ async def fetch_isos_from_category(category: OSCategory) -> List[dict]:
 @router.get("", response_model=List[ISOResponse])
 async def list_all_isos(
     current_admin: User = Depends(get_current_admin_user),
-    category: Optional[str] = None
+    db: Session = Depends(get_db),
+    category: Optional[str] = None,
+    include_disabled: bool = False
 ):
     """
     List all ISOs (admin only).
     Can filter by category.
-    Custom ISOs override built-in ISOs with the same ID.
+    Database overrides take precedence over built-in ISOs.
     """
-    # Use a dictionary to merge ISOs (custom overrides built-in)
     all_isos_dict = {}
 
-    # Get built-in ISOs from providers
+    # Get built-in ISOs from providers (with overrides applied)
     for cat in [OSCategory.WINDOWS, OSCategory.LINUX, OSCategory.MACOS, OSCategory.BSD]:
         if category and cat.value != category.lower():
             continue
         try:
-            cat_isos = await fetch_isos_from_category(cat)
+            cat_isos = await fetch_isos_from_category(cat, db)
             for iso in cat_isos:
-                all_isos_dict[iso["id"]] = iso
+                if include_disabled or iso.get("is_enabled", True):
+                    all_isos_dict[iso["id"]] = iso
         except Exception:
             pass
-
-    # Add/override with custom ISOs
-    for iso in custom_isos:
-        if category and iso["category"] != category.lower():
-            continue
-        # Mark as editable and custom
-        iso_with_flags = {
-            **iso,
-            "is_custom": True,
-            "can_edit": True
-        }
-        all_isos_dict[iso["id"]] = iso_with_flags
 
     return list(all_isos_dict.values())
 
@@ -179,120 +191,153 @@ async def list_all_isos(
 @router.post("", response_model=ISOResponse)
 async def create_iso(
     iso_data: ISOCreate,
-    current_admin: User = Depends(get_current_admin_user)
+    current_admin: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """
     Add a new custom ISO or override a built-in ISO (admin only).
-    If an ISO with the same ID exists, it will be overridden.
+    If an ISO with the same ID exists, it will be updated.
     """
     iso_id = generate_iso_id(iso_data)
 
-    new_iso = {
-        "id": iso_id,
-        "name": iso_data.name,
-        "version": iso_data.version,
-        "category": iso_data.category,
-        "architecture": iso_data.architecture,
-        "language": iso_data.language,
-        "url": iso_data.url,
-        "size": iso_data.size,
-        "description": iso_data.description,
-        "icon": iso_data.icon or "💿",
-        "checksum": iso_data.checksum,
-        "checksum_type": iso_data.checksum_type,
-        "created_at": datetime.utcnow().isoformat(),
-        "created_by": current_admin.username,
-        "is_custom": True,
-        "can_edit": True
-    }
+    # Check if already exists
+    existing = db.query(ISOOverride).filter(ISOOverride.iso_id == iso_id).first()
 
-    # Check if ISO with this ID already exists in custom list and update or add
-    existing_index = None
-    for i, iso in enumerate(custom_isos):
-        if iso["id"] == iso_id:
-            existing_index = i
-            break
+    if existing:
+        # Update existing
+        existing.name = iso_data.name
+        existing.version = iso_data.version
+        existing.category = iso_data.category
+        existing.architecture = iso_data.architecture
+        existing.language = iso_data.language
+        existing.url = iso_data.url
+        existing.size = iso_data.size
+        existing.description = iso_data.description
+        existing.icon = iso_data.icon
+        existing.checksum = iso_data.checksum
+        existing.checksum_type = iso_data.checksum_type
+        existing.updated_at = datetime.utcnow()
+        existing.updated_by = current_admin.username
+        existing.is_enabled = True
 
-    if existing_index is not None:
-        # Update existing custom ISO
-        custom_isos[existing_index] = new_iso
+        db.commit()
+        db.refresh(existing)
+        return existing.to_dict()
     else:
-        # Add new custom ISO
-        custom_isos.append(new_iso)
+        # Create new
+        new_override = ISOOverride(
+            iso_id=iso_id,
+            name=iso_data.name,
+            version=iso_data.version,
+            category=iso_data.category,
+            architecture=iso_data.architecture,
+            language=iso_data.language,
+            url=iso_data.url,
+            size=iso_data.size,
+            description=iso_data.description,
+            icon=iso_data.icon,
+            checksum=iso_data.checksum,
+            checksum_type=iso_data.checksum_type,
+            created_by=current_admin.username,
+            is_enabled=True
+        )
 
-    return new_iso
+        db.add(new_override)
+        db.commit()
+        db.refresh(new_override)
+        return new_override.to_dict()
 
 
 @router.put("/{iso_id}", response_model=ISOResponse)
 async def update_iso(
     iso_id: str,
     iso_data: ISOUpdate,
-    current_admin: User = Depends(get_current_admin_user)
+    current_admin: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """
     Update an existing ISO (admin only).
     Can update both custom ISOs and create overrides for built-in ISOs.
     """
-    # Check if this ISO already exists in custom list
-    existing_index = None
-    for i, iso in enumerate(custom_isos):
-        if iso["id"] == iso_id:
-            existing_index = i
-            break
+    # Check if this ISO already exists in database
+    existing = db.query(ISOOverride).filter(ISOOverride.iso_id == iso_id).first()
 
-    if existing_index is not None:
-        # Update existing custom ISO
-        iso = custom_isos[existing_index]
-        # Update fields
+    if existing:
+        # Update existing override
         if iso_data.name is not None:
-            iso["name"] = iso_data.name
+            existing.name = iso_data.name
         if iso_data.version is not None:
-            iso["version"] = iso_data.version
+            existing.version = iso_data.version
         if iso_data.category is not None:
-            iso["category"] = iso_data.category
+            existing.category = iso_data.category
         if iso_data.architecture is not None:
-            iso["architecture"] = iso_data.architecture
+            existing.architecture = iso_data.architecture
         if iso_data.language is not None:
-            iso["language"] = iso_data.language
+            existing.language = iso_data.language
         if iso_data.url is not None:
-            iso["url"] = iso_data.url
+            existing.url = iso_data.url
         if iso_data.size is not None:
-            iso["size"] = iso_data.size
+            existing.size = iso_data.size
         if iso_data.description is not None:
-            iso["description"] = iso_data.description
+            existing.description = iso_data.description
         if iso_data.icon is not None:
-            iso["icon"] = iso_data.icon
+            existing.icon = iso_data.icon
         if iso_data.checksum is not None:
-            iso["checksum"] = iso_data.checksum
+            existing.checksum = iso_data.checksum
         if iso_data.checksum_type is not None:
-            iso["checksum_type"] = iso_data.checksum_type
+            existing.checksum_type = iso_data.checksum_type
 
-        iso["updated_at"] = datetime.utcnow().isoformat()
-        iso["updated_by"] = current_admin.username
-        iso["is_custom"] = True
-        iso["can_edit"] = True
+        existing.updated_at = datetime.utcnow()
+        existing.updated_by = current_admin.username
 
-        return iso
+        db.commit()
+        db.refresh(existing)
+        return existing.to_dict()
     else:
-        # This is a built-in ISO that doesn't exist in custom list yet
-        # Create a custom override for it
+        # This is a built-in ISO that doesn't exist in database yet
+        # Create a database override for it
         # First, we need to fetch the original built-in ISO data to use as base
         for cat in [OSCategory.WINDOWS, OSCategory.LINUX, OSCategory.MACOS, OSCategory.BSD]:
             try:
-                cat_isos = await fetch_isos_from_category(cat)
+                cat_isos = await fetch_isos_from_category(cat, db)
                 for built_in_iso in cat_isos:
-                    if built_in_iso["id"] == iso_id:
+                    if built_in_iso["id"] == iso_id and not built_in_iso.get("is_custom"):
                         # Found the built-in ISO, create override
-                        override_iso = {
-                            **built_in_iso,
-                            **{k: v for k, v in iso_data.dict().items() if v is not None},
-                            "updated_at": datetime.utcnow().isoformat(),
-                            "updated_by": current_admin.username,
-                            "is_custom": True,
-                            "can_edit": True
-                        }
-                        custom_isos.append(override_iso)
-                        return override_iso
+                        new_override = ISOOverride(
+                            iso_id=iso_id,
+                            name=built_in_iso["name"],
+                            version=built_in_iso["version"],
+                            category=built_in_iso["category"],
+                            architecture=built_in_iso["architecture"],
+                            language=built_in_iso["language"],
+                            url=built_in_iso["url"],
+                            size=built_in_iso.get("size", 0),
+                            description=built_in_iso.get("description"),
+                            icon=built_in_iso.get("icon"),
+                            checksum=built_in_iso.get("checksum"),
+                            checksum_type=built_in_iso.get("checksum_type"),
+                            created_by=current_admin.username,
+                            is_enabled=True
+                        )
+
+                        # Apply updates
+                        if iso_data.name is not None:
+                            new_override.name = iso_data.name
+                        if iso_data.version is not None:
+                            new_override.version = iso_data.version
+                        if iso_data.url is not None:
+                            new_override.url = iso_data.url
+                        if iso_data.size is not None:
+                            new_override.size = iso_data.size
+                        if iso_data.description is not None:
+                            new_override.description = iso_data.description
+                        if iso_data.icon is not None:
+                            new_override.icon = iso_data.icon
+
+                        db.add(new_override)
+                        db.commit()
+                        db.refresh(new_override)
+                        return new_override.to_dict()
             except Exception:
                 pass
 
@@ -305,20 +350,22 @@ async def update_iso(
 @router.delete("/{iso_id}")
 async def delete_iso(
     iso_id: str,
-    current_admin: User = Depends(get_current_admin_user)
+    current_admin: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """
     Delete a custom ISO or remove an override (admin only).
     Cannot delete built-in ISOs, only removes custom overrides.
     """
-    global custom_isos
-    for i, iso in enumerate(custom_isos):
-        if iso["id"] == iso_id:
-            deleted_iso = custom_isos.pop(i)
-            return {
-                "message": f"ISO '{deleted_iso['name']}' deleted successfully. Built-in ISO will be used if available.",
-                "id": iso_id
-            }
+    override = db.query(ISOOverride).filter(ISOOverride.iso_id == iso_id).first()
+
+    if override:
+        db.delete(override)
+        db.commit()
+        return {
+            "message": f"ISO '{override.name}' deleted successfully. Built-in ISO will be used if available.",
+            "id": iso_id
+        }
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
@@ -328,19 +375,23 @@ async def delete_iso(
 
 @router.get("/stats", response_model=dict)
 async def get_iso_stats(
-    current_admin: User = Depends(get_current_admin_user)
+    current_admin: User = Depends(get_current_admin_user),
+    db: Session = Depends(get_db)
 ):
     """
     Get ISO statistics (admin only).
     """
-    all_isos = await list_all_isos(current_admin, None)
+    all_isos = await list_all_isos(current_admin, db, None)
+
+    # Get override count from database
+    override_count = db.query(ISOOverride).count()
 
     stats = {
         "total_count": len(all_isos),
         "by_category": {},
         "by_architecture": {},
-        "custom_count": len(custom_isos),
-        "builtin_count": len(all_isos) - len([iso for iso in all_isos if iso.get("is_custom")])
+        "custom_count": override_count,
+        "builtin_count": len(all_isos) - override_count
     }
 
     # Count by category
