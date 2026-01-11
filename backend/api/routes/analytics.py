@@ -64,13 +64,13 @@ async def get_detailed_analytics(
     """
     # Basic stats
     total = db.query(DownloadRecord).count()
-    active = db.query(DownloadRecord).filter(DownloadRecord.state == DownloadState.DOWNLOADING).count()
-    completed = db.query(DownloadRecord).filter(DownloadRecord.state == DownloadState.COMPLETED).count()
-    failed = db.query(DownloadRecord).filter(DownloadRecord.state == DownloadState.FAILED).count()
+    active = db.query(DownloadRecord).filter(DownloadRecord.state == DownloadState.DOWNLOADING.value).count()
+    completed = db.query(DownloadRecord).filter(DownloadRecord.state == DownloadState.COMPLETED.value).count()
+    failed = db.query(DownloadRecord).filter(DownloadRecord.state == DownloadState.FAILED.value).count()
 
     # Total bytes
     total_bytes = db.query(func.sum(DownloadRecord.total_bytes)).filter(
-        DownloadRecord.state == DownloadState.COMPLETED
+        DownloadRecord.state == DownloadState.COMPLETED.value
     ).scalar() or 0
 
     # Category breakdown
@@ -79,7 +79,7 @@ async def get_detailed_analytics(
         func.count(DownloadRecord.id).label('count'),
         func.sum(DownloadRecord.total_bytes).label('total_bytes')
     ).filter(
-        DownloadRecord.state == DownloadState.COMPLETED
+        DownloadRecord.state == DownloadState.COMPLETED.value
     ).group_by(DownloadRecord.os_category).all()
 
     category_breakdown = [
@@ -92,7 +92,7 @@ async def get_detailed_analytics(
         DownloadRecord.os_architecture,
         func.count(DownloadRecord.id).label('count')
     ).filter(
-        DownloadRecord.state == DownloadState.COMPLETED
+        DownloadRecord.state == DownloadState.COMPLETED.value
     ).group_by(DownloadRecord.os_architecture).all()
 
     architecture_breakdown = [
@@ -111,7 +111,7 @@ async def get_detailed_analytics(
             "os_name": r.os_name,
             "os_version": r.os_version,
             "os_category": r.os_category,
-            "state": r.state.value,
+            "state": r.state,
             "created_at": r.created_at.isoformat() if r.created_at else None,
         }
         for r in recent_downloads
@@ -127,7 +127,7 @@ async def get_detailed_analytics(
         daily_downloads = db.query(DownloadRecord).filter(
             DownloadRecord.created_at >= date_start,
             DownloadRecord.created_at <= date_end,
-            DownloadRecord.state == DownloadState.COMPLETED
+            DownloadRecord.state == DownloadState.COMPLETED.value
         ).all()
 
         time_series.append(TimeSeriesData(
@@ -144,7 +144,7 @@ async def get_detailed_analytics(
         DownloadRecord.os_version,
         func.count(DownloadRecord.id).label('count')
     ).filter(
-        DownloadRecord.state == DownloadState.COMPLETED
+        DownloadRecord.state == DownloadState.COMPLETED.value
     ).group_by(
         DownloadRecord.os_name,
         DownloadRecord.os_version
@@ -222,7 +222,7 @@ async def get_popular_categories(
         DownloadRecord.os_category,
         func.count(DownloadRecord.id).label('count')
     ).filter(
-        DownloadRecord.state == DownloadState.COMPLETED
+        DownloadRecord.state == DownloadState.COMPLETED.value
     ).group_by(
         DownloadRecord.os_category
     ).order_by(desc('count')).limit(limit).all()

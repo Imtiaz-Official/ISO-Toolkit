@@ -168,26 +168,26 @@ async def get_stats(db: Session = Depends(get_db)) -> StatsResponse:
 
     active = (
         db.query(DownloadRecord)
-        .filter(DownloadRecord.state == DownloadState.DOWNLOADING)
+        .filter(DownloadRecord.state == DownloadState.DOWNLOADING.value)
         .count()
     )
 
     completed = (
         db.query(DownloadRecord)
-        .filter(DownloadRecord.state == DownloadState.COMPLETED)
+        .filter(DownloadRecord.state == DownloadState.COMPLETED.value)
         .count()
     )
 
     failed = (
         db.query(DownloadRecord)
-        .filter(DownloadRecord.state == DownloadState.FAILED)
+        .filter(DownloadRecord.state == DownloadState.FAILED.value)
         .count()
     )
 
     # Calculate total bytes downloaded
     completed_records = (
         db.query(DownloadRecord)
-        .filter(DownloadRecord.state == DownloadState.COMPLETED)
+        .filter(DownloadRecord.state == DownloadState.COMPLETED.value)
         .all()
     )
 
