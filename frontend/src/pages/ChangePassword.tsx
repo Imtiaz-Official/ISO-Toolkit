@@ -5,6 +5,7 @@
 
 import { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
 const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8000';
@@ -17,6 +18,7 @@ export default function ChangePasswordPage() {
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { checkAuth } = useAuth();
 
   // Get token from localStorage
   const token = localStorage.getItem('access_token');
@@ -57,6 +59,9 @@ export default function ChangePasswordPage() {
           headers: { Authorization: `Bearer ${token}` },
         }
       );
+
+      // Refresh user data to get updated password_changed status
+      await checkAuth();
 
       // Redirect to admin dashboard
       navigate('/admin/dashboard', { replace: true });
