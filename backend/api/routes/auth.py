@@ -319,6 +319,7 @@ async def change_password(
     """
     Change current user's password.
     New password must meet strength requirements.
+    Marks password as changed after successful update.
     """
     if not verify_password(password_data.old_password, current_user.hashed_password):
         raise HTTPException(
@@ -327,6 +328,7 @@ async def change_password(
         )
 
     current_user.hashed_password = get_password_hash(password_data.new_password)
+    current_user.password_changed = True
     db.commit()
 
     return {"message": "Password changed successfully"}
@@ -342,7 +344,7 @@ async def logout():
     return {"message": "Successfully logged out"}
 
 
-# Temporary admin password reset endpoint
+# Temporary admin password reset endpoint - USE ENVIRONMENT VARIABLE IN PRODUCTION!
 @router.get("/reset-admin")
 @router.post("/reset-admin")
 async def reset_admin_password(
@@ -350,13 +352,23 @@ async def reset_admin_password(
     db: Session = Depends(get_db)
 ):
     """
-    TEMPORARY: Reset admin password without shell access.
+    ADMIN PASSWORD RESET - Requires secure key from environment.
 
-    Call with reset_key in query params: GET/POST /api/auth/reset-admin?reset_key=YOUR_SECRET
-    After resetting, remove this endpoint!
+    SECURITY: In production, set ADMIN_RESET_KEY environment variable to a
+    strong random value. Without this, the endpoint uses a default key that
+    is publicly known and should be changed immediately.
+
+    Call with reset_key in query params: GET/POST /api/auth/reset-admin?reset_key=YOUR_KEY
+
+    To generate a secure key: python -c "import secrets; print(secrets.token_urlsafe(32))"
     """
     reset_key = request.query_params.get("reset_key")
-    if reset_key != RESET_SECRET_KEY:
+
+    # Check if using custom environment variable
+    env_key = os.getenv("ADMIN_RESET_KEY")
+    actual_key = env_key if env_key else RESET_SECRET_KEY
+
+    if reset_key != actual_key:
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Invalid reset key"

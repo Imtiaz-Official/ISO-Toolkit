@@ -14,6 +14,7 @@ interface User {
   email: string;
   is_admin: boolean;
   is_active: boolean;
+  password_changed: boolean;
   created_at: string;
   last_login: string | null;
 }

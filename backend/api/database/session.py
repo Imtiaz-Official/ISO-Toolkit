@@ -65,11 +65,15 @@ def init_database():
                 email="admin@example.com",
                 hashed_password=get_password_hash(default_password),
                 is_admin=True,
-                is_active=True
+                is_active=True,
+                password_changed=False  # Force password change on first login
             )
             db.add(admin_user)
             db.commit()
-            print("Default admin user created successfully")
+            print("Default admin user created successfully - PLEASE CHANGE THE PASSWORD IMMEDIATELY!")
+            print(f"Username: admin")
+            print(f"Default Password: {default_password}")
+            print("SECURITY WARNING: Change this password immediately after first login!")
     except Exception as e:
         db.rollback()
         print(f"Error creating default admin user: {e}")

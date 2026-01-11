@@ -27,6 +27,7 @@ const BrowsePage = lazy(() => import('./pages/BrowseOS'));
 const DownloadsPage = lazy(() => import('./pages/Downloads'));
 const SettingsPage = lazy(() => import('./pages/Settings'));
 const LoginPage = lazy(() => import('./pages/Login'));
+const ChangePasswordPage = lazy(() => import('./pages/ChangePassword'));
 
 // Load AdminDashboard and wrap with auth
 const AdminDashboardPageLazy = lazy(() => import('./pages/AdminDashboard'));
@@ -166,6 +167,7 @@ function App() {
               <Route path="/downloads" element={<DownloadsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/admin/login" element={<LoginPage />} />
+              <Route path="/admin/change-password" element={<ChangePasswordPage />} />
               <Route path="/admin/dashboard" element={<AdminDashboardPage />} />
             </Routes>
           </Suspense>

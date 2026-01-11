@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import axios from 'axios';
 
@@ -141,8 +142,16 @@ const TOKEN_KEY = 'access_token';
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabType>('overview');
   const [, setLoading] = useState(true);
+
+  // Redirect to change password if user hasn't changed their password
+  useEffect(() => {
+    if (user && !user.password_changed) {
+      navigate('/admin/change-password', { replace: true });
+    }
+  }, [user, navigate]);
 
   // Overview data
   const [analytics, setAnalytics] = useState<Analytics | null>(null);
