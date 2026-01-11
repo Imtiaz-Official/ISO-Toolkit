@@ -60,7 +60,8 @@ async def proxy_download_by_id(
         )
 
     # Get all OS for category and find matching one by ID
-    all_os = await os_routes.get_os_by_category(category)
+    # Pass db session explicitly since we're calling the function directly
+    all_os = await os_routes.get_os_by_category(category, db=db)
     matching_os = None
     for os_item in all_os:
         if os_item.id == os_id:
