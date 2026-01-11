@@ -102,40 +102,38 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_10(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows 10 ISO information.
-
-        URLs extracted from massgrave.dev using Botasaurus Cloudflare bypass.
-        Windows 10 links use buzzheavier.com redirect service.
+        Fetch Windows 10 ISO information from archive.isdn.network mirror.
+        Build 19045.6456 (October 2025) - Final Windows 10 release.
         """
         isos = [
-            # Windows 10 22H2 - x64 Consumer Edition (via buzzheavier.com)
+            # Windows 10 22H2 - x64 Consumer Edition
             OSInfo(
                 name="Windows 10",
                 version="22H2",
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://buzzheavier.com/fuxscqu93mnn",
+                url="https://archive.isdn.network/windows/en-us_windows_10_consumer_editions_version_22h2_updated_oct_2025_x64_dvd_38efd00d.iso",
                 size=5800000000,
                 release_date=datetime(2024, 10, 17),
-                description="Windows 10 Version 22H2 - Consumer Editions (Updated October 2025)",
+                description="Windows 10 Version 22H2 - Consumer Editions (Updated October 2025, Build 19045.6456)",
                 icon="🪟",
-                source="buzzheavier.com (via massgrave.dev)",
+                source="archive.isdn.network",
                 subcategory="Windows 10",
             ),
-            # Windows 10 22H2 - x64 Business Edition (via buzzheavier.com)
+            # Windows 10 22H2 - x64 Business Edition
             OSInfo(
                 name="Windows 10",
                 version="22H2 Business",
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://buzzheavier.com/6tglbbetyyav",
+                url="https://archive.isdn.network/windows/en-us_windows_10_business_editions_version_22h2_updated_oct_2025_x64_dvd_d2eef4b0.iso",
                 size=4900000000,
-                release_date=datetime(2025, 3, 15),
-                description="Windows 10 Version 22H2 - Business Editions (Enterprise/Professional/Education) Updated March 2025",
+                release_date=datetime(2024, 10, 17),
+                description="Windows 10 Version 22H2 - Business Editions (Enterprise/Professional/Education, Updated October 2025, Build 19045.6456)",
                 icon="🪟",
-                source="buzzheavier.com (via massgrave.dev)",
+                source="archive.isdn.network",
                 subcategory="Windows 10",
             ),
         ]
