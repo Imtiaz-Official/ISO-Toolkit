@@ -119,17 +119,6 @@ async def proxy_download_by_id(
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
-    # First get content length by making a HEAD request
-    content_length = None
-    content_range = None
-    try:
-        async with httpx.AsyncClient(timeout=30) as client:
-            head_response = await client.head(matching_os.url, headers=headers, follow_redirects=True)
-            content_length = head_response.headers.get("content-length")
-            content_range = head_response.headers.get("content-range")
-    except Exception:
-        pass
-
     # Build response headers with resume support
     response_headers = {
         "Content-Disposition": f'attachment; filename="{filename}"',
@@ -138,29 +127,8 @@ async def proxy_download_by_id(
         "X-Original-URL": matching_os.url,
     }
 
-    # Add Content-Length if available (shows file size in IDM/browsers)
-    if content_length:
-        response_headers["Content-Length"] = content_length
-
-    # For Range requests, we need to return 206 status code for IDM to recognize resume
-    # We'll use a custom response class to override the status
+    # For Range requests, return 206 status code for IDM to recognize resume
     if range_header:
-        # Parse the range header to get the requested byte range
-        # Format: "bytes=start-end" or "bytes=start-"
-        try:
-            range_spec = range_header.replace("bytes=", "")
-            if "-" in range_spec:
-                start, end = range_spec.split("-", 1)
-                total_size = int(content_length) if content_length else 0
-                if total_size > 0:
-                    end_value = int(end) if end else total_size - 1
-                    response_headers["Content-Range"] = f"bytes {start}-{end_value}/{total_size}"
-        except:
-            pass
-
-        # Return StreamingResponse with 206 status code for Range requests
-        # This allows IDM to recognize the download as resumable
-        from fastapi.responses import StreamingResponse
         return StreamingResponse(
             generate(),
             status_code=206,
@@ -237,15 +205,6 @@ async def proxy_download(
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
-    # First get content length by making a HEAD request
-    content_length = None
-    try:
-        async with httpx.AsyncClient(timeout=30) as client:
-            head_response = await client.head(original_url, headers=headers, follow_redirects=True)
-            content_length = head_response.headers.get("content-length")
-    except Exception:
-        pass
-
     # Build response headers with resume support
     response_headers = {
         "Content-Disposition": f'attachment; filename="{filename}"',
@@ -253,25 +212,8 @@ async def proxy_download(
         "Accept-Ranges": "bytes",  # Enable resume support
     }
 
-    # Add Content-Length if available (shows file size in IDM/browsers)
-    if content_length:
-        response_headers["Content-Length"] = content_length
-
-    # For Range requests, we need to return 206 status code for IDM to recognize resume
+    # For Range requests, return 206 status code for IDM to recognize resume
     if range_header:
-        # Parse the range header to get the requested byte range
-        try:
-            range_spec = range_header.replace("bytes=", "")
-            if "-" in range_spec:
-                start, end = range_spec.split("-", 1)
-                total_size = int(content_length) if content_length else 0
-                if total_size > 0:
-                    end_value = int(end) if end else total_size - 1
-                    response_headers["Content-Range"] = f"bytes {start}-{end_value}/{total_size}"
-        except:
-            pass
-
-        # Return StreamingResponse with 206 status code for Range requests
         return StreamingResponse(
             generate(),
             status_code=206,
@@ -377,15 +319,6 @@ async def direct_download(
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
-    # First get content length by making a HEAD request
-    content_length = None
-    try:
-        async with httpx.AsyncClient(timeout=30) as client:
-            head_response = await client.head(matching_os.url, headers=headers, follow_redirects=True)
-            content_length = head_response.headers.get("content-length")
-    except Exception:
-        pass
-
     # Build response headers with resume support
     response_headers = {
         "Content-Disposition": f'attachment; filename="{filename}"',
@@ -394,25 +327,8 @@ async def direct_download(
         "X-Original-URL": matching_os.url,
     }
 
-    # Add Content-Length if available (shows file size in IDM/browsers)
-    if content_length:
-        response_headers["Content-Length"] = content_length
-
-    # For Range requests, we need to return 206 status code for IDM to recognize resume
+    # For Range requests, return 206 status code for IDM to recognize resume
     if range_header:
-        # Parse the range header to get the requested byte range
-        try:
-            range_spec = range_header.replace("bytes=", "")
-            if "-" in range_spec:
-                start, end = range_spec.split("-", 1)
-                total_size = int(content_length) if content_length else 0
-                if total_size > 0:
-                    end_value = int(end) if end else total_size - 1
-                    response_headers["Content-Range"] = f"bytes {start}-{end_value}/{total_size}"
-        except:
-            pass
-
-        # Return StreamingResponse with 206 status code for Range requests
         return StreamingResponse(
             generate(),
             status_code=206,
@@ -487,15 +403,6 @@ async def proxy_download_by_url(
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
-    # First get content length by making a HEAD request
-    content_length = None
-    try:
-        async with httpx.AsyncClient(timeout=30) as client:
-            head_response = await client.head(original_url, follow_redirects=True)
-            content_length = head_response.headers.get("content-length")
-    except Exception:
-        pass
-
     # Build response headers with resume support
     response_headers = {
         "Content-Disposition": f'attachment; filename="{filename}"',
@@ -504,25 +411,8 @@ async def proxy_download_by_url(
         "X-Original-URL": original_url,
     }
 
-    # Add Content-Length if available (shows file size in IDM/browsers)
-    if content_length:
-        response_headers["Content-Length"] = content_length
-
-    # For Range requests, we need to return 206 status code for IDM to recognize resume
+    # For Range requests, return 206 status code for IDM to recognize resume
     if range_header:
-        # Parse the range header to get the requested byte range
-        try:
-            range_spec = range_header.replace("bytes=", "")
-            if "-" in range_spec:
-                start, end = range_spec.split("-", 1)
-                total_size = int(content_length) if content_length else 0
-                if total_size > 0:
-                    end_value = int(end) if end else total_size - 1
-                    response_headers["Content-Range"] = f"bytes {start}-{end_value}/{total_size}"
-        except:
-            pass
-
-        # Return StreamingResponse with 206 status code for Range requests
         return StreamingResponse(
             generate(),
             status_code=206,
