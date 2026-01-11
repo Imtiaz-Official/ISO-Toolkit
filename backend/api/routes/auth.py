@@ -343,6 +343,7 @@ async def logout():
 
 
 # Temporary admin password reset endpoint
+@router.get("/reset-admin")
 @router.post("/reset-admin")
 async def reset_admin_password(
     request: Request,
@@ -351,7 +352,7 @@ async def reset_admin_password(
     """
     TEMPORARY: Reset admin password without shell access.
 
-    Call with reset_key in query params: POST /api/auth/reset-admin?reset_key=YOUR_SECRET
+    Call with reset_key in query params: GET/POST /api/auth/reset-admin?reset_key=YOUR_SECRET
     After resetting, remove this endpoint!
     """
     reset_key = request.query_params.get("reset_key")
