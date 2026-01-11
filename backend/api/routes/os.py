@@ -2,9 +2,10 @@
 API routes for OS listings and browsing.
 """
 
-from fastapi import APIRouter, HTTPException
-from typing import List, Union
+from fastapi import APIRouter, HTTPException, Depends
+from typing import List, Union, Optional
 import asyncio
+from sqlalchemy.orm import Session
 
 from api.models.schemas import (
     OSInfoResponse,
@@ -12,6 +13,8 @@ from api.models.schemas import (
     LinuxSubcategoryResponse,
     Architecture,
 )
+from api.database.session import get_db
+from api.database.models import ISOOverride
 from core.os.base import get_registry
 from core.os.windows import WindowsProvider
 from core.os.linux import LinuxProvider
@@ -234,9 +237,11 @@ async def get_os_by_category(
     architecture: Architecture | None = None,
     language: str | None = None,
     subcategory: str | None = None,
+    db: Session = Depends(get_db),
 ) -> List[OSInfoResponse]:
     """
     Get available OS for a specific category.
+    Database overrides take precedence over built-in ISOs.
 
     Args:
         category: OS category (windows, linux, macos, bsd)
@@ -251,7 +256,7 @@ async def get_os_by_category(
 
     # Convert string to OSCategory enum
     try:
-        category = OSCategory(category.lower())
+        category_enum = OSCategory(category.lower())
     except ValueError:
         raise HTTPException(
             status_code=400,
@@ -259,29 +264,82 @@ async def get_os_by_category(
         )
 
     registry = get_registry()
-    providers = registry.get_by_category(category)
-    print(f"DEBUG: Category={category}, Providers found={len(providers)}")
+    providers = registry.get_by_category(category_enum)
+
+    # Get database overrides for this category
+    overrides = db.query(ISOOverride).filter(
+        ISOOverride.category == category_enum.value,
+        ISOOverride.is_enabled == True
+    ).all()
+
+    # Create a lookup dict for overrides
+    override_map = {override.iso_id: override for override in overrides}
 
     all_os = []
     for provider in providers:
         try:
-            print(f"DEBUG: Calling fetch_available on provider with filters: architecture={architecture}, language={language}")
             os_list = await provider.fetch_available(
                 architecture=architecture,
                 language=language,
             )
-            print(f"DEBUG: Provider returned {len(os_list)} ISOs")
             all_os.extend(os_list)
         except Exception as e:
-            print(f"DEBUG: Exception from provider: {e}")
             raise HTTPException(status_code=500, detail=f"Error fetching OS: {str(e)}")
+
+    # Apply database overrides to built-in ISOs and add custom ISOs
+    merged_os = {}
+    for os_info in all_os:
+        iso_id = f"{os_info.category.value}_{os_info.name.lower()}_{os_info.version.lower()}_{os_info.architecture.value}"
+
+        # Check if there's a database override
+        if iso_id in override_map:
+            override = override_map[iso_id]
+            # Create OSInfo from database override
+            from core.models import OSInfo, Architecture as ArchEnum
+            merged_os[iso_id] = OSInfo(
+                name=override.name,
+                version=override.version,
+                category=category_enum,
+                architecture=ArchEnum(override.architecture.upper()),
+                language=override.language,
+                url=override.url,
+                size=override.size or 0,
+                description=override.description,
+                icon=override.icon,
+                checksum=override.checksum,
+                checksum_type=override.checksum_type,
+                source="Database Override",
+            )
+        else:
+            merged_os[iso_id] = os_info
+
+    # Also add any custom ISOs that aren't in built-in list
+    for override in overrides:
+        iso_id = override.iso_id
+        if iso_id not in merged_os:
+            from core.models import OSInfo, Architecture as ArchEnum
+            merged_os[iso_id] = OSInfo(
+                name=override.name,
+                version=override.version,
+                category=category_enum,
+                architecture=ArchEnum(override.architecture.upper()),
+                language=override.language,
+                url=override.url,
+                size=override.size or 0,
+                description=override.description,
+                icon=override.icon,
+                checksum=override.checksum,
+                checksum_type=override.checksum_type,
+                source="Custom",
+            )
 
     # Filter by subcategory if specified
     if subcategory:
-        all_os = [os for os in all_os if (os.subcategory or os.name) == subcategory]
+        all_os = [os for os in merged_os.values() if (getattr(os, 'subcategory', None) or os.name) == subcategory]
+    else:
+        all_os = list(merged_os.values())
 
     # Convert to response models
-    print(f"DEBUG: Converting {len(all_os)} OSInfo objects to response")
     response = []
     for os_info in all_os:
         try:
@@ -290,33 +348,33 @@ async def get_os_by_category(
                     id=f"{os_info.category.value}_{os_info.name.lower()}_{os_info.version.lower()}_{os_info.architecture.value}",
                     name=os_info.name,
                     version=os_info.version,
-                    category=category.value,  # Use string value, not enum
+                    category=category_enum.value,
                     architecture=os_info.architecture,
                     language=os_info.language,
                     size=os_info.size,
-                    size_formatted=os_info.size_formatted,
-                    source=os_info.source,
+                    size_formatted=getattr(os_info, 'size_formatted', None) or f"{os_info.size / (1024**3):.1f} GB" if os_info.size else "Unknown",
+                    source=getattr(os_info, 'source', None),
                     icon=os_info.icon,
                     url=os_info.url,
                     checksum=os_info.checksum,
                     checksum_type=os_info.checksum_type,
                     description=os_info.description,
-                    release_date=os_info.release_date,
-                    subcategory=os_info.subcategory,
+                    release_date=getattr(os_info, 'release_date', None),
+                    subcategory=getattr(os_info, 'subcategory', None),
                 )
             )
         except Exception as e:
             print(f"DEBUG: Error converting OSInfo: {e}")
             raise
 
-    print(f"DEBUG: Returning {len(response)} items")
     return response
 
 
 @router.get("/{category}/{os_id}", response_model=OSInfoResponse)
-async def get_os_details(category: str, os_id: str) -> OSInfoResponse:
+async def get_os_details(category: str, os_id: str, db: Session = Depends(get_db)) -> OSInfoResponse:
     """
     Get details for a specific OS.
+    Database overrides take precedence over built-in ISOs.
 
     Args:
         category: OS category
@@ -327,8 +385,36 @@ async def get_os_details(category: str, os_id: str) -> OSInfoResponse:
     """
     _init_providers()
 
+    # First check database for this ISO ID
+    override = db.query(ISOOverride).filter(
+        ISOOverride.iso_id == os_id,
+        ISOOverride.is_enabled == True
+    ).first()
+
+    if override:
+        # Return database override
+        from core.models import Architecture as ArchEnum
+        return OSInfoResponse(
+            id=override.iso_id,
+            name=override.name,
+            version=override.version,
+            category=override.category,
+            architecture=ArchEnum(override.architecture.upper()),
+            language=override.language,
+            url=override.url,
+            size=override.size or 0,
+            size_formatted=f"{override.size / (1024**3):.1f} GB" if override.size else "Unknown",
+            source="Database Override",
+            icon=override.icon,
+            checksum=override.checksum,
+            checksum_type=override.checksum_type,
+            description=override.description,
+            release_date=None,
+            subcategory=None,
+        )
+
     # Get all OS for category
-    all_os = await get_os_by_category(category)
+    all_os = await get_os_by_category(category, db=db)
 
     # Find matching OS
     for os_response in all_os:
@@ -342,9 +428,11 @@ async def get_os_details(category: str, os_id: str) -> OSInfoResponse:
 async def search_os(
     query: str,
     category: str | None = None,
+    db: Session = Depends(get_db),
 ) -> List[OSInfoResponse]:
     """
     Search for OS by name or version.
+    Includes database overrides and custom ISOs.
 
     Args:
         query: Search query
@@ -357,7 +445,7 @@ async def search_os(
 
     registry = get_registry()
 
-    results = []
+    results = {}
 
     # Parse category if provided
     if category:
@@ -371,38 +459,104 @@ async def search_os(
     else:
         categories_to_search = list(OSCategory)
 
+    # Get all database overrides
+    all_overrides = db.query(ISOOverride).filter(
+        ISOOverride.is_enabled == True
+    ).all()
+
+    # Build override map
+    override_map = {}
+    for override in all_overrides:
+        override_map[override.iso_id] = override
+
     for cat in categories_to_search:
         providers = registry.get_by_category(cat)
         for provider in providers:
             try:
                 os_list = await provider.fetch_available()
                 for os_info in os_list:
-                    # Search in name and version
-                    if (
-                        query.lower() in os_info.name.lower()
-                        or query.lower() in os_info.version.lower()
-                    ):
-                        results.append(
-                            OSInfoResponse(
-                                id=f"{os_info.category.value}_{os_info.name.lower()}_{os_info.version.lower()}_{os_info.architecture.value}",
-                                name=os_info.name,
-                                version=os_info.version,
-                                category=cat.value,  # Use string value
-                                architecture=os_info.architecture,
-                                language=os_info.language,
-                                size=os_info.size,
-                                size_formatted=os_info.size_formatted,
-                                source=os_info.source,
-                                icon=os_info.icon,
-                                url=os_info.url,
-                                checksum=os_info.checksum,
-                                checksum_type=os_info.checksum_type,
-                                description=os_info.description,
-                                release_date=os_info.release_date,
-                                subcategory=os_info.subcategory,
-                            )
-                        )
+                    iso_id = f"{os_info.category.value}_{os_info.name.lower()}_{os_info.version.lower()}_{os_info.architecture.value}"
+
+                    # Check if there's a database override
+                    if iso_id in override_map:
+                        override = override_map[iso_id]
+                        if (
+                            query.lower() in override.name.lower()
+                            or query.lower() in override.version.lower()
+                        ):
+                            if iso_id not in results:
+                                from core.models import Architecture as ArchEnum
+                                results[iso_id] = OSInfoResponse(
+                                    id=override.iso_id,
+                                    name=override.name,
+                                    version=override.version,
+                                    category=override.category,
+                                    architecture=ArchEnum(override.architecture.upper()),
+                                    language=override.language,
+                                    url=override.url,
+                                    size=override.size or 0,
+                                    size_formatted=f"{override.size / (1024**3):.1f} GB" if override.size else "Unknown",
+                                    source="Database Override",
+                                    icon=override.icon,
+                                    checksum=override.checksum,
+                                    checksum_type=override.checksum_type,
+                                    description=override.description,
+                                    release_date=None,
+                                    subcategory=None,
+                                )
+                    else:
+                        # Search in name and version
+                        if (
+                            query.lower() in os_info.name.lower()
+                            or query.lower() in os_info.version.lower()
+                        ):
+                            if iso_id not in results:
+                                results[iso_id] = OSInfoResponse(
+                                    id=iso_id,
+                                    name=os_info.name,
+                                    version=os_info.version,
+                                    category=cat.value,
+                                    architecture=os_info.architecture,
+                                    language=os_info.language,
+                                    size=os_info.size,
+                                    size_formatted=os_info.size_formatted,
+                                    source=os_info.source,
+                                    icon=os_info.icon,
+                                    url=os_info.url,
+                                    checksum=os_info.checksum,
+                                    checksum_type=os_info.checksum_type,
+                                    description=os_info.description,
+                                    release_date=os_info.release_date,
+                                    subcategory=os_info.subcategory,
+                                )
             except Exception:
                 pass
 
-    return results
+    # Also search in database overrides that might not be in built-in list
+    for override in all_overrides:
+        if (
+            query.lower() in override.name.lower()
+            or query.lower() in override.version.lower()
+        ):
+            if override.iso_id not in results:
+                from core.models import Architecture as ArchEnum
+                results[override.iso_id] = OSInfoResponse(
+                    id=override.iso_id,
+                    name=override.name,
+                    version=override.version,
+                    category=override.category,
+                    architecture=ArchEnum(override.architecture.upper()),
+                    language=override.language,
+                    url=override.url,
+                    size=override.size or 0,
+                    size_formatted=f"{override.size / (1024**3):.1f} GB" if override.size else "Unknown",
+                    source="Database Override",
+                    icon=override.icon,
+                    checksum=override.checksum,
+                    checksum_type=override.checksum_type,
+                    description=override.description,
+                    release_date=None,
+                    subcategory=None,
+                )
+
+    return list(results.values())
