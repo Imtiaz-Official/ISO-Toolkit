@@ -3,7 +3,7 @@ Proxy download routes - Stream downloads through our server.
 This makes all downloads appear to come from our domain.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.responses import StreamingResponse
 from sqlalchemy.orm import Session
 from typing import Optional
@@ -27,13 +27,15 @@ DOWNLOAD_TIMEOUT = 300  # 5 minutes
 @router.get("/{download_id}")
 async def proxy_download(
     download_id: int,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    request: Request = None
 ):
     """
     Proxy a download through our server.
 
     The URL will be: /download/{id} instead of the original external URL.
     This makes all downloads appear to come from our domain.
+    Supports resume/partial downloads via Range requests.
     """
     # Get the download record
     record = db.query(DownloadRecord).filter(DownloadRecord.id == download_id).first()
@@ -58,14 +60,20 @@ async def proxy_download(
 
     # Get custom headers if available (for some sources that need specific User-Agent)
     headers = {}
-    # We'll need to store headers in the database or fetch from OS info
-    # For now, use a standard user agent
+
+    # Check for Range request (for resume support)
+    range_header = request.headers.get("range") if request else None
 
     async def generate():
-        """Stream the download in chunks."""
+        """Stream the download in chunks with range support."""
         async with httpx.AsyncClient(timeout=DOWNLOAD_TIMEOUT) as client:
             try:
-                async with client.stream("GET", original_url, headers=headers, follow_redirects=True) as response:
+                # Forward Range header if present for resume support
+                req_headers = headers.copy()
+                if range_header:
+                    req_headers["Range"] = range_header
+
+                async with client.stream("GET", original_url, headers=req_headers, follow_redirects=True) as response:
                     response.raise_for_status()
 
                     # Stream content in chunks
@@ -78,14 +86,34 @@ async def proxy_download(
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
-    # Return streaming response with proper headers
+    # First get content length by making a HEAD request
+    content_length = None
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            head_response = await client.head(original_url, headers=headers, follow_redirects=True)
+            content_length = head_response.headers.get("content-length")
+    except Exception:
+        pass
+
+    # Build response headers with resume support
+    response_headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "Cache-Control": "no-cache",
+        "Accept-Ranges": "bytes",  # Enable resume support
+    }
+
+    # Add Content-Length if available (shows file size in IDM/browsers)
+    if content_length:
+        response_headers["Content-Length"] = content_length
+
+    # Add Content-Range for partial content requests
+    if range_header:
+        response_headers["Content-Range"] = f"bytes {range_header.replace('bytes=', '')}/*"
+
     return StreamingResponse(
         generate(),
         media_type="application/octet-stream",
-        headers={
-            "Content-Disposition": f'attachment; filename="{filename}"',
-            "Cache-Control": "no-cache",
-        }
+        headers=response_headers
     )
 
 
@@ -95,13 +123,15 @@ async def direct_download(
     os_name: str,
     version: Optional[str] = None,
     architecture: Optional[str] = None,
-    db: Session = Depends(get_db)
+    db: Session = Depends(get_db),
+    request: Request = None
 ):
     """
     Direct download URL by OS info.
     Creates a URL like: /download/direct/linux/ubuntu or /download/direct/macos/ventura
 
     This will find the matching OS entry and proxy the download.
+    Supports resume/partial downloads via Range requests.
     """
     from core.os.base import get_registry
     from core.models import OSCategory, Architecture
@@ -148,21 +178,35 @@ async def direct_download(
     # Get custom headers from OS info if available
     headers = getattr(matching_os, "headers", {})
 
+    # Check for Range request (for resume support)
+    range_header = request.headers.get("range") if request else None
+
     async def generate():
-        """Stream the download in chunks."""
+        """Stream the download in chunks with range support."""
         async with httpx.AsyncClient(timeout=DOWNLOAD_TIMEOUT) as client:
             try:
+                # Forward Range header if present for resume support
+                req_headers = headers.copy()
+                if range_header:
+                    req_headers["Range"] = range_header
+
                 async with client.stream(
                     "GET",
                     matching_os.url,
-                    headers=headers,
+                    headers=req_headers,
                     follow_redirects=True
                 ) as response:
                     response.raise_for_status()
 
+                    # Get content length from response
+                    content_length = response.headers.get("content-length")
+
                     # Stream content in chunks
                     async for chunk in response.aiter_bytes(chunk_size=CHUNK_SIZE):
                         yield chunk
+
+                    # Return content length at the end for final response headers
+                    return content_length
 
             except httpx.HTTPError as e:
                 raise HTTPException(
@@ -170,23 +214,48 @@ async def direct_download(
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
-    # Return streaming response
+    # First get content length by making a HEAD request
+    content_length = None
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            head_response = await client.head(matching_os.url, headers=headers, follow_redirects=True)
+            content_length = head_response.headers.get("content-length")
+    except Exception:
+        pass
+
+    # Build response headers with resume support
+    response_headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "Cache-Control": "public, max-age=31536000",
+        "Accept-Ranges": "bytes",  # Enable resume support
+        "X-Original-URL": matching_os.url,
+    }
+
+    # Add Content-Length if available (shows file size in IDM/browsers)
+    if content_length:
+        response_headers["Content-Length"] = content_length
+
+    # Add Content-Range for partial content requests
+    if range_header:
+        response_headers["Content-Range"] = f"bytes {range_header.replace('bytes=', '')}/*"
+
     return StreamingResponse(
         generate(),
         media_type="application/octet-stream",
-        headers={
-            "Content-Disposition": f'attachment; filename="{filename}"',
-            "Cache-Control": "public, max-age=31536000",  # Cache for 1 year
-            "X-Original-URL": matching_os.url,
-        }
+        headers=response_headers
     )
 
 
 @router.get("/url/{encoded_url}")
-async def proxy_download_by_url(encoded_url: str, db: Session = Depends(get_db)):
+async def proxy_download_by_url(
+    encoded_url: str,
+    db: Session = Depends(get_db),
+    request: Request = None
+):
     """
     Proxy download by base64 encoded URL.
     This allows any URL to be proxied through our server.
+    Supports resume/partial downloads via Range requests.
 
     Usage: /download/url/{base64_encoded_url}
     Example: /download/url/aHR0cHM6Ly9leGFtcGxlLmNvbS9maWxlLmlzbw==
@@ -207,13 +276,22 @@ async def proxy_download_by_url(encoded_url: str, db: Session = Depends(get_db))
     parsed = urlparse(original_url)
     filename = parsed.path.split("/")[-1] or "download.iso"
 
+    # Check for Range request (for resume support)
+    range_header = request.headers.get("range") if request else None
+
     async def generate():
-        """Stream the download in chunks."""
+        """Stream the download in chunks with range support."""
         async with httpx.AsyncClient(timeout=DOWNLOAD_TIMEOUT) as client:
             try:
+                # Forward Range header if present for resume support
+                req_headers = {}
+                if range_header:
+                    req_headers["Range"] = range_header
+
                 async with client.stream(
                     "GET",
                     original_url,
+                    headers=req_headers,
                     follow_redirects=True
                 ) as response:
                     response.raise_for_status()
@@ -228,13 +306,33 @@ async def proxy_download_by_url(encoded_url: str, db: Session = Depends(get_db))
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
-    # Return streaming response
+    # First get content length by making a HEAD request
+    content_length = None
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            head_response = await client.head(original_url, follow_redirects=True)
+            content_length = head_response.headers.get("content-length")
+    except Exception:
+        pass
+
+    # Build response headers with resume support
+    response_headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "Cache-Control": "no-cache",
+        "Accept-Ranges": "bytes",  # Enable resume support
+        "X-Original-URL": original_url,
+    }
+
+    # Add Content-Length if available (shows file size in IDM/browsers)
+    if content_length:
+        response_headers["Content-Length"] = content_length
+
+    # Add Content-Range for partial content requests
+    if range_header:
+        response_headers["Content-Range"] = f"bytes {range_header.replace('bytes=', '')}/*"
+
     return StreamingResponse(
         generate(),
         media_type="application/octet-stream",
-        headers={
-            "Content-Disposition": f'attachment; filename="{filename}"',
-            "Cache-Control": "no-cache",
-            "X-Original-URL": original_url,
-        }
+        headers=response_headers
     )
