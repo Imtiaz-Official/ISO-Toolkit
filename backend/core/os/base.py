@@ -85,12 +85,18 @@ class ProviderRegistry:
         self._providers_map: Dict[str, BaseProvider] = {}
 
     def register(self, provider: BaseProvider) -> None:
-        """Register a provider."""
+        """Register a provider. Prevents duplicate registrations by name."""
+        provider_name = provider.metadata.name.lower()
+
+        # Check if provider with same name is already registered
+        if provider_name in self._providers_map:
+            return  # Skip duplicate registration
+
         category = provider.metadata.category
         if category not in self._providers:
             self._providers[category] = []
         self._providers[category].append(provider)
-        self._providers_map[provider.metadata.name.lower()] = provider
+        self._providers_map[provider_name] = provider
 
     def unregister(self, provider_name: str) -> None:
         """Unregister a provider by name."""
