@@ -17,7 +17,7 @@ from core.os.windows import WindowsProvider
 from core.os.linux import LinuxProvider
 from core.os.macos import MacOSProvider
 from core.os.bsd import BSDProvider
-from core.models import OSCategory as CoreOSCategory
+from core.models import OSCategory
 
 router = APIRouter(prefix="/api/os", tags=["OS"])
 
@@ -184,7 +184,7 @@ async def get_os_by_category(
 
     # Convert string to OSCategory enum
     try:
-        category = CoreOSCategory(category.lower())
+        category = OSCategory(category.lower())
     except ValueError:
         raise HTTPException(
             status_code=400,
@@ -295,14 +295,14 @@ async def search_os(
     # Parse category if provided
     if category:
         try:
-            categories_to_search = [CoreOSCategory(category.lower())]
+            categories_to_search = [OSCategory(category.lower())]
         except ValueError:
             raise HTTPException(
                 status_code=400,
                 detail=f"Invalid category: {category}"
             )
     else:
-        categories_to_search = list(CoreOSCategory)
+        categories_to_search = list(OSCategory)
 
     for cat in categories_to_search:
         providers = registry.get_by_category(cat)
