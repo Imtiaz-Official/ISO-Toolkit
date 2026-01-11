@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+
+  <link rel="apple-touch-icon"
+      sizes="180x180"
+      href="https://assets.ubuntu.com/v1/f38b9c7e-COF%20apple-touch-icon.png" />
+  <link rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="https://assets.ubuntu.com/v1/be7e4cc6-COF-favicon-32x32.png" />
+  <link rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="https://assets.ubuntu.com/v1/16c27f81-COF%20favicon-16x16.png" />
+  <!-- Serving favicon for search engines locally -->
+  <link rel="icon"
+      type="image/png"
+      sizes="48x48"
+      href="/static/images/favicons/COF-favicon-48x48.png?v=fa3c63f" />
+
+  <link rel="stylesheet" type="text/css" media="screen" href="/static/css/main.css?v=2bafeee" />
+
+  <title>404: Page not found</title>
+  <meta name="description" content="Ubuntu brand, app and web guidelines that help you create professional materials, software, sites, apps that build the Ubuntu brand.">
+  <meta name="keywords" content="Ubuntu, Design, Brand guidelines, web guidelines, apps guidelines, colors, buttons, layout, styleguide" />
+  <meta name="author" content="Canonical" />
+  <meta name="copydoc" content="https://drive.google.com/drive/u/0/folders/1LxHnsplr5Xd8JQxNvwvLil2J_Q5_3loU" />
+
+  <!-- Cookie policy -->
+  <script src="/static/js/cookie-policy.js?v=90c3a18"></script>
+  <script>
+    cpNs.cookiePolicy();
+  </script>
+
+  <!-- Google Tag Manager -->
+  <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+  new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+  j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+  'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+  })(window,document,'script','dataLayer','GTM-NV2KV6F');</script>
+  <!-- End Google Tag Manager -->
+</head>
+
+
+<body class="l-site is-paper">
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NV2KV6F"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+<a href="#main-content" class="p-link--skip">Jump to main content</a>
+
+<header id="navigation" class="p-navigation is-dark">
+  <div class="p-navigation__row--25-75">
+
+    <div class="p-navigation__banner">
+      <div class="p-navigation__tagged-logo">
+        <a class="p-navigation__link" href="/">
+          <div class="p-navigation__logo-tag">
+            <img class="p-navigation__logo-icon" src="https://assets.ubuntu.com/v1/82818827-CoF_white.svg" alt="">
+          </div>
+          <span class="p-navigation__logo-title">Design</span>
+        </a>
+      </div>
+      <a href="#navigation" class="p-navigation__toggle--open" title="menu">Menu</a>
+      <a href="#navigation-closed" class="p-navigation__toggle--close" title="close menu">Close menu</a>
+    </div>
+    <nav class="p-navigation__nav">
+      <ul class="p-navigation__items">
+        <li class="p-navigation__item "><a class="p-navigation__link " href="/brand/">Brand</a></li>
+        <li class="p-navigation__item "><a class="p-navigation__link" href="/font/">Font</a></li>
+        <li class="p-navigation__item "><a class="p-navigation__link" href="/vanilla/">Vanilla</a></li>
+        <li class="p-navigation__item "><a class="p-navigation__link" href="/accessibility/">Accessibility</a></li>
+        <li class="p-navigation__item "><a class="p-navigation__link" href="/resources/">Resources</a></li>
+        <li class="p-navigation__item "><a class="p-navigation__link" href="/contribute/">Contribute</a></li>
+      </ul>
+      <ul class="p-navigation__items global-nav"></ul>
+    </nav>
+  </div>
+</header>
+
+
+
+
+  
+<section class="p-strip is-deep">
+  <div class="row--25-75">
+    <hr class="p-rule">
+    <div class="col u-hide--small">
+      <p class="p-heading--1">404</p>
+    </div>
+    <div class="col">
+      <h1><span class="u-hide--medium u-hide--large">404: </span>Page not found</h1>
+      <p class="p-heading--2">
+        We can't find the page you're looking for.
+        <br>
+        <a href="https://github.com/canonical/design.ubuntu.com/issues/new/choose">File a bug</a> if you think this might be an error.
+      </p>
+    </div>
+  </div>
+</section>
+
+
+
+
+
+
+<footer class="l-footer--sticky p-strip is-dark">
+  <div class="row">
+    <div class="col-9 col-medium-4">
+      <p class="u-no-max-width">© 2023 Canonical Ltd. Ubuntu and Canonical are registered trademarks of Canonical&nbsp;Ltd.</p>
+      <nav>
+        <ul class="p-inline-list--middot">
+          <li class="p-inline-list__item">
+            <a class="p-footer__link" href="https://www.ubuntu.com/legal">Legal information</a>
+          </li>
+          <li class="p-inline-list__item">
+            <a class="p-footer__link" href="https://www.ubuntu.com/legal/data-privacy">Data privacy</a>
+          </li>
+          <li class="p-inline-list__item">
+            <a class="p-footer__link" href="https://github.com/canonical/design.ubuntu.com/issues/new/choose">Report a bug on this site</a>
+          </li>
+          <li class="p-inline-list__item">
+            <a href="" class="p-footer__link js-revoke-cookie-manager">Manage your tracker settings</a>
+          </li>
+        </ul>
+        <span class="u-off-screen">
+          <a href="#">Go to the top of the page</a>
+        </span>
+      </nav>
+    </div>
+    <div class="col-3 col-medium-2">
+      <h5 class="p-muted-heading">Follow us</h5>
+      <ul class="p-inline-list">
+        <li class="p-inline-list__item">
+          <a href="https://twitter.com/ubuntudesigners" class="p-icon--twitter">@ubuntudesigners on twitter</a>
+        </li>
+        <li class="p-inline-list__item">
+          <a href="https://www.instagram.com/ubuntudesigners/" class="p-icon--instagram">@ubuntudesigners on instagram</a>
+        </li>
+        <li class="p-inline-list__item">
+          <a href="https://ubuntu.com/blog/topics/design" class="p-icon--canonical">Web &amp; design blog</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</footer>
+
+<!-- global navigation component -->
+<script src="/static/js/global-nav.js?v=e5b5021"></script>
+<script>
+  canonicalGlobalNav.createNav();  
+</script>
+
+
+
+
+</body>
+</html>

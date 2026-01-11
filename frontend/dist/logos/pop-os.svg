@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+    <head>
+        <title>system76 - Not Found</title>
+        <link rel="dns-prefetch preconnect" href="https://cdn11.bigcommerce.com/s-pywjnxrcr2" crossorigin><link rel="dns-prefetch preconnect" href="https://fonts.googleapis.com/" crossorigin><link rel="dns-prefetch preconnect" href="https://fonts.gstatic.com/" crossorigin>
+        <meta name='platform' content='bigcommerce.stencil' />
+        
+         
+
+        <link href="https://cdn11.bigcommerce.com/s-pywjnxrcr2/product_images/system76_logo-fav-32x32.png?t&#x3D;1711381758" rel="shortcut icon">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+
+        <script>
+            document.documentElement.className = document.documentElement.className.replace('no-js', 'js');
+        </script>
+
+        <script>
+    function browserSupportsAllFeatures() {
+        return window.Promise
+            && window.fetch
+            && window.URL
+            && window.URLSearchParams
+            && window.WeakMap
+            // object-fit support
+            && ('objectFit' in document.documentElement.style);
+    }
+
+    function loadScript(src) {
+        var js = document.createElement('script');
+        js.src = src;
+        js.onerror = function () {
+            console.error('Failed to load polyfill script ' + src);
+        };
+        document.head.appendChild(js);
+    }
+
+    if (!browserSupportsAllFeatures()) {
+        loadScript('https://cdn11.bigcommerce.com/s-pywjnxrcr2/stencil/0ff768d0-35d1-013e-426f-3234c08a9e7e/dist/theme-bundle.polyfills.js');
+    }
+</script>
+        <script>window.consentManagerTranslations = `{"locale":"en","locales":{"consent_manager.data_collection_warning":"en","consent_manager.accept_all_cookies":"en","consent_manager.gdpr_settings":"en","consent_manager.data_collection_preferences":"en","consent_manager.manage_data_collection_preferences":"en","consent_manager.use_data_by_cookies":"en","consent_manager.data_categories_table":"en","consent_manager.allow":"en","consent_manager.accept":"en","consent_manager.deny":"en","consent_manager.dismiss":"en","consent_manager.reject_all":"en","consent_manager.category":"en","consent_manager.purpose":"en","consent_manager.functional_category":"en","consent_manager.functional_purpose":"en","consent_manager.analytics_category":"en","consent_manager.analytics_purpose":"en","consent_manager.targeting_category":"en","consent_manager.advertising_category":"en","consent_manager.advertising_purpose":"en","consent_manager.essential_category":"en","consent_manager.esential_purpose":"en","consent_manager.yes":"en","consent_manager.no":"en","consent_manager.not_available":"en","consent_manager.cancel":"en","consent_manager.save":"en","consent_manager.back_to_preferences":"en","consent_manager.close_without_changes":"en","consent_manager.unsaved_changes":"en","consent_manager.by_using":"en","consent_manager.agree_on_data_collection":"en","consent_manager.change_preferences":"en","consent_manager.cancel_dialog_title":"en","consent_manager.privacy_policy":"en","consent_manager.allow_category_tracking":"en","consent_manager.disallow_category_tracking":"en"},"translations":{"consent_manager.data_collection_warning":"We use cookies (and other similar technologies) to collect data to improve your shopping experience.","consent_manager.accept_all_cookies":"Accept All Cookies","consent_manager.gdpr_settings":"Settings","consent_manager.data_collection_preferences":"Website Data Collection Preferences","consent_manager.manage_data_collection_preferences":"Manage Website Data Collection Preferences","consent_manager.use_data_by_cookies":" uses data collected by cookies and JavaScript libraries to improve your shopping experience.","consent_manager.data_categories_table":"The table below outlines how we use this data by category. To opt out of a category of data collection, select 'No' and save your preferences.","consent_manager.allow":"Allow","consent_manager.accept":"Accept","consent_manager.deny":"Deny","consent_manager.dismiss":"Dismiss","consent_manager.reject_all":"Reject all","consent_manager.category":"Category","consent_manager.purpose":"Purpose","consent_manager.functional_category":"Functional","consent_manager.functional_purpose":"Enables enhanced functionality, such as videos and live chat. If you do not allow these, then some or all of these functions may not work properly.","consent_manager.analytics_category":"Analytics","consent_manager.analytics_purpose":"Provide statistical information on site usage, e.g., web analytics so we can improve this website over time.","consent_manager.targeting_category":"Targeting","consent_manager.advertising_category":"Advertising","consent_manager.advertising_purpose":"Used to create profiles or personalize content to enhance your shopping experience.","consent_manager.essential_category":"Essential","consent_manager.esential_purpose":"Essential for the site and any requested services to work, but do not perform any additional or secondary function.","consent_manager.yes":"Yes","consent_manager.no":"No","consent_manager.not_available":"N/A","consent_manager.cancel":"Cancel","consent_manager.save":"Save","consent_manager.back_to_preferences":"Back to Preferences","consent_manager.close_without_changes":"You have unsaved changes to your data collection preferences. Are you sure you want to close without saving?","consent_manager.unsaved_changes":"You have unsaved changes","consent_manager.by_using":"By using our website, you're agreeing to our","consent_manager.agree_on_data_collection":"By using our website, you're agreeing to the collection of data as described in our ","consent_manager.change_preferences":"You can change your preferences at any time","consent_manager.cancel_dialog_title":"Are you sure you want to cancel?","consent_manager.privacy_policy":"Privacy Policy","consent_manager.allow_category_tracking":"Allow [CATEGORY_NAME] tracking","consent_manager.disallow_category_tracking":"Disallow [CATEGORY_NAME] tracking"}}`;</script>
+
+        <script>
+            window.lazySizesConfig = window.lazySizesConfig || {};
+            window.lazySizesConfig.loadMode = 1;
+        </script>
+        <script async src="https://cdn11.bigcommerce.com/s-pywjnxrcr2/stencil/0ff768d0-35d1-013e-426f-3234c08a9e7e/dist/theme-bundle.head_async.js"></script>
+
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Slab:700,500,400,300%7CFira+Sans:400,300,500,700&display=block" rel="stylesheet">
+
+        <script async src="https://cdn11.bigcommerce.com/s-pywjnxrcr2/stencil/0ff768d0-35d1-013e-426f-3234c08a9e7e/dist/theme-bundle.font.js"></script>
+
+        <link href="https://cdn11.bigcommerce.com/s-pywjnxrcr2/content/css/fontawesome.min.css" rel="stylesheet" />
+        <link href="https://cdn11.bigcommerce.com/s-pywjnxrcr2/content/css/solid.min.css" rel="stylesheet" />
+        <link data-stencil-stylesheet href="https://cdn11.bigcommerce.com/s-pywjnxrcr2/stencil/0ff768d0-35d1-013e-426f-3234c08a9e7e/css/theme-2e8db950-cfd7-013e-e584-4ea0a5dcd80a.css" rel="stylesheet">
+
+        <!-- Start Tracking Code for analytics_googleanalytics4 -->
+
+<script data-cfasync="false" src="https://cdn11.bigcommerce.com/shared/js/google_analytics4_bodl_subscribers-358423becf5d870b8b603a81de597c10f6bc7699.js" integrity="sha256-gtOfJ3Avc1pEE/hx6SKj/96cca7JvfqllWA9FTQJyfI=" crossorigin="anonymous"></script>
+<script data-cfasync="false">
+  (function () {
+    window.dataLayer = window.dataLayer || [];
+
+    function gtag(){
+        dataLayer.push(arguments);
+    }
+
+    function initGA4(event) {
+         function setupGtag() {
+            function configureGtag() {
+                gtag('js', new Date());
+                gtag('set', 'developer_id.dMjk3Nj', true);
+                gtag('config', 'G-H37KSF3165');
+            }
+
+            var script = document.createElement('script');
+
+            script.src = 'https://www.googletagmanager.com/gtag/js?id=G-H37KSF3165';
+            script.async = true;
+            script.onload = configureGtag;
+
+            document.head.appendChild(script);
+        }
+
+        setupGtag();
+
+        if (typeof subscribeOnBodlEvents === 'function') {
+            subscribeOnBodlEvents('G-H37KSF3165', true);
+        }
+
+        window.removeEventListener(event.type, initGA4);
+    }
+
+    gtag('consent', 'default', {"ad_storage":"denied","ad_user_data":"denied","ad_personalization":"denied","analytics_storage":"denied","functionality_storage":"denied"})
+            
+
+    var eventName = document.readyState === 'complete' ? 'consentScriptsLoaded' : 'DOMContentLoaded';
+    window.addEventListener(eventName, initGA4, false);
+  })()
+</script>
+
+<!-- End Tracking Code for analytics_googleanalytics4 -->
+
+
+<script type="text/javascript" src="https://checkout-sdk.bigcommerce.com/v1/loader.js" defer ></script>
+<script>window.consentManagerStoreConfig = function () { return {"storeName":"system76","privacyPolicyUrl":"","writeKey":null,"improvedConsentManagerEnabled":true,"AlwaysIncludeScriptsWithConsentTag":true}; };</script>
+<script type="text/javascript" src="https://cdn11.bigcommerce.com/shared/js/bodl-consent-32a446f5a681a22e8af09a4ab8f4e4b6deda6487.js" integrity="sha256-uitfaufFdsW9ELiQEkeOgsYedtr3BuhVvA4WaPhIZZY=" crossorigin="anonymous" defer></script>
+<script type="text/javascript" src="https://cdn11.bigcommerce.com/shared/js/storefront/consent-manager-config-3013a89bb0485f417056882e3b5cf19e6588b7ba.js" defer></script>
+<script type="text/javascript" src="https://cdn11.bigcommerce.com/shared/js/storefront/consent-manager-08633fe15aba542118c03f6d45457262fa9fac88.js" defer></script>
+<script type="text/javascript">
+var BCData = {};
+</script>
+<script src='https://ecommplugins-trustboxsettings.trustpilot.com/stores/pywjnxrcr2.js?settings=1736970618038' async ></script><script src='https://widget.trustpilot.com/bootstrap/v5/tp.widget.bootstrap.min.js' async ></script><script data-bc-cookie-consent="3" type="text/plain" src='https://t.contentsquare.net/uxa/fcf4e60dded71.js'   ></script><script>
+  var b2bHideBodyStyle = document.createElement('style')
+  b2bHideBodyStyle.id = 'b2b-account-page-hide-body'
+  const removeCart = () => {
+    const style = document.createElement('style')
+    style.type = 'text/css'
+    style.id = 'b2bPermissions-cartElement-id'
+    style.innerHTML =
+      '[href="/cart.php"], #form-action-addToCart, [data-button-type="add-cart"], .button--cardAdd, .card-figcaption-button, [data-emthemesmodez-cart-item-add], .add-to-cart-button { display: none !important }'
+    document.getElementsByTagName('head').item(0).appendChild(style)
+  }
+  removeCart()
+</script><script data-bc-cookie-consent="3" type="text/plain" defer data-domain="system76.com" src="https://plausible.io/js/script.hash.outbound-links.js"></script>
+<script data-bc-cookie-consent="3" type="text/plain">window.plausible = window.plausible || function() { (window.plausible.q = window.plausible.q || []).push(arguments) }</script>
+                <script type="text/javascript">
+                    const trustpilot_settings = {
+                        page: "404" === "default" ? "landing" : "404",
+                        sku: "",
+                        name: "",
+                        key: "D0MMr4btJEPATOr6",
+                        product_id: "", // Needed for TrustBoxPreview
+                    };
+                    const createTrustBoxScript = function() {
+                        const trustBoxScript = document.createElement('script');
+                        trustBoxScript.async = true;
+                        trustBoxScript.src = "https://ecommplugins-scripts.trustpilot.com/v2.1/js/header_bigcommerce.min.js";
+                        document.head.appendChild(trustBoxScript);
+                    };
+                    if (BCData.product_attributes && !BCData.product_attributes.base && "sku" !== 'id') {
+                        addEventListener('DOMContentLoaded', () => {
+                            const endpoint = "/remote/v1/product-attributes/";
+                            try {
+                                stencilUtils.api.productAttributes.makeRequest(endpoint, "GET", {}, {}, function(err, res) {
+                                    trustpilot_settings.sku = res.data["sku"];
+                                    createTrustBoxScript();
+                                })
+                            } catch {
+                                fetch(endpoint).then(function(res) {
+                                    res.json().then(function(jsonRes) {
+                                        trustpilot_settings.sku = jsonRes.data["sku"];
+                                        createTrustBoxScript();
+                                    });
+                                });
+                            }
+                        });
+                    } else {
+                        createTrustBoxScript();
+                    }
+                </script>
+            
+ <script data-cfasync="false" src="https://microapps.bigcommerce.com/bodl-events/1.9.4/index.js" integrity="sha256-Y0tDj1qsyiKBRibKllwV0ZJ1aFlGYaHHGl/oUFoXJ7Y=" nonce="" crossorigin="anonymous"></script>
+ <script data-cfasync="false" nonce="">
+
+ (function() {
+    function decodeBase64(base64) {
+       const text = atob(base64);
+       const length = text.length;
+       const bytes = new Uint8Array(length);
+       for (let i = 0; i < length; i++) {
+          bytes[i] = text.charCodeAt(i);
+       }
+       const decoder = new TextDecoder();
+       return decoder.decode(bytes);
+    }
+    window.bodl = JSON.parse(decodeBase64("eyJzZXNzaW9uIjp7ImlkIjoiNDEzMTJmYjgtMjY1NC00M2EyLWFhNzUtMmM4NWJlMGM2NDM5IiwiZmlyc3RfdG91Y2hfdGltZXN0YW1wIjoiMjAyNi0wMS0xMVQwNzo0MzoyOCIsImZpcnN0X3RvdWNoX3JlZmVycmFsX3VybCI6IiIsImZpcnN0X3RvdWNoX3JlcXVlc3RfdXJsIjoiaHR0cHM6Ly9zeXN0ZW03Ni5jb20vcG9wL2ltZy9wb3AtbG9nby5zdmcifSwic2hvcHBlciI6eyJ2aXNpdG9yX2lkIjoiIiwiY3VzdG9tZXJfaWQiOm51bGwsImVtYWlsIjpudWxsLCJmaXJzdF9uYW1lIjpudWxsLCJsYXN0X25hbWUiOm51bGx9LCJkYXRhX2NvbnNlbnQiOnsiZnVuY3Rpb25hbCI6ZmFsc2UsImFuYWx5dGljcyI6ZmFsc2UsImFkdmVydGlzaW5nIjpmYWxzZX0sImV2ZW50cyI6W3siYm9kbF92MV9jb25zZW50X2xvYWRlZCI6eyJldmVudF9pZCI6ImU4Y2JhNjFjLWU3YjYtNDYxOS04NzYzLTcwMGUzYzFmOGY3OSIsImFkdmVydGlzaW5nIjpmYWxzZSwiYW5hbHl0aWNzIjpmYWxzZSwiZnVuY3Rpb25hbCI6ZmFsc2V9fV19"));
+ })()
+
+ </script>
+
+<script nonce="">
+(function () {
+    var xmlHttp = new XMLHttpRequest();
+
+    xmlHttp.open('POST', 'https://bes.gcp.data.bigcommerce.com/nobot');
+    xmlHttp.setRequestHeader('Content-Type', 'application/json');
+    xmlHttp.send('{"store_id":"1003011990","timezone_offset":"-6.0","timestamp":"2026-01-11T07:43:28.82531900Z","visit_id":"fae5bd65-caf1-42aa-95bb-3f61aa4a678a","channel_id":1}');
+})();
+</script>
+
+    </head>
+    <body>
+        <svg data-src="https://cdn11.bigcommerce.com/s-pywjnxrcr2/stencil/0ff768d0-35d1-013e-426f-3234c08a9e7e/img/icon-sprite.svg" class="icons-svg-sprite"></svg>
+
+        <a href="#main-content" class="skip-to-main-link">Skip to main content</a>
+                <div class="omnibar">
+    <div data-content-region="omnibar--global"></div>
+</div>
+<header class="header" role="banner">
+    <a href="#" class="mobileMenu-toggle" data-mobile-menu-toggle="menu">
+        <span class="mobileMenu-toggleIcon">Toggle menu</span>
+    </a>
+    <nav class="navUser">
+        
+    <ul class="navUser-section navUser-section--alt">
+        <li class="navUser-item">
+            <a class="navUser-action navUser-item--compare"
+               href="/compare"
+               data-compare-nav
+               aria-label="Compare"
+            >
+                Compare <span class="countPill countPill--positive countPill--alt"></span>
+            </a>
+        </li>
+        <li class="navUser-item">
+            <button class="navUser-action navUser-action--quickSearch"
+               type="button"
+               id="quick-search-expand"
+               data-search="quickSearch"
+               aria-controls="quickSearch"
+               aria-label="Search"
+            >
+                Search
+            </button>
+        </li>
+        <li class="navUser-item">
+            <a class="navUser-action"
+                href="https://system76.com/contact"
+                aria-label="Contact"
+            >
+                Contact
+            </a>
+        </li>
+        <li class="navUser-item navUser-item--account-retail">
+                <a class="navUser-action"
+                   href="https://account.system76.com/login?bc&#x3D;true"
+                   aria-label="Log in"
+                >
+                    Log in
+                </a>
+                    <span class="navUser-or">or</span>
+                    <a class="navUser-action"
+                       href="https://account.system76.com/create-account?bc&#x3D;true"
+                       aria-label="Register"
+                    >
+                        Register
+                    </a>
+        </li>
+        <li class="navUser-item navUser-item--cart">
+            <a class="navUser-action"
+               data-cart-preview
+               data-dropdown="cart-preview-dropdown"
+               data-options="align:right"
+               href="/cart.php"
+               aria-label="Cart with 0 items"
+            >
+                <span class="navUser-item-cartLabel">Cart</span>
+                <span class="countPill cart-quantity"></span>
+            </a>
+
+            <div class="dropdown-menu" id="cart-preview-dropdown" data-dropdown-content aria-hidden="true"></div>
+        </li>
+    </ul>
+    <div class="dropdown dropdown--quickSearch" id="quickSearch" aria-hidden="true" data-prevent-quick-search-close>
+        <div class="container">
+    <form class="form" onsubmit="return false" data-url="/search.php" data-quick-search-form>
+        <fieldset class="form-fieldset">
+            <div class="form-field">
+                <label class="is-srOnly" for="nav-quick-search">Search</label>
+                <input class="form-input"
+                       data-search-quick
+                       name="nav-quick-search"
+                       id="nav-quick-search"
+                       data-error-message="Search field cannot be empty."
+                       placeholder="Search the store"
+                       autocomplete="off"
+                >
+            </div>
+        </fieldset>
+    </form>
+    <section class="quickSearchResults" data-bind="html: results"></section>
+    <p role="status"
+       aria-live="polite"
+       class="aria-description--hidden"
+       data-search-aria-message-predefined-text="product results for"
+    ></p>
+</div>
+    </div>
+</nav>
+
+        <div class="header-logo header-logo--center">
+            <a href="https://system76.com/" class="header-logo__link" data-header-logo-link>
+        <div class="header-logo-image-container">
+            <img class="header-logo-image"
+                src="https://cdn11.bigcommerce.com/s-pywjnxrcr2/images/stencil/250x100/system76-logo-open-source-tagliner4_1730474034__00841.original.png"
+                srcset="https://cdn11.bigcommerce.com/s-pywjnxrcr2/images/stencil/250x100/system76-logo-open-source-tagliner4_1730474034__00841.original.png 1x, https://cdn11.bigcommerce.com/s-pywjnxrcr2/images/stencil/500x200/system76-logo-open-source-tagliner4_1730474034__00841.original.png 2x"
+                alt="System76 logo"
+                title="System76 - Powerful Linux Computers"
+            >
+        </div>
+</a>
+        </div>
+    <div class="navPages-container" id="menu" data-menu>
+        <nav class="navPages">
+    <div class="navPages-quickSearch">
+        <div class="container">
+    <form class="form" onsubmit="return false" data-url="/search.php" data-quick-search-form>
+        <fieldset class="form-fieldset">
+            <div class="form-field">
+                <label class="is-srOnly" for="nav-menu-quick-search">Search</label>
+                <input class="form-input"
+                       data-search-quick
+                       name="nav-menu-quick-search"
+                       id="nav-menu-quick-search"
+                       data-error-message="Search field cannot be empty."
+                       placeholder="Search the store"
+                       autocomplete="off"
+                >
+            </div>
+        </fieldset>
+    </form>
+    <section class="quickSearchResults" data-bind="html: results"></section>
+    <p role="status"
+       aria-live="polite"
+       class="aria-description--hidden"
+       data-search-aria-message-predefined-text="product results for"
+    ></p>
+</div>
+    </div>
+    <ul class="navPages-list">
+                 <li class="navPages-item navPages-item-page">
+                     <a class="navPages-action"
+                        href="https://system76.com/laptops"
+                        aria-label="Laptops"
+                     >
+                         Laptops
+                     </a>
+                 </li>
+                 <li class="navPages-item navPages-item-page">
+                     <a class="navPages-action"
+                        href="https://system76.com/desktops/"
+                        aria-label="Desktops"
+                     >
+                         Desktops
+                     </a>
+                 </li>
+                 <li class="navPages-item navPages-item-page">
+                     <a class="navPages-action"
+                        href="https://system76.com/workstations/"
+                        aria-label="Workstations"
+                     >
+                         Workstations
+                     </a>
+                 </li>
+                 <li class="navPages-item navPages-item-page">
+                     <a class="navPages-action"
+                        href="https://system76.com/desktops/meerkat/"
+                        aria-label="mini"
+                     >
+                         mini
+                     </a>
+                 </li>
+                 <li class="navPages-item navPages-item-page">
+                     <a class="navPages-action"
+                        href="https://system76.com/servers/"
+                        aria-label="Servers"
+                     >
+                         Servers
+                     </a>
+                 </li>
+                 <li class="navPages-item navPages-item-page">
+                     <a class="navPages-action"
+                        href="https://system76.com/keyboards/"
+                        aria-label="keyboards"
+                     >
+                         keyboards
+                     </a>
+                 </li>
+                 <li class="navPages-item navPages-item-page">
+                     <a class="navPages-action"
+                        href="https://system76.com/components/"
+                        aria-label="components"
+                     >
+                         components
+                     </a>
+                 </li>
+                 <li class="navPages-item navPages-item-page">
+                     <a class="navPages-action"
+                        href="https://system76.com/pop/"
+                        aria-label="pop!_os"
+                     >
+                         pop!_os
+                     </a>
+                 </li>
+                 <li class="navPages-item navPages-item-page">
+                     <a class="navPages-action"
+                        href="https://system76.com/merch/"
+                        aria-label="merch"
+                     >
+                         merch
+                     </a>
+                 </li>
+                 <li class="navPages-item navPages-item-page">
+                     <a class="navPages-action"
+                        href="https://system76.com/specials"
+                        aria-label="specials"
+                     >
+                         specials
+                     </a>
+                 </li>
+    </ul>
+    <ul class="navPages-list navPages-list--user">
+            <li class="navPages-item">
+                <a class="navPages-action"
+                   href="https://account.system76.com/login?bc&#x3D;true"
+                   aria-label="Log in"
+                >
+                    Log in
+                </a>
+                    or
+                    <a class="navPages-action"
+                       href="https://account.system76.com/create-account?bc&#x3D;true"
+                       aria-label="Register"
+                    >
+                        Register
+                    </a>
+            </li>
+    </ul>
+</nav>
+    </div>
+    <div data-content-region="header_navigation_bottom--global"></div>
+</header>
+<div data-content-region="header_bottom--global"></div>
+<div data-content-region="header_bottom"></div>
+        <main class="body" id="main-content" role="main" data-currency-code="USD">
+     
+
+    
+<nav aria-label="Breadcrumb">
+    <ol class="breadcrumbs">
+        <li class="breadcrumb ">
+            <a class="breadcrumb-label"
+                href="https://system76.com/"
+                
+            >
+                <span>Home</span>
+            </a>
+        </li>
+        <li class="breadcrumb is-active">
+            <a class="breadcrumb-label"
+                href="https://system76.com/pop/img/pop-logo.svg"
+                aria-current="page"
+            >
+                <span>Error</span>
+            </a>
+        </li>
+    </ol>
+</nav>
+
+<script type="application/ld+json">
+{
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement":
+    [
+        {
+            "@type": "ListItem",
+            "position": 1,
+            "item": {
+                "@id": "https://system76.com/",
+                "name": "Home"
+            }
+        },
+        {
+            "@type": "ListItem",
+            "position": 2,
+            "item": {
+                "@id": "https://system76.com/pop/img/pop-logo.svg",
+                "name": "Error"
+            }
+        }
+    ]
+}
+</script>
+
+<div class="page">
+    <section class="page-content page-content--centered">
+        <h1 class="page-heading">404 Error - Page not found</h1>
+        <p class="u-textAlignCenter">
+            Uh oh, looks like the page you are looking for has moved or no longer exists.
+        </p>
+        <form class="form"  action="/search.php">
+    <fieldset class="form-fieldset">
+        <div class="form-field">
+            <label class="form-label is-srOnly" for="search_query_adv">Search Keyword:</label>
+            <div class="form-prefixPostfix wrap">
+                <input class="form-input" id="search_query_adv" name="search_query_adv" value="">
+                <input class="button button--primary form-prefixPostfix-button--postfix" type="submit" value="Search">
+            </div>
+        </div>
+    </fieldset>
+</form>
+    </section>
+</div>
+
+
+
+    <div id="modal" class="modal" data-reveal data-prevent-quick-search-close>
+    <button class="modal-close"
+        type="button"
+        title="Close"
+        
+>
+    <span class="aria-description--hidden">Close</span>
+    <span aria-hidden="true">&#215;</span>
+</button>
+    <div id="modal-content" class="modal-content"></div>
+    <div class="loadingOverlay"></div>
+</div>
+    <div id="alert-modal" class="modal modal--alert modal--small" data-reveal data-prevent-quick-search-close>
+    <div class="alert-icon error-icon">
+        <span class="icon-content">
+            <span class="line line-left"></span>
+            <span class="line line-right"></span>
+        </span>
+    </div>
+
+    <div class="alert-icon warning-icon">
+        <div class="icon-content">!</div>
+    </div>
+
+    <div class="modal-content"></div>
+
+    <div class="button-container">
+        <button type="button" class="confirm button" data-reveal-close>OK</button>
+        <button type="button" class="cancel button" data-reveal-close>Cancel</button>
+    </div>
+</div>
+</main>
+                <div id="modal-newsletter" class="modal" data-reveal>
+      <a href="#" class="modal-close" role="button">
+        <span aria-hidden="true">&#215;</span>
+    </a>
+    <div class="modal-content">
+      <h3>Subscribe</h3>
+      <div>
+        <p>Select one or more options below to subscribe.</p>
+      </div>
+      <form
+        action="https://system76.us10.list-manage.com/subscribe/post?u=00040e6ab34b3c90fc6a7c925&amp;id=7690d88ee1&amp;f_id=0048efe1f0"
+        method="post"
+        id="mc-embedded-subscribe-form"
+        name="mc-embedded-subscribe-form"
+        class="validate"
+      >
+        <div>
+          <label for="mce-EMAIL">Email Address <span class="asterisk">*</span></label><br>
+          <input
+            type="email"
+            name="EMAIL"
+            class="required email"
+            id="mce-EMAIL"
+          >
+        </div>
+
+        <div>
+          <input
+            type="checkbox"
+            name="group[14426][1]"
+            id="mce-group[14426]-14426-0"
+            value=""
+          >
+          <label for="mce-group[14426]-14426-0">New Hardware Announcements</label>
+        </div>
+
+        <div>
+          <input
+            type="checkbox"
+            name="group[14426][2]"
+            id="mce-group[14426]-14426-1"
+            value=""
+          >
+          <label for="mce-group[14426]-14426-1">Company News and Stories</label>
+        </div>
+
+        <div>
+          <input
+            type="checkbox"
+            name="group[14426][4]"
+            id="mce-group[14426]-14426-2"
+            value=""
+          >
+          <label for="mce-group[14426]-14426-2">Pop!_OS & COSMIC Announcements</label>
+        </div>
+
+        <div>
+          <input
+            type="checkbox"
+            name="group[14426][8]"
+            id="mce-group[14426]-14426-3"
+            value=""
+          >
+          <label for="mce-group[14426]-14426-3">Sales and Promotions</label>
+        </div>
+
+        <div class="submit">
+          <input
+            type="submit"
+            name="subscribe"
+            id="mc-embedded-subscribe"
+            class="button"
+            value="Subscribe">
+        </div>
+      </form>
+      <div>
+        <p class="legal">Your email address will be used in accordance with our <a data-v-f9fa161c="" href="/privacy" target="_blank">privacy policy</a>.</p>
+      </div>
+
+    </div>
+</div>
+<footer class="footer">
+    <div class="container">
+      <nav class="nav">
+        <div class="links">
+          <a
+            href="https://system76.com/contact"
+            class="link"
+          >
+            Contact
+          </a>
+
+          <a
+            href="https://system76.com/shipping"
+            class="link"
+          >
+            Shipping
+          </a>
+
+          <a
+            href="https://system76.com/careers"
+            class="link"
+          >
+            Careers
+          </a>
+
+          <a
+            href="https://system76.com/about"
+            class="link"
+          >
+            About Us
+          </a>
+        </div>
+
+        <div class="links">
+
+
+          <a
+            href="https://system76.com/sustainability"
+            class="link"
+          >
+            Sustainability
+          </a>
+
+          <a
+            href="https://system76.com/privacy-and-legal"
+            class="link"
+          >
+            Privacy & Legal
+          </a>
+
+          <a
+            href="http://blog.system76.com/"
+            class="link"
+          >
+            Blog
+          </a>
+
+          <a
+            href="https://system76.com/donate"
+            class="link"
+          >
+            Donate
+          </a>
+        </div>
+        <div class="connections">
+          <div>
+
+            <div class="subscribe">
+              <p>Subscribe for updates on products, OS features, and promotions.</p>
+              <p>
+                <a href="#modal-newsletter" data-reveal-id="modal-newsletter" class="button">
+                  Subscribe
+                </a>
+              </p>
+            </div>
+
+            <div class="socials">
+
+              <a
+                aria-label="RSS"
+                href="https://blog.system76.com/rss.xml"
+                rel="noopener"
+                target="_blank"
+                title="Blog RSS Feed"
+                class="social"
+              >
+                <svg>
+                    <use href="#icon-square-rss" />
+                </svg>
+              </a>
+
+              <a
+                aria-label="Linkedin"
+                href="https://www.linkedin.com/company/system76"
+                rel="noopener"
+                target="_blank"
+                title="Linkedin"
+                class="social"
+              >
+                <svg>
+                  <use href="#icon-linkedin" />
+                </svg>
+              </a>
+
+              <a
+                aria-label="GitHub"
+                href="https://github.com/system76"
+                rel="noopener"
+                target="_blank"
+                title="GitHub"
+                class="social"
+              >
+                <svg>
+                  <use href="#icon-github" />
+                </svg>
+              </a>
+
+              <a
+                aria-label="YouTube"
+                href="https://youtube.com/system76/"
+                rel="noopener"
+                target="_blank"
+                title="Youtube"
+                class="social"
+              >
+                <svg>
+                    <use href="#icon-square-youtube" />
+                </svg>
+              </a>
+
+              <a
+                aria-label="Instagram"
+                href="https://instagram.com/system76_com"
+                rel="noopener"
+                target="_blank"
+                title="Instagram"
+                class="social"
+              >
+                <svg>
+                  <use href="#icon-instagram" />
+                </svg>
+              </a>
+
+              <a
+                aria-label="X (formerly Twiiter)"
+                href="https://x.com/system76/"
+                rel="noopener"
+                target="_blank"
+                title="X (formerly Twitter)"
+                class="social"
+              >
+                <svg>
+                  <use href="#icon-square-x" />
+                </svg>
+              </a>
+
+            </div>
+          </div>
+        </div>
+      </nav>
+
+      <div class="copy">
+        <div class="copyright">
+            Copyright &copy; 2026 System76, Inc.
+        </div>
+        <div class="trademarks">
+            * Financing issued by WebBank, member FDIC and serviced by Klarna.
+            <a
+              href="http://cdn.klarna.com/1.0/shared/content/legal/terms/0/en_us/account-terms"
+              rel="noopener"
+              target="_blank"
+            >
+              See terms.
+            </a>
+            <br>
+            Intel, the Intel Logo, Intel Core, Iris, and Xeon are trademarks of
+            Intel Corporation or its subsidiaries in the U.S. and/or other
+            countries.
+        </div>
+      </div>
+    </div>
+</footer>
+
+        <script>window.__webpack_public_path__ = "https://cdn11.bigcommerce.com/s-pywjnxrcr2/stencil/0ff768d0-35d1-013e-426f-3234c08a9e7e/dist/";</script>
+        <script>
+            function onThemeBundleMain() {
+                window.stencilBootstrap("404", "{\"zoomSize\":\"1280x1280\",\"productSize\":\"500x659\",\"genericError\":\"Oops! Something went wrong.\",\"urls\":{\"home\":\"https://system76.com/\",\"account\":{\"index\":\"/account.php\",\"orders\":{\"all\":\"/account.php?action=order_status\",\"completed\":\"/account.php?action=view_orders\",\"save_new_return\":\"/account.php?action=save_new_return\"},\"update_action\":\"/account.php?action=update_account\",\"returns\":\"/account.php?action=view_returns\",\"addresses\":\"/account.php?action=address_book\",\"inbox\":\"/account.php?action=inbox\",\"send_message\":\"/account.php?action=send_message\",\"add_address\":\"/account.php?action=add_shipping_address\",\"wishlists\":{\"all\":\"/wishlist.php\",\"add\":\"/wishlist.php?action=addwishlist\",\"edit\":\"/wishlist.php?action=editwishlist\",\"delete\":\"/wishlist.php?action=deletewishlist\"},\"details\":\"/account.php?action=account_details\",\"recent_items\":\"/account.php?action=recent_items\"},\"brands\":\"https://system76.com/brands/\",\"gift_certificate\":{\"purchase\":\"/giftcertificates.php\",\"redeem\":\"/giftcertificates.php?action=redeem\",\"balance\":\"/giftcertificates.php?action=balance\"},\"auth\":{\"login\":\"/login.php\",\"check_login\":\"/login.php?action=check_login\",\"create_account\":\"/login.php?action=create_account\",\"save_new_account\":\"/login.php?action=save_new_account\",\"forgot_password\":\"/login.php?action=reset_password\",\"send_password_email\":\"/login.php?action=send_password_email\",\"save_new_password\":\"/login.php?action=save_new_password\",\"logout\":\"/login.php?action=logout\"},\"product\":{\"post_review\":\"/postreview.php\"},\"cart\":\"/cart.php\",\"checkout\":{\"single_address\":\"/checkout\",\"multiple_address\":\"/checkout.php?action=multiple\"},\"rss\":{\"products\":[]},\"contact_us_submit\":\"/pages.php?action=sendContactForm\",\"search\":\"/search.php\",\"compare\":\"/compare\",\"sitemap\":\"/sitemap.php\",\"subscribe\":{\"action\":\"/subscribe.php\"}},\"secureBaseUrl\":\"https://system76.com\",\"cartId\":null,\"template\":\"pages/errors/404\",\"validationDictionaryJSON\":\"{\\\"locale\\\":\\\"en\\\",\\\"locales\\\":{\\\"validation_messages.valid_email\\\":\\\"en\\\",\\\"validation_messages.password\\\":\\\"en\\\",\\\"validation_messages.password_match\\\":\\\"en\\\",\\\"validation_messages.invalid_password\\\":\\\"en\\\",\\\"validation_messages.field_not_blank\\\":\\\"en\\\",\\\"validation_messages.certificate_amount\\\":\\\"en\\\",\\\"validation_messages.certificate_amount_range\\\":\\\"en\\\",\\\"validation_messages.price_min_evaluation\\\":\\\"en\\\",\\\"validation_messages.price_max_evaluation\\\":\\\"en\\\",\\\"validation_messages.price_min_not_entered\\\":\\\"en\\\",\\\"validation_messages.price_max_not_entered\\\":\\\"en\\\",\\\"validation_messages.price_invalid_value\\\":\\\"en\\\",\\\"validation_messages.invalid_gift_certificate\\\":\\\"en\\\"},\\\"translations\\\":{\\\"validation_messages.valid_email\\\":\\\"You must enter a valid email.\\\",\\\"validation_messages.password\\\":\\\"You must enter a password.\\\",\\\"validation_messages.password_match\\\":\\\"Your passwords do not match.\\\",\\\"validation_messages.invalid_password\\\":\\\"Passwords must be at least 7 characters and contain both alphabetic and numeric characters.\\\",\\\"validation_messages.field_not_blank\\\":\\\" field cannot be blank.\\\",\\\"validation_messages.certificate_amount\\\":\\\"You must enter a gift certificate amount.\\\",\\\"validation_messages.certificate_amount_range\\\":\\\"You must enter a certificate amount between [MIN] and [MAX]\\\",\\\"validation_messages.price_min_evaluation\\\":\\\"Min. price must be less than max. price.\\\",\\\"validation_messages.price_max_evaluation\\\":\\\"Min. price must be less than max. price.\\\",\\\"validation_messages.price_min_not_entered\\\":\\\"Min. price is required.\\\",\\\"validation_messages.price_max_not_entered\\\":\\\"Max. price is required.\\\",\\\"validation_messages.price_invalid_value\\\":\\\"Input must be greater than 0.\\\",\\\"validation_messages.invalid_gift_certificate\\\":\\\"Please enter your valid certificate code.\\\"}}\",\"validationFallbackDictionaryJSON\":\"{\\\"locale\\\":\\\"en\\\",\\\"locales\\\":{\\\"validation_fallback_messages.valid_email\\\":\\\"en\\\",\\\"validation_fallback_messages.password\\\":\\\"en\\\",\\\"validation_fallback_messages.password_match\\\":\\\"en\\\",\\\"validation_fallback_messages.invalid_password\\\":\\\"en\\\",\\\"validation_fallback_messages.field_not_blank\\\":\\\"en\\\",\\\"validation_fallback_messages.certificate_amount\\\":\\\"en\\\",\\\"validation_fallback_messages.certificate_amount_range\\\":\\\"en\\\",\\\"validation_fallback_messages.price_min_evaluation\\\":\\\"en\\\",\\\"validation_fallback_messages.price_max_evaluation\\\":\\\"en\\\",\\\"validation_fallback_messages.price_min_not_entered\\\":\\\"en\\\",\\\"validation_fallback_messages.price_max_not_entered\\\":\\\"en\\\",\\\"validation_fallback_messages.price_invalid_value\\\":\\\"en\\\",\\\"validation_fallback_messages.invalid_gift_certificate\\\":\\\"en\\\"},\\\"translations\\\":{\\\"validation_fallback_messages.valid_email\\\":\\\"You must enter a valid email.\\\",\\\"validation_fallback_messages.password\\\":\\\"You must enter a password.\\\",\\\"validation_fallback_messages.password_match\\\":\\\"Your passwords do not match.\\\",\\\"validation_fallback_messages.invalid_password\\\":\\\"Passwords must be at least 7 characters and contain both alphabetic and numeric characters.\\\",\\\"validation_fallback_messages.field_not_blank\\\":\\\" field cannot be blank.\\\",\\\"validation_fallback_messages.certificate_amount\\\":\\\"You must enter a gift certificate amount.\\\",\\\"validation_fallback_messages.certificate_amount_range\\\":\\\"You must enter a certificate amount between [MIN] and [MAX]\\\",\\\"validation_fallback_messages.price_min_evaluation\\\":\\\"Min. price must be less than max. price.\\\",\\\"validation_fallback_messages.price_max_evaluation\\\":\\\"Min. price must be less than max. price.\\\",\\\"validation_fallback_messages.price_min_not_entered\\\":\\\"Min. price is required.\\\",\\\"validation_fallback_messages.price_max_not_entered\\\":\\\"Max. price is required.\\\",\\\"validation_fallback_messages.price_invalid_value\\\":\\\"Input must be greater than 0.\\\",\\\"validation_fallback_messages.invalid_gift_certificate\\\":\\\"Please enter your valid certificate code.\\\"}}\",\"validationDefaultDictionaryJSON\":\"{\\\"locale\\\":\\\"en\\\",\\\"locales\\\":{\\\"validation_default_messages.valid_email\\\":\\\"en\\\",\\\"validation_default_messages.password\\\":\\\"en\\\",\\\"validation_default_messages.password_match\\\":\\\"en\\\",\\\"validation_default_messages.invalid_password\\\":\\\"en\\\",\\\"validation_default_messages.field_not_blank\\\":\\\"en\\\",\\\"validation_default_messages.certificate_amount\\\":\\\"en\\\",\\\"validation_default_messages.certificate_amount_range\\\":\\\"en\\\",\\\"validation_default_messages.price_min_evaluation\\\":\\\"en\\\",\\\"validation_default_messages.price_max_evaluation\\\":\\\"en\\\",\\\"validation_default_messages.price_min_not_entered\\\":\\\"en\\\",\\\"validation_default_messages.price_max_not_entered\\\":\\\"en\\\",\\\"validation_default_messages.price_invalid_value\\\":\\\"en\\\",\\\"validation_default_messages.invalid_gift_certificate\\\":\\\"en\\\"},\\\"translations\\\":{\\\"validation_default_messages.valid_email\\\":\\\"You must enter a valid email.\\\",\\\"validation_default_messages.password\\\":\\\"You must enter a password.\\\",\\\"validation_default_messages.password_match\\\":\\\"Your passwords do not match.\\\",\\\"validation_default_messages.invalid_password\\\":\\\"Passwords must be at least 7 characters and contain both alphabetic and numeric characters.\\\",\\\"validation_default_messages.field_not_blank\\\":\\\"The field cannot be blank.\\\",\\\"validation_default_messages.certificate_amount\\\":\\\"You must enter a gift certificate amount.\\\",\\\"validation_default_messages.certificate_amount_range\\\":\\\"You must enter a certificate amount between [MIN] and [MAX]\\\",\\\"validation_default_messages.price_min_evaluation\\\":\\\"Min. price must be less than max. price.\\\",\\\"validation_default_messages.price_max_evaluation\\\":\\\"Min. price must be less than max. price.\\\",\\\"validation_default_messages.price_min_not_entered\\\":\\\"Min. price is required.\\\",\\\"validation_default_messages.price_max_not_entered\\\":\\\"Max. price is required.\\\",\\\"validation_default_messages.price_invalid_value\\\":\\\"Input must be greater than 0.\\\",\\\"validation_default_messages.invalid_gift_certificate\\\":\\\"Please enter your valid certificate code.\\\"}}\",\"carouselArrowAndDotAriaLabel\":\"Go to slide [SLIDE_NUMBER] of [SLIDES_QUANTITY]\",\"carouselActiveDotAriaLabel\":\"active\",\"carouselContentAnnounceMessage\":\"You are currently on slide [SLIDE_NUMBER] of [SLIDES_QUANTITY]\"}").load();
+
+                function browserSupportsFormData() {
+                    return typeof FormData !== 'undefined'
+                        && !!FormData.prototype.keys;
+                }
+                function loadFormDataPolyfillScript(src) {
+                    var formDataPolyfillScript = document.createElement('script');
+                    formDataPolyfillScript.src = src;
+                    formDataPolyfillScript.onerror = function () {
+                        console.error('Failed to load formData polyfill script ' + src);
+                    };
+                    document.body.appendChild(formDataPolyfillScript);
+                }
+
+                if (!browserSupportsFormData()) {
+                    loadFormDataPolyfillScript('https://cdn11.bigcommerce.com/s-pywjnxrcr2/stencil/0ff768d0-35d1-013e-426f-3234c08a9e7e/dist/theme-bundle.polyfill_form_data.js');
+                }
+            }
+        </script>
+        <script async defer src="https://cdn11.bigcommerce.com/s-pywjnxrcr2/stencil/0ff768d0-35d1-013e-426f-3234c08a9e7e/dist/theme-bundle.main.js" onload="onThemeBundleMain()"></script>
+
+        <script type="text/javascript" src="https://cdn11.bigcommerce.com/shared/js/csrf-protection-header-5eeddd5de78d98d146ef4fd71b2aedce4161903e.js"></script>
+<script data-bc-cookie-consent="4" type="text/plain" src='https://chimpstatic.com/mcjs-connected/js/users/00040e6ab34b3c90fc6a7c925/bb64805364cfd7ca29a0a967e.js' defer  ></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+
+(function() {
+
+var storeHash247 = 'pywjnxrcr2'; //Replace your storehash here
+
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const urlSegment = urlParams.get('segment');
+
+if (urlSegment == '247-widgets-migration') {
+var popupContent = '<div id="popup">' +
+        '<p style="font-size: xx-large;color: blue;text-align: center;margin-top: 10%;">Please keep this page open until the popup is closed.</p>' +
+        '</div>';
+
+    $('body').append(popupContent);
+
+ 
+
+    $('#popup').css({
+        'position': 'fixed',
+'top': '50%',
+'left': '50%',
+'transform': 'translate(-50%, -50%)',
+'background': 'lightblue',
+'padding': '20px',
+'border': '1px solid rgb(204, 204, 204)',
+'width': '60%',
+'height': '40%',
+'z-index' : '100'
+    });
+let xhr = new XMLHttpRequest();
+xhr.open('GET', 'https://app.stagingpro.com/pages/getPagesData?storehash=' + storeHash247, true);
+xhr.send();
+xhr.onload = function() {
+var pageList247 = JSON.parse(xhr.response);
+for (var i = 0; i < pageList247.length; i++) {
+collectPageInfo(pageList247[i].id, pageList247[i].url, pageList247[i].templatefile,i,pageList247.length);
+}
+}
+$('#popup').show();
+}
+
+function collectPageInfo(pageId, pageUrl, pageTemplate,page,pageLength) {
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {
+if (xhr.readyState == 4) {
+collectRegionInfo(pageId, pageUrl, pageTemplate,page,pageLength, xhr.response);
+}
+}
+xhr.open('GET', pageUrl, true);
+xhr.send();
+
+}
+
+function collectRegionInfo(pageId, pageUrl, pageTemplate,page,pageLength, response) {
+
+var xhr = new XMLHttpRequest();
+xhr.onreadystatechange = function() {
+if (xhr.readyState == 4) {
+postDataToDotnet(pageId, pageUrl, pageTemplate,page,pageLength, xhr.response);
+}
+}
+
+xhr.open('POST', 'https://lyradev.247commerce.co.uk/stagingpro-test/webcrawling.php', true);
+xhr.setRequestHeader('Content-Type', 'text/plain');
+xhr.send(response);
+
+}
+
+function postDataToDotnet(pageId, pageUrl, pageTemplate,page,pageLength, response) {
+let jsonObject = JSON.parse(response);
+let placementBody = {
+'placements': [{
+'pageid': pageId,
+'pageurl': pageUrl,
+'templatefile': pageTemplate,
+'storehash': storeHash247,
+'regions': jsonObject
+}]
+}
+
+var xhr = new XMLHttpRequest();
+xhr.open('POST', 'https://app.stagingpro.com/pages/postplacementdata?storehash=' + storeHash247, true);
+xhr.setRequestHeader('Content-Type', 'application/json');
+xhr.send(JSON.stringify(placementBody));
+if(page=pageLength)
+{
+$('#popup').hide();
+}
+}
+
+})();
+</script><script>
+  window.b3CheckoutConfig = {
+    routes: {
+      dashboard: '/account.php?action=order_status',
+    },
+  }
+  window.B3 = {
+    setting: {
+      store_hash: 'pywjnxrcr2',
+      channel_id: 1,
+      platform: 'bigcommerce',
+      b2b_client_id: 'dl7c39mdpul6hyc489yk0vzxl6jesyx',
+      b2b_url: 'https://api-b2b.bigcommerce.com',
+      captcha_setkey: '6LdGN_sgAAAAAGYFg1lmVoakQ8QXxbhWqZ1GpYaJ',
+    },
+    'dom.checkoutRegisterParentElement': '#checkout-app',
+    'dom.registerElement':
+      '[href^="/login.php"], #checkout-customer-login, [href="/login.php"] .navUser-item-loginLabel, #checkout-customer-returning .form-legend-container [href="#"]',
+    'dom.openB3Checkout': 'checkout-customer-continue',
+    before_login_goto_page: '/account.php?action=order_status',
+    checkout_super_clear_session: 'true',
+    'dom.navUserLoginElement': '.navUser-item--account',
+  }
+</script>
+<script
+  type="module"
+  crossorigin=""
+  src="https://bc.system76.com/storefront/dev2025/dist/index.BPi-gTYq.js"
+></script>
+<script
+  nomodule=""
+  crossorigin=""
+  src="https://bc.system76.com/storefront/dev2025/dist/polyfills-legacy.DArz4FPZ.js"
+></script>
+<script
+  nomodule=""
+  crossorigin=""
+  src="https://bc.system76.com/storefront/dev2025/dist/index-legacy.C3tYdNZM.js"
+></script>
+    </body>
+</html>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        plausible('404', { props: { path: document.location.pathname } });
+    });
+
+    function isNumeric(str) { // note: not Number
+        if (typeof str != "string") return false
+        return !isNaN(str) &&
+                !isNaN(parseFloat(str))
+    }
+    const path = '/pop/img/pop-logo.svg'.split('/');
+    if (path[1] === 'my-account' && path[2] === 'ticket') {
+        if (path.length > 3) {
+            if (isNumeric(path[3])) { // it's a ticket (ex: /my-account/ticket/1234)
+                window.location = 'https://support.system76.com/articles/new-web-infrastructure'
+            }
+        } else {
+            window.location = '/contact/support/';
+        }
+    }
+</script>

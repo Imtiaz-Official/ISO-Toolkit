@@ -281,12 +281,8 @@ export const linuxLogos: Record<string, { url: string; fallback: string }> = {
   },
 
   // ARM/SBC - Official logos (local)
-  "Fedora ARM": {
-    url: `${logoPath}/fedora.svg`,
-    fallback: "🔵"
-  },
   "Ubuntu MATE ARM": {
-    url: `${logoPath}/ubuntu-mate.svg`,
+    url: `${logoPath}/ubuntu-logo.png`,
     fallback: "💚"
   },
 };
