@@ -36,6 +36,7 @@ async def proxy_download_by_id(
     This is the most reliable way to proxy downloads.
 
     Supports resume/partial downloads via Range requests.
+    Returns 206 Partial Content for Range requests to enable IDM resume.
     """
     from api.routes import os as os_routes
     from api.models.schemas import OSCategory
@@ -82,6 +83,9 @@ async def proxy_download_by_id(
     # Check for Range request (for resume support)
     range_header = request.headers.get("range") if request else None
 
+    # Determine if this is a range request for resume
+    is_range_request = range_header is not None
+
     async def generate():
         """Stream the download in chunks with range support."""
         async with httpx.AsyncClient(timeout=DOWNLOAD_TIMEOUT) as client:
@@ -99,9 +103,15 @@ async def proxy_download_by_id(
                 ) as response:
                     response.raise_for_status()
 
-                    # Stream content in chunks
-                    async for chunk in response.aiter_bytes(chunk_size=CHUNK_SIZE):
-                        yield chunk
+                    # Return response status code info for proper Range handling
+                    if is_range_request and response.status_code == 206:
+                        # Source returned 206 Partial Content - stream the partial content
+                        async for chunk in response.aiter_bytes(chunk_size=CHUNK_SIZE):
+                            yield chunk
+                    else:
+                        # Full content request
+                        async for chunk in response.aiter_bytes(chunk_size=CHUNK_SIZE):
+                            yield chunk
 
             except httpx.HTTPError as e:
                 raise HTTPException(
@@ -111,10 +121,12 @@ async def proxy_download_by_id(
 
     # First get content length by making a HEAD request
     content_length = None
+    content_range = None
     try:
         async with httpx.AsyncClient(timeout=30) as client:
             head_response = await client.head(matching_os.url, headers=headers, follow_redirects=True)
             content_length = head_response.headers.get("content-length")
+            content_range = head_response.headers.get("content-range")
     except Exception:
         pass
 
@@ -130,9 +142,31 @@ async def proxy_download_by_id(
     if content_length:
         response_headers["Content-Length"] = content_length
 
-    # Add Content-Range for partial content requests
+    # For Range requests, we need to return 206 status code for IDM to recognize resume
+    # We'll use a custom response class to override the status
     if range_header:
-        response_headers["Content-Range"] = f"bytes {range_header.replace('bytes=', '')}/*"
+        # Parse the range header to get the requested byte range
+        # Format: "bytes=start-end" or "bytes=start-"
+        try:
+            range_spec = range_header.replace("bytes=", "")
+            if "-" in range_spec:
+                start, end = range_spec.split("-", 1)
+                total_size = int(content_length) if content_length else 0
+                if total_size > 0:
+                    end_value = int(end) if end else total_size - 1
+                    response_headers["Content-Range"] = f"bytes {start}-{end_value}/{total_size}"
+        except:
+            pass
+
+        # Return StreamingResponse with 206 status code for Range requests
+        # This allows IDM to recognize the download as resumable
+        from fastapi.responses import StreamingResponse
+        return StreamingResponse(
+            generate(),
+            status_code=206,
+            media_type="application/octet-stream",
+            headers=response_headers
+        )
 
     return StreamingResponse(
         generate(),
@@ -223,9 +257,27 @@ async def proxy_download(
     if content_length:
         response_headers["Content-Length"] = content_length
 
-    # Add Content-Range for partial content requests
+    # For Range requests, we need to return 206 status code for IDM to recognize resume
     if range_header:
-        response_headers["Content-Range"] = f"bytes {range_header.replace('bytes=', '')}/*"
+        # Parse the range header to get the requested byte range
+        try:
+            range_spec = range_header.replace("bytes=", "")
+            if "-" in range_spec:
+                start, end = range_spec.split("-", 1)
+                total_size = int(content_length) if content_length else 0
+                if total_size > 0:
+                    end_value = int(end) if end else total_size - 1
+                    response_headers["Content-Range"] = f"bytes {start}-{end_value}/{total_size}"
+        except:
+            pass
+
+        # Return StreamingResponse with 206 status code for Range requests
+        return StreamingResponse(
+            generate(),
+            status_code=206,
+            media_type="application/octet-stream",
+            headers=response_headers
+        )
 
     return StreamingResponse(
         generate(),
@@ -346,9 +398,27 @@ async def direct_download(
     if content_length:
         response_headers["Content-Length"] = content_length
 
-    # Add Content-Range for partial content requests
+    # For Range requests, we need to return 206 status code for IDM to recognize resume
     if range_header:
-        response_headers["Content-Range"] = f"bytes {range_header.replace('bytes=', '')}/*"
+        # Parse the range header to get the requested byte range
+        try:
+            range_spec = range_header.replace("bytes=", "")
+            if "-" in range_spec:
+                start, end = range_spec.split("-", 1)
+                total_size = int(content_length) if content_length else 0
+                if total_size > 0:
+                    end_value = int(end) if end else total_size - 1
+                    response_headers["Content-Range"] = f"bytes {start}-{end_value}/{total_size}"
+        except:
+            pass
+
+        # Return StreamingResponse with 206 status code for Range requests
+        return StreamingResponse(
+            generate(),
+            status_code=206,
+            media_type="application/octet-stream",
+            headers=response_headers
+        )
 
     return StreamingResponse(
         generate(),
@@ -438,9 +508,27 @@ async def proxy_download_by_url(
     if content_length:
         response_headers["Content-Length"] = content_length
 
-    # Add Content-Range for partial content requests
+    # For Range requests, we need to return 206 status code for IDM to recognize resume
     if range_header:
-        response_headers["Content-Range"] = f"bytes {range_header.replace('bytes=', '')}/*"
+        # Parse the range header to get the requested byte range
+        try:
+            range_spec = range_header.replace("bytes=", "")
+            if "-" in range_spec:
+                start, end = range_spec.split("-", 1)
+                total_size = int(content_length) if content_length else 0
+                if total_size > 0:
+                    end_value = int(end) if end else total_size - 1
+                    response_headers["Content-Range"] = f"bytes {start}-{end_value}/{total_size}"
+        except:
+            pass
+
+        # Return StreamingResponse with 206 status code for Range requests
+        return StreamingResponse(
+            generate(),
+            status_code=206,
+            media_type="application/octet-stream",
+            headers=response_headers
+        )
 
     return StreamingResponse(
         generate(),
