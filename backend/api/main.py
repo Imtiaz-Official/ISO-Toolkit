@@ -13,7 +13,7 @@ import os as os_module
 from pathlib import Path
 
 from api.database.session import init_database
-from api.routes import os, downloads, ws, auth, analytics
+from api.routes import os, downloads, ws, auth, analytics, admin_iso, admin_settings
 
 # Configure logging
 logging.basicConfig(
@@ -76,6 +76,8 @@ app.include_router(downloads.router)
 app.include_router(ws.router)
 app.include_router(auth.router)
 app.include_router(analytics.router)
+app.include_router(admin_iso.router)
+app.include_router(admin_settings.router)
 
 
 @app.get("/health")
