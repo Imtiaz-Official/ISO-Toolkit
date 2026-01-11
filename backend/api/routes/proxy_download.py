@@ -119,6 +119,15 @@ async def proxy_download_by_id(
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
+    # Quick HEAD request to get Content-Length (non-blocking with short timeout)
+    content_length = None
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            head_response = await client.head(matching_os.url, headers=headers, follow_redirects=True)
+            content_length = head_response.headers.get("content-length")
+    except Exception:
+        pass  # Don't block download if HEAD fails
+
     # Build response headers with resume support
     response_headers = {
         "Content-Disposition": f'attachment; filename="{filename}"',
@@ -126,6 +135,10 @@ async def proxy_download_by_id(
         "Accept-Ranges": "bytes",  # Enable resume support
         "X-Original-URL": matching_os.url,
     }
+
+    # Add Content-Length if we got it (shows file size in download managers)
+    if content_length:
+        response_headers["Content-Length"] = content_length
 
     # For Range requests, return 206 status code for IDM to recognize resume
     if range_header:
@@ -205,12 +218,25 @@ async def proxy_download(
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
+    # Quick HEAD request to get Content-Length (non-blocking with short timeout)
+    content_length = None
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            head_response = await client.head(original_url, headers=headers, follow_redirects=True)
+            content_length = head_response.headers.get("content-length")
+    except Exception:
+        pass  # Don't block download if HEAD fails
+
     # Build response headers with resume support
     response_headers = {
         "Content-Disposition": f'attachment; filename="{filename}"',
         "Cache-Control": "no-cache",
         "Accept-Ranges": "bytes",  # Enable resume support
     }
+
+    # Add Content-Length if we got it (shows file size in download managers)
+    if content_length:
+        response_headers["Content-Length"] = content_length
 
     # For Range requests, return 206 status code for IDM to recognize resume
     if range_header:
@@ -319,6 +345,15 @@ async def direct_download(
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
+    # Quick HEAD request to get Content-Length (non-blocking with short timeout)
+    content_length = None
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            head_response = await client.head(matching_os.url, headers=headers, follow_redirects=True)
+            content_length = head_response.headers.get("content-length")
+    except Exception:
+        pass  # Don't block download if HEAD fails
+
     # Build response headers with resume support
     response_headers = {
         "Content-Disposition": f'attachment; filename="{filename}"',
@@ -326,6 +361,10 @@ async def direct_download(
         "Accept-Ranges": "bytes",  # Enable resume support
         "X-Original-URL": matching_os.url,
     }
+
+    # Add Content-Length if we got it (shows file size in download managers)
+    if content_length:
+        response_headers["Content-Length"] = content_length
 
     # For Range requests, return 206 status code for IDM to recognize resume
     if range_header:
@@ -403,6 +442,15 @@ async def proxy_download_by_url(
                     detail=f"Failed to fetch from source: {str(e)}"
                 )
 
+    # Quick HEAD request to get Content-Length (non-blocking with short timeout)
+    content_length = None
+    try:
+        async with httpx.AsyncClient(timeout=5) as client:
+            head_response = await client.head(original_url, follow_redirects=True)
+            content_length = head_response.headers.get("content-length")
+    except Exception:
+        pass  # Don't block download if HEAD fails
+
     # Build response headers with resume support
     response_headers = {
         "Content-Disposition": f'attachment; filename="{filename}"',
@@ -410,6 +458,10 @@ async def proxy_download_by_url(
         "Accept-Ranges": "bytes",  # Enable resume support
         "X-Original-URL": original_url,
     }
+
+    # Add Content-Length if we got it (shows file size in download managers)
+    if content_length:
+        response_headers["Content-Length"] = content_length
 
     # For Range requests, return 206 status code for IDM to recognize resume
     if range_header:
