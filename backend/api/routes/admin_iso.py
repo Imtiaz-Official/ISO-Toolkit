@@ -126,7 +126,7 @@ async def list_all_isos(
 
     # Get built-in ISOs from providers
     for cat in [OSCategory.WINDOWS, OSCategory.LINUX, OSCategory.MACOS, OSCategory.BSD]:
-        if category and cat.value != category:
+        if category and cat.value != category.lower():
             continue
         try:
             cat_isos = await fetch_isos_from_category(cat)
@@ -137,7 +137,7 @@ async def list_all_isos(
 
     # Add/override with custom ISOs
     for iso in custom_isos:
-        if category and iso["category"] != category:
+        if category and iso["category"] != category.lower():
             continue
         # Mark as editable and custom
         iso_with_flags = {
