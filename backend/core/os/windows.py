@@ -61,7 +61,7 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_11(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows 11 ISO information from Microsoft CDN and os.click mirror.
+        Fetch Windows 11 ISO information from Microsoft CDN.
 
         URLs extracted from massgrave.dev using Botasaurus Cloudflare bypass.
         """
@@ -81,21 +81,8 @@ class WindowsProvider(BaseProvider):
                 source="Microsoft (via massgrave.dev)",
                 subcategory="Windows 11",
             ),
-            # Windows 11 24H2 - x64 Consumer Edition
-            OSInfo(
-                name="Windows 11",
-                version="24H2",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X64,
-                language="en-US",
-                url="https://dl.os.click/OS/NT10/Win11_26100/1742/en-us_windows_11_consumer_editions_version_24h2_x64_dvd_1d5fcad3.iso?md5=HC0wZCNYGHDPOQvr_VgCfw&expires=1768233338",
-                size=5500000000,
-                release_date=datetime(2024, 10, 1),
-                description="Windows 11 Version 24H2 - Official Microsoft ISO (Consumer Editions)",
-                icon="🪟",
-                source="os.click",
-                subcategory="Windows 11",
-            ),
+            # Windows 11 24H2 - URL expired (403 Forbidden from dl.os.click)
+            # TODO: Find working mirror for Windows 11 24H2
         ]
 
         return self._apply_filters(isos, **filters)
