@@ -165,20 +165,7 @@ class WindowsProvider(BaseProvider):
                 source="archive.isdn.network",
                 subcategory="Windows XP",
             ),
-            OSInfo(
-                name="Windows XP",
-                version="Home SP3",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X86,
-                language="en-US",
-                url="https://archive.isdn.network/windows/xp_home_with_service_pack_3_x86_cd_x14-79513.iso",
-                size=630194176,
-                release_date=datetime(2008, 4, 21),
-                description="Windows XP Home SP3",
-                icon="🪟",
-                source="archive.isdn.network",
-                subcategory="Windows XP",
-            ),
+            # Windows XP Home SP3 - URL removed (404 from archive.isdn.network)
         ]
 
         return self._apply_filters(isos, **filters)
