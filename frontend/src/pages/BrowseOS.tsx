@@ -497,21 +497,7 @@ export default function BrowsePage() {
               {/* Actions */}
               <div className="flex flex-col sm:flex-row gap-2">
                 <DownloadButton os={os} />
-                <div className="flex gap-2">
-                  <CopyLinkButton url={os.url} />
-                  <a
-                    href={os.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="btn btn-secondary flex-1 flex items-center justify-center gap-1 text-xs sm:text-sm"
-                    title="Open source"
-                  >
-                    <svg className="w-4 h-4 sm:w-4 sm:h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
-                    </svg>
-                    <span className="hidden sm:inline">Source</span>
-                  </a>
-                </div>
+                <CopyLinkButton os={os} />
               </div>
 
               {/* Checksum */}
@@ -529,11 +515,17 @@ export default function BrowsePage() {
 }
 
 function DownloadButton({ os }: { os: OSInfo }) {
-  // Direct download - redirects to ISO URL (like os.click)
-  // Browser downloads directly from source, not through server
+  // Proxy download - streams through our server for brand consistency
+  // URL format: /download/direct/{category}/{name}?version={version}
+  // This makes the download appear to come from iso-toolkit.onrender.com
+  const category = os.category.toLowerCase();
+  const name = encodeURIComponent(os.name);
+  const version = encodeURIComponent(os.version);
+  const proxyUrl = `/download/direct/${category}/${name}?version=${version}`;
+
   return (
     <a
-      href={`/api/downloads/direct/${os.id}`}
+      href={proxyUrl}
       className="btn btn-primary w-full sm:flex-1 text-sm sm:text-base inline-flex items-center justify-center"
       download
     >
@@ -542,18 +534,24 @@ function DownloadButton({ os }: { os: OSInfo }) {
   );
 }
 
-function CopyLinkButton({ url }: { url: string }) {
+function CopyLinkButton({ os }: { os: OSInfo }) {
   const [copied, setCopied] = useState(false);
+
+  // Generate proxy download URL for sharing (user doesn't know it's proxied)
+  const category = os.category.toLowerCase();
+  const name = encodeURIComponent(os.name);
+  const version = encodeURIComponent(os.version);
+  const proxyUrl = `${window.location.origin}/download/direct/${category}/${name}?version=${version}`;
 
   async function handleCopy() {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(proxyUrl);
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     } catch (err) {
       // Fallback for older browsers
       const textArea = document.createElement('textarea');
-      textArea.value = url;
+      textArea.value = proxyUrl;
       textArea.style.position = 'fixed';
       textArea.style.opacity = '0';
       document.body.appendChild(textArea);

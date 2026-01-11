@@ -37,6 +37,7 @@ class SystemSettings(BaseModel):
     max_download_size_gb: int = 100
     download_timeout_seconds: int = 3600
     maintenance_mode: bool = False
+    proxy_downloads: bool = True  # Enable/disable proxy downloads (brand consistency)
     custom_css: Optional[str] = None
     custom_js: Optional[str] = None
 
@@ -90,6 +91,7 @@ async def get_settings(
         "max_download_size_gb": 100,
         "download_timeout_seconds": 3600,
         "maintenance_mode": False,
+        "proxy_downloads": True,  # Enable proxy downloads by default (brand consistency)
         "custom_css": None,
         "custom_js": None,
     }
@@ -97,7 +99,7 @@ async def get_settings(
     defaults.update(settings_dict)
 
     # Convert boolean strings
-    for key in ["allow_registration", "maintenance_mode"]:
+    for key in ["allow_registration", "maintenance_mode", "proxy_downloads"]:
         if key in defaults and isinstance(defaults[key], str):
             defaults[key] = defaults[key].lower() == "true"
 
