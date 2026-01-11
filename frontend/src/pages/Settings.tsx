@@ -105,7 +105,7 @@ function applyTheme(theme: 'light' | 'dark' | 'auto') {
 // Apply accent color to CSS variables
 function applyAccentColor(color: string) {
   const colors: Record<string, { r: number; g: number; b: number }> = {
-    blue: { r: 147, g: 51, b: 234 },
+    blue: { r: 59, g: 130, b: 246 },
     purple: { r: 168, g: 85, b: 247 },
     green: { r: 34, g: 197, b: 94 },
     red: { r: 239, g: 68, b: 68 },
