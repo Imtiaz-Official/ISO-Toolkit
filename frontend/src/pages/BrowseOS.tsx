@@ -9,6 +9,76 @@ import { osAPI } from '../services/api';
 import type { OSInfo, OSCategory, LinuxSubcategory } from '../types';
 import { DistroLogo } from '../components/LogoImage';
 
+// Simple emoji fallback map for common distros (used for subcategories to avoid loading 100+ SVGs)
+const distroEmojis: Record<string, string> = {
+  // Ubuntu Family
+  'Ubuntu': '🟠',
+  'Kubuntu': '💙',
+  'Xubuntu': '🦊',
+  'Lubuntu': '🐧',
+  'Pop!_OS': '🚀',
+  'Linux Mint': '🍃',
+  'Linux Mint Cinnamon': '🍃',
+  'Linux Mint MATE': '🍃',
+  'Linux Mint XFCE': '🍃',
+  'elementary OS': '💎',
+  'Zorin OS': '🌟',
+  'KDE neon': '💠',
+  // Fedora & RHEL
+  'Fedora': '🔵',
+  'Rocky Linux': '💎',
+  'AlmaLinux': '🐦',
+  'CentOS Stream': '📦',
+  'RHEL': '🎩',
+  'Oracle Linux': '🔴',
+  // Debian Family
+  'Debian': '🔴',
+  'Raspberry Pi OS': '🍓',
+  // Arch Family
+  'Arch Linux': '🏔️',
+  'Manjaro': '💚',
+  'EndeavourOS': '🚀',
+  'Garuda Linux': '🦅',
+  'Artix Linux': '🎨',
+  'ArcoLinux': '🎯',
+  // Others
+  'Alpine Linux': '🏔️',
+  'openSUSE': '🦎',
+  'NixOS': '🌱',
+  'Gentoo': '💜',
+  'Void Linux': '⚫',
+  'Slackware': '🔷',
+  'Kali Linux': '🐉',
+  'Parrot OS': '🦜',
+  'Tails': '🕵️',
+  'MX Linux': '🐴',
+  'Solus': '🌿',
+  'deepin': '🎨',
+  'Puppy Linux': '🐕',
+  'antiX': '🐜',
+  'Bodhi Linux': '🌸',
+  'Q4OS': '🔵',
+  'PCLinuxOS': '🌲',
+  'DietPi': '🥗',
+  'LibreELEC': '📺',
+  'Clear Linux': '💧',
+  'Mageia': '🧙',
+  'Amazon Linux': '📦',
+  'BigLinux': '🇧🇷',
+  'RebeccaBlackOS': '🎬',
+  'Edubuntu': '🎓',
+  'Ubuntu MATE': '💚',
+  'Ubuntu Studio': '🎵',
+  'Ubuntu Budgie': '🦜',
+  'Ubuntu Cinnamon': '🎄',
+  'Fedora ARM': '🔵',
+};
+
+// Get emoji for distro (fast, no external requests)
+function getDistroEmoji(distroName: string): string {
+  return distroEmojis[distroName] || '🐧';
+}
+
 // localStorage key for persisting last selected category
 const LAST_CATEGORY_KEY = 'iso-toolkit-last-category';
 const LAST_SUBCATEGORY_KEY = 'iso-toolkit-last-subcategory';
@@ -257,7 +327,7 @@ export default function BrowsePage() {
                   }`}
                   title={`${sub.name} (${sub.count} ISOs)`}
                 >
-                  <DistroLogo distroName={sub.name} size="sm" />
+                  <span className="text-sm sm:text-base">{getDistroEmoji(sub.name)}</span>
                   <span className="hidden sm:inline">{sub.name}</span>
                 </button>
               ))}
