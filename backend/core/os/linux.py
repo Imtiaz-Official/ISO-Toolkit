@@ -462,31 +462,18 @@ class LinuxProvider(BaseProvider):
 
     async def _fetch_debian(self, **filters) -> List[OSInfo]:
         """Fetch Debian ISO information."""
+        # Debian 13 URLs are broken (404). Using stable Debian 12.
         isos = [
             OSInfo(
                 name="Debian",
-                version="13.2 Trixie",
+                version="12 Bookworm",
                 category=OSCategory.LINUX,
                 architecture=Architecture.X64,
                 language="Multi",
-                url="https://cdimage.debian.org/debian-cd/current/amd64/iso-cd/debian-13.2.0-amd64-netinst.iso",
-                size=419430400,
-                release_date=datetime(2024, 11, 9),
-                description="Debian 13.2 Trixie - Network install",
-                icon="🔴",
-                source="Debian",
-                subcategory="Debian",
-            ),
-            OSInfo(
-                name="Debian",
-                version="13.2 Trixie",
-                category=OSCategory.LINUX,
-                architecture=Architecture.X64,
-                language="Multi",
-                url="https://cdimage.debian.org/debian-cd/current/amd64/iso-dvd/debian-13.2.0-amd64-DVD-1.iso",
-                size=4194304000,
-                release_date=datetime(2024, 11, 9),
-                description="Debian 13.2 Trixie - Full DVD",
+                url="https://cdimage.debian.org/debian-cd/12.9.0/amd64/iso-dvd/debian-12.9.0-amd64-DVD-1.iso",
+                size=4055236608,
+                release_date=datetime(2024, 9, 7),
+                description="Debian 12.9 Bookworm - Full DVD",
                 icon="🔴",
                 source="Debian",
                 subcategory="Debian",
@@ -1044,22 +1031,10 @@ class LinuxProvider(BaseProvider):
         return self._apply_filters(isos, **filters)
 
     async def _fetch_void(self, **filters) -> List[OSInfo]:
-        """Fetch Void Linux ISO information."""
-        isos = [
-            OSInfo(
-                name="Void Linux",
-                version="Live",
-                category=OSCategory.LINUX,
-                architecture=Architecture.X64,
-                language="Multi",
-                url="https://repo-default.voidlinux.org/live/20241001/void-live-x86_64-20241001.iso",
-                size=734003200,
-                description="Void Linux - Rolling release with XBPS",
-                icon="⚫",
-                source="Void Linux",
-                subcategory="Void Linux",
-            ),
-        ]
+        """Fetch Void Linux ISO information - currently disabled due to mirror issues."""
+        # Void Linux mirrors are experiencing connectivity issues (404/timeout)
+        # TODO: Find reliable mirror for Void Linux
+        isos = []
         return self._apply_filters(isos, **filters)
 
     async def _fetch_deepin(self, **filters) -> List[OSInfo]:

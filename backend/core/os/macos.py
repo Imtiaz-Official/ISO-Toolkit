@@ -82,45 +82,11 @@ class MacOSProvider(BaseProvider):
         ]
 
     async def _fetch_macos_sonoma(self, **filters) -> List[OSInfo]:
-        """Fetch macOS Sonoma (14.x) ISO information."""
-        return [
-            OSInfo(
-                name="macOS Sonoma",
-                version="14.7.1",
-                category=OSCategory.MACOS,
-                architecture=Architecture.X64,
-                language="Multi",
-                url="https://archive.org/download/macos-sonoma-14.7.1/Install macOS Sonoma 14.7.1.iso",
-                checksum="",
-                checksum_type="",
-                size=13200000000,
-                release_date=datetime(2024, 10, 25),
-                description="macOS Sonoma 14.7.1 - Intel",
-                icon="🍎",
-                source="Internet Archive",
-                headers={
-                    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
-                },
-            ),
-            OSInfo(
-                name="macOS Sonoma",
-                version="14.7.1",
-                category=OSCategory.MACOS,
-                architecture=Architecture.ARM64,
-                language="Multi",
-                url="https://archive.org/download/macos-sonoma-14.7.1-arm/Install macOS Sonoma 14.7.1.ipsw",
-                checksum="",
-                checksum_type="",
-                size=14100000000,
-                release_date=datetime(2024, 10, 25),
-                description="macOS Sonoma 14.7.1 - Apple Silicon",
-                icon="🍎",
-                source="Internet Archive",
-                headers={
-                    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36"
-                },
-            ),
-        ]
+        """Fetch macOS Sonoma (14.x) ISO information - disabled due to Archive.org issues."""
+        # Archive.org is returning 503 Service Unavailable for macOS ISOs
+        # Apple requires developer account for direct downloads
+        # TODO: Find alternative mirror or use Apple's developer tools
+        return []
 
     async def _fetch_macos_ventura(self, **filters) -> List[OSInfo]:
         """Fetch macOS Ventura (13.x) ISO information."""
