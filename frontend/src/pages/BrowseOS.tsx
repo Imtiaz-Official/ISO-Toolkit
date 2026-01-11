@@ -516,12 +516,9 @@ export default function BrowsePage() {
 
 function DownloadButton({ os }: { os: OSInfo }) {
   // Proxy download - streams through our server for brand consistency
-  // URL format: /download/direct/{category}/{name}?version={version}
+  // URL format: /download/id/{os_id} - uses unique OS ID for reliable lookup
   // This makes the download appear to come from iso-toolkit.onrender.com
-  const category = os.category.toLowerCase();
-  const name = encodeURIComponent(os.name);
-  const version = encodeURIComponent(os.version);
-  const proxyUrl = `/download/direct/${category}/${name}?version=${version}`;
+  const proxyUrl = `/download/id/${os.id}`;
 
   return (
     <a
@@ -538,10 +535,7 @@ function CopyLinkButton({ os }: { os: OSInfo }) {
   const [copied, setCopied] = useState(false);
 
   // Generate proxy download URL for sharing (user doesn't know it's proxied)
-  const category = os.category.toLowerCase();
-  const name = encodeURIComponent(os.name);
-  const version = encodeURIComponent(os.version);
-  const proxyUrl = `${window.location.origin}/download/direct/${category}/${name}?version=${version}`;
+  const proxyUrl = `${window.location.origin}/download/id/${os.id}`;
 
   async function handleCopy() {
     try {

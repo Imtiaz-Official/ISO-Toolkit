@@ -24,6 +24,123 @@ CHUNK_SIZE = 1024 * 1024  # 1MB chunks
 DOWNLOAD_TIMEOUT = 300  # 5 minutes
 
 
+@router.get("/id/{os_id}")
+async def proxy_download_by_id(
+    os_id: str,
+    db: Session = Depends(get_db),
+    request: Request = None
+):
+    """
+    Proxy download by OS ID.
+    The OS ID is in format: category_name_version_architecture (e.g., windows_windows_11_24h2_x64)
+    This is the most reliable way to proxy downloads.
+
+    Supports resume/partial downloads via Range requests.
+    """
+    from api.routes import os as os_routes
+    from api.models.schemas import OSCategory
+
+    # Parse OS ID to get category
+    # Format: category_name_version_architecture
+    parts = os_id.split("_")
+    if len(parts) < 4:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid OS ID format"
+        )
+
+    category_str = parts[0]
+    try:
+        category = OSCategory(category_str)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Invalid category: {category_str}"
+        )
+
+    # Get all OS for category and find matching one by ID
+    all_os = await os_routes.get_os_by_category(category)
+    matching_os = None
+    for os_item in all_os:
+        if os_item.id == os_id:
+            matching_os = os_item
+            break
+
+    if not matching_os:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"OS not found: {os_id}"
+        )
+
+    # Generate filename
+    ext = ".iso" if not matching_os.url.endswith(".ipsw") and not matching_os.url.endswith(".dmg") else ""
+    filename = f"{matching_os.name} {matching_os.version}{ext}".replace(" ", "_")
+
+    # Get custom headers from OS info if available
+    headers = getattr(matching_os, "headers", {})
+
+    # Check for Range request (for resume support)
+    range_header = request.headers.get("range") if request else None
+
+    async def generate():
+        """Stream the download in chunks with range support."""
+        async with httpx.AsyncClient(timeout=DOWNLOAD_TIMEOUT) as client:
+            try:
+                # Forward Range header if present for resume support
+                req_headers = headers.copy()
+                if range_header:
+                    req_headers["Range"] = range_header
+
+                async with client.stream(
+                    "GET",
+                    matching_os.url,
+                    headers=req_headers,
+                    follow_redirects=True
+                ) as response:
+                    response.raise_for_status()
+
+                    # Stream content in chunks
+                    async for chunk in response.aiter_bytes(chunk_size=CHUNK_SIZE):
+                        yield chunk
+
+            except httpx.HTTPError as e:
+                raise HTTPException(
+                    status_code=status.HTTP_502_BAD_GATEWAY,
+                    detail=f"Failed to fetch from source: {str(e)}"
+                )
+
+    # First get content length by making a HEAD request
+    content_length = None
+    try:
+        async with httpx.AsyncClient(timeout=30) as client:
+            head_response = await client.head(matching_os.url, headers=headers, follow_redirects=True)
+            content_length = head_response.headers.get("content-length")
+    except Exception:
+        pass
+
+    # Build response headers with resume support
+    response_headers = {
+        "Content-Disposition": f'attachment; filename="{filename}"',
+        "Cache-Control": "public, max-age=31536000",
+        "Accept-Ranges": "bytes",  # Enable resume support
+        "X-Original-URL": matching_os.url,
+    }
+
+    # Add Content-Length if available (shows file size in IDM/browsers)
+    if content_length:
+        response_headers["Content-Length"] = content_length
+
+    # Add Content-Range for partial content requests
+    if range_header:
+        response_headers["Content-Range"] = f"bytes {range_header.replace('bytes=', '')}/*"
+
+    return StreamingResponse(
+        generate(),
+        media_type="application/octet-stream",
+        headers=response_headers
+    )
+
+
 @router.get("/{download_id}")
 async def proxy_download(
     download_id: int,
@@ -31,7 +148,7 @@ async def proxy_download(
     request: Request = None
 ):
     """
-    Proxy a download through our server.
+    Proxy a download through our server by database download record ID.
 
     The URL will be: /download/{id} instead of the original external URL.
     This makes all downloads appear to come from our domain.
