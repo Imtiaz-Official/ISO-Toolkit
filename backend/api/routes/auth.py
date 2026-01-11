@@ -2,6 +2,7 @@
 Authentication routes for admin login/logout.
 """
 
+import os
 from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -22,6 +23,9 @@ from api.auth.auth_utils import (
 from api.auth.rate_limiter import check_login_rate_limit
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
+
+# Temporary reset key for admin password recovery (CHANGE IN PRODUCTION!)
+RESET_SECRET_KEY = os.getenv("ADMIN_RESET_KEY", "reset-admin-2024-temp-key")
 
 # OAuth2 scheme for token-based authentication
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/auth/login")
@@ -336,6 +340,53 @@ async def logout():
     potential future server-side token blacklisting.
     """
     return {"message": "Successfully logged out"}
+
+
+# Temporary admin password reset endpoint
+@router.post("/reset-admin")
+async def reset_admin_password(
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """
+    TEMPORARY: Reset admin password without shell access.
+
+    Call with reset_key in query params: POST /api/auth/reset-admin?reset_key=YOUR_SECRET
+    After resetting, remove this endpoint!
+    """
+    reset_key = request.query_params.get("reset_key")
+    if reset_key != RESET_SECRET_KEY:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Invalid reset key"
+        )
+
+    # Find or create admin user
+    admin_user = db.query(User).filter(User.username == "admin").first()
+    if not admin_user:
+        # Create admin user
+        admin_user = User(
+            username="admin",
+            email="admin@example.com",
+            hashed_password=get_password_hash("AdminPass123"),
+            is_admin=True,
+            is_active=True
+        )
+        db.add(admin_user)
+    else:
+        # Update password
+        admin_user.hashed_password = get_password_hash("AdminPass123")
+        admin_user.is_admin = True
+        admin_user.is_active = True
+
+    db.commit()
+
+    return {
+        "message": "Admin password reset successfully!",
+        "username": "admin",
+        "new_password": "AdminPass123",
+        "note": "Please remove this endpoint after use for security"
+    }
 
 
 # Admin-only routes
