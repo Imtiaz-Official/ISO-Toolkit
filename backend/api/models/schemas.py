@@ -18,7 +18,7 @@ class OSInfoResponse(BaseModel):
     id: str
     name: str
     version: str
-    category: OSCategory
+    category: str  # Changed from OSCategory enum to string for better compatibility
     architecture: Architecture
     language: str
     size: Optional[int] = None

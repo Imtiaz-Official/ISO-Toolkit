@@ -3,14 +3,13 @@ API routes for OS listings and browsing.
 """
 
 from fastapi import APIRouter, HTTPException
-from typing import List
+from typing import List, Union
 import asyncio
 
 from api.models.schemas import (
     OSInfoResponse,
     OSCategoryResponse,
     LinuxSubcategoryResponse,
-    OSCategory,
     Architecture,
 )
 from core.os.base import get_registry
@@ -18,6 +17,7 @@ from core.os.windows import WindowsProvider
 from core.os.linux import LinuxProvider
 from core.os.macos import MacOSProvider
 from core.os.bsd import BSDProvider
+from core.models import OSCategory as CoreOSCategory
 
 router = APIRouter(prefix="/api/os", tags=["OS"])
 
@@ -163,7 +163,7 @@ async def get_linux_subcategories() -> List[LinuxSubcategoryResponse]:
 
 @router.get("/{category}", response_model=List[OSInfoResponse])
 async def get_os_by_category(
-    category: OSCategory,
+    category: str,
     architecture: Architecture | None = None,
     language: str | None = None,
     subcategory: str | None = None,
@@ -172,7 +172,7 @@ async def get_os_by_category(
     Get available OS for a specific category.
 
     Args:
-        category: OS category (windows, linux, etc.)
+        category: OS category (windows, linux, macos, bsd)
         architecture: Filter by architecture (optional)
         language: Filter by language (optional)
         subcategory: Filter by subcategory for Linux (optional)
@@ -182,13 +182,14 @@ async def get_os_by_category(
     """
     _init_providers()
 
-    # Ensure category is the correct OSCategory enum from core.models
-    from core.models import OSCategory as CoreOSCategory
-    if isinstance(category, str):
-        category = CoreOSCategory(category)
-    else:
-        # Convert to core.models OSCategory to ensure type consistency
-        category = CoreOSCategory(category.value)
+    # Convert string to OSCategory enum
+    try:
+        category = CoreOSCategory(category.lower())
+    except ValueError:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid category: {category}. Valid options: windows, linux, macos, bsd"
+        )
 
     registry = get_registry()
     providers = registry.get_by_category(category)
@@ -222,7 +223,7 @@ async def get_os_by_category(
                     id=f"{os_info.category.value}_{os_info.name.lower()}_{os_info.version.lower()}_{os_info.architecture.value}",
                     name=os_info.name,
                     version=os_info.version,
-                    category=category,
+                    category=category.value,  # Use string value, not enum
                     architecture=os_info.architecture,
                     language=os_info.language,
                     size=os_info.size,
@@ -246,7 +247,7 @@ async def get_os_by_category(
 
 
 @router.get("/{category}/{os_id}", response_model=OSInfoResponse)
-async def get_os_details(category: OSCategory, os_id: str) -> OSInfoResponse:
+async def get_os_details(category: str, os_id: str) -> OSInfoResponse:
     """
     Get details for a specific OS.
 
@@ -273,7 +274,7 @@ async def get_os_details(category: OSCategory, os_id: str) -> OSInfoResponse:
 @router.get("/search", response_model=List[OSInfoResponse])
 async def search_os(
     query: str,
-    category: OSCategory | None = None,
+    category: str | None = None,
 ) -> List[OSInfoResponse]:
     """
     Search for OS by name or version.
@@ -291,10 +292,17 @@ async def search_os(
 
     results = []
 
+    # Parse category if provided
     if category:
-        categories_to_search = [category]
+        try:
+            categories_to_search = [CoreOSCategory(category.lower())]
+        except ValueError:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Invalid category: {category}"
+            )
     else:
-        categories_to_search = list(OSCategory)
+        categories_to_search = list(CoreOSCategory)
 
     for cat in categories_to_search:
         providers = registry.get_by_category(cat)
@@ -312,7 +320,7 @@ async def search_os(
                                 id=f"{os_info.category.value}_{os_info.name.lower()}_{os_info.version.lower()}_{os_info.architecture.value}",
                                 name=os_info.name,
                                 version=os_info.version,
-                                category=cat,
+                                category=cat.value,  # Use string value
                                 architecture=os_info.architecture,
                                 language=os_info.language,
                                 size=os_info.size,
