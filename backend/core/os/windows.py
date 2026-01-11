@@ -61,7 +61,7 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_11(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows 11 ISO information from Microsoft CDN.
+        Fetch Windows 11 ISO information from Microsoft CDN and os.click mirror.
 
         URLs extracted from massgrave.dev using Botasaurus Cloudflare bypass.
         """
@@ -88,12 +88,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://software-static.download.prss.microsoft.com/dbazure/888969d5-f34g-4e03-ac9d-1f9786c66749/26100.3361.250915-1905.24h2_ge_release_svc_refresh_CLIENT_CONSUMER_x64FRE_en-us.iso",
+                url="https://dl.os.click/OS/NT10/Win11_26100/1742/en-us_windows_11_consumer_editions_version_24h2_x64_dvd_1d5fcad3.iso?md5=HC0wZCNYGHDPOQvr_VgCfw&expires=1768233338",
                 size=5500000000,
                 release_date=datetime(2024, 10, 1),
                 description="Windows 11 Version 24H2 - Official Microsoft ISO (Consumer Editions)",
                 icon="🪟",
-                source="Microsoft (via massgrave.dev)",
+                source="os.click",
                 subcategory="Windows 11",
             ),
         ]
@@ -121,60 +121,18 @@ class WindowsProvider(BaseProvider):
                 source="TrashBytes",
                 subcategory="Windows 10",
             ),
-            # Windows 10 22H2 - x64 Business Edition
-            OSInfo(
-                name="Windows 10",
-                version="22H2 Business",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X64,
-                language="en-US",
-                url="https://trashbytes.net/dl/o3URyRIZ7zk8BUoa-r0XEFbiRhZo7a-11yzaMlU_qcVJ0XOOisLEBeTnInsFINwAzFgPgH-vbhkKGnYm9Ul3D1x3PdjgW_uRpeiN93EaRhjYNXun-Tz6EyEcNJ_xL69i2e-0aU5UH6O9vPuwO0KbiWcpQZgFgZ94LA-kpuB8mVPCv0Z1BU7t-mmqpmY9nPvcQ8S5coSRDKRk",
-                size=4900000000,
-                release_date=datetime(2024, 10, 17),
-                description="Windows 10 Version 22H2 - Business Editions (Enterprise/Professional/Education, Updated October 2025, Build 19045.6456)",
-                icon="🪟",
-                source="TrashBytes",
-                subcategory="Windows 10",
-            ),
         ]
 
         return self._apply_filters(isos, **filters)
 
     async def _fetch_windows_81(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows 8.1 ISO information from Internet Archive.
-        """
-        isos = [
-            OSInfo(
-                name="Windows 8.1",
-                version="Professional",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X64,
-                language="en-US",
-                url="https://archive.org/download/win81pro_x64/en-us_windows_8.1_professional_x64.iso",
-                size=3909742592,
-                release_date=datetime(2014, 2, 27),
-                description="Windows 8.1 Professional x64",
-                icon="🪟",
-                source="Internet Archive",
-                subcategory="Windows 8.1",
-            ),
-            OSInfo(
-                name="Windows 8.1",
-                version="Professional",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X86,
-                language="en-US",
-                url="https://archive.org/download/win81pro_x86/en-us_windows_8.1_professional_x86.iso",
-                size=3019898880,
-                release_date=datetime(2014, 2, 27),
-                description="Windows 8.1 Professional x86",
-                icon="🪟",
-                source="Internet Archive",
-                subcategory="Windows 8.1",
-            ),
-        ]
+        Fetch Windows 8.1 ISO information - currently unavailable.
 
+        Archive.org is experiencing service issues (503 errors).
+        TODO: Find working mirror for Windows 8.1 ISOs.
+        """
+        isos = []
         return self._apply_filters(isos, **filters)
 
     async def _fetch_windows_7(self, **filters) -> List[OSInfo]:
@@ -182,34 +140,7 @@ class WindowsProvider(BaseProvider):
         Fetch Windows 7 ISO information from archive.isdn.network mirror.
         """
         isos = [
-            OSInfo(
-                name="Windows 7",
-                version="Professional SP1",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X64,
-                language="en-US",
-                url="https://archive.isdn.network/windows/en_windows_7_professional_with_sp1_x64_dvd_u_676939.iso",
-                size=3265291264,
-                release_date=datetime(2011, 2, 22),
-                description="Windows 7 Professional SP1 x64",
-                icon="🪟",
-                source="archive.isdn.network",
-                subcategory="Windows 7",
-            ),
-            OSInfo(
-                name="Windows 7",
-                version="Professional VL SP1",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X64,
-                language="en-US",
-                url="https://archive.isdn.network/windows/en_windows_7_professional_with_sp1_vl_build_x64_dvd_u_677791.iso",
-                size=3265291264,
-                release_date=datetime(2011, 2, 22),
-                description="Windows 7 Professional SP1 VL (Volume License) x64",
-                icon="🪟",
-                source="archive.isdn.network",
-                subcategory="Windows 7",
-            ),
+            # Windows 7 Ultimate SP1 x64 - Working URL
             OSInfo(
                 name="Windows 7",
                 version="Ultimate SP1",
@@ -220,20 +151,6 @@ class WindowsProvider(BaseProvider):
                 size=3386296320,
                 release_date=datetime(2011, 2, 22),
                 description="Windows 7 Ultimate SP1 x64",
-                icon="🪟",
-                source="archive.isdn.network",
-                subcategory="Windows 7",
-            ),
-            OSInfo(
-                name="Windows 7",
-                version="Professional SP1",
-                category=OSCategory.WINDOWS,
-                architecture=Architecture.X86,
-                language="en-US",
-                url="https://archive.isdn.network/windows/en_windows_7_professional_with_sp1_x86_dvd_u_677056.iso",
-                size=2465423360,
-                release_date=datetime(2011, 2, 22),
-                description="Windows 7 Professional SP1 x86",
                 icon="🪟",
                 source="archive.isdn.network",
                 subcategory="Windows 7",
