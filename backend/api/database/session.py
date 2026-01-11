@@ -46,8 +46,35 @@ DATABASE_URL = get_database_url()
 
 
 def init_database():
-    """Initialize database tables."""
+    """Initialize database tables and create default admin user if needed."""
+    from api.database.models import User
+    from api.auth.auth_utils import get_password_hash
+    import os
+
+    # Create tables
     Base.metadata.create_all(bind=engine)
+
+    # Create default admin user if it doesn't exist
+    db = SessionLocal()
+    try:
+        admin_user = db.query(User).filter(User.username == "admin").first()
+        if not admin_user:
+            default_password = os.getenv("DEFAULT_ADMIN_PASSWORD", "AdminPass123")
+            admin_user = User(
+                username="admin",
+                email="admin@example.com",
+                hashed_password=get_password_hash(default_password),
+                is_admin=True,
+                is_active=True
+            )
+            db.add(admin_user)
+            db.commit()
+            print("Default admin user created successfully")
+    except Exception as e:
+        db.rollback()
+        print(f"Error creating default admin user: {e}")
+    finally:
+        db.close()
 
 
 def get_session() -> Generator[Session, None, None]:

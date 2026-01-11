@@ -467,14 +467,14 @@ export default function AdminDashboard() {
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-900">
       {/* Sidebar */}
-      <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 p-4">
-        <div className="mb-8">
+      <div className="w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col">
+        <div className="p-4">
           <div className="text-2xl mb-2">💿</div>
           <h1 className="text-xl font-bold text-gray-900 dark:text-white">ISO Toolkit</h1>
           <p className="text-sm text-gray-600 dark:text-gray-400">Admin Panel</p>
         </div>
 
-        <nav className="space-y-2">
+        <nav className="flex-1 overflow-y-auto px-4 space-y-2">
           <button
             onClick={() => handleTabChange('overview')}
             className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors ${
@@ -536,18 +536,16 @@ export default function AdminDashboard() {
           </button>
         </nav>
 
-        <div className="absolute bottom-4 left-4 right-4">
-          <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
-            <p className="text-sm text-gray-600 dark:text-gray-400">
-              Logged in as <span className="font-medium text-gray-900 dark:text-white">{user?.username}</span>
-            </p>
-            <button
-              onClick={logout}
-              className="mt-2 w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
-            >
-              Logout
-            </button>
-          </div>
+        <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-2">
+            Logged in as <span className="font-medium text-gray-900 dark:text-white">{user?.username}</span>
+          </p>
+          <button
+            onClick={logout}
+            className="w-full px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors text-sm"
+          >
+            Logout
+          </button>
         </div>
       </div>
 
