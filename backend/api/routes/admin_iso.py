@@ -10,9 +10,9 @@ from datetime import datetime
 
 from api.database.session import get_db
 from api.database.models import User
-from api.routes.os import get_all_os, get_os_by_category
 from api.routes.auth import get_current_admin_user
 from core.models import OSInfo, OSCategory, Architecture
+from core.os.base import get_registry
 
 router = APIRouter(prefix="/api/admin/iso", tags=["Admin ISO Management"])
 
@@ -74,6 +74,38 @@ def generate_iso_id(iso_data: ISOCreate) -> str:
     return f"{category}_{name}_{version}_{arch}"
 
 
+async def fetch_isos_from_category(category: OSCategory) -> List[dict]:
+    """Fetch all ISOs from a specific category using the provider registry."""
+    registry = get_registry()
+    providers = registry.get_by_category(category)
+
+    all_isos = []
+    for provider in providers:
+        try:
+            os_list = await provider.fetch_available()
+            for os_info in os_list:
+                all_isos.append({
+                    "id": f"{os_info.category.value}_{os_info.name.lower()}_{os_info.version.lower()}_{os_info.architecture.value}",
+                    "name": os_info.name,
+                    "version": os_info.version,
+                    "category": os_info.category.value,
+                    "architecture": os_info.architecture.value,
+                    "language": os_info.language,
+                    "url": os_info.url,
+                    "size": os_info.size or 0,
+                    "description": os_info.description,
+                    "icon": os_info.icon,
+                    "checksum": os_info.checksum,
+                    "checksum_type": os_info.checksum_type,
+                    "created_at": None,
+                    "is_custom": False
+                })
+        except Exception:
+            pass
+
+    return all_isos
+
+
 @router.get("", response_model=List[ISOResponse])
 async def list_all_isos(
     current_admin: User = Depends(get_current_admin_user),
@@ -90,23 +122,8 @@ async def list_all_isos(
         if category and cat.value != category:
             continue
         try:
-            cat_isos = await get_os_by_category(cat)
-            all_isos.extend([{
-                "id": iso.id,
-                "name": iso.name,
-                "version": iso.version,
-                "category": iso.category.value,
-                "architecture": iso.architecture.value,
-                "language": iso.language,
-                "url": iso.url,
-                "size": iso.size or 0,
-                "description": iso.description,
-                "icon": iso.icon,
-                "checksum": iso.checksum,
-                "checksum_type": iso.checksum_type,
-                "created_at": None,
-                "is_custom": False
-            } for iso in cat_isos])
+            cat_isos = await fetch_isos_from_category(cat)
+            all_isos.extend(cat_isos)
         except Exception:
             pass
 
