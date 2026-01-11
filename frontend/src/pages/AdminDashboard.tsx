@@ -95,6 +95,7 @@ interface ISO {
   checksum_type?: string;
   created_at?: string;
   is_custom?: boolean;
+  can_edit?: boolean;
 }
 
 interface ISOCreate {
@@ -967,8 +968,8 @@ export default function AdminDashboard() {
                           <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600 dark:text-gray-400">{formatBytes(iso.size)}</td>
                           <td className="px-6 py-4 whitespace-nowrap">
                             {iso.is_custom ? (
-                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-800 dark:text-blue-300">
-                                Custom
+                              <span className="px-2 py-1 text-xs font-semibold rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-800 dark:text-purple-300">
+                                Override
                               </span>
                             ) : (
                               <span className="px-2 py-1 text-xs font-semibold rounded-full bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300">
@@ -977,22 +978,22 @@ export default function AdminDashboard() {
                             )}
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-right text-sm">
-                            {iso.is_custom && (
-                              <div className="flex justify-end space-x-2">
-                                <button
-                                  onClick={() => editISOCustom(iso)}
-                                  className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
-                                >
-                                  Edit
-                                </button>
+                            <div className="flex justify-end space-x-2">
+                              <button
+                                onClick={() => editISOCustom(iso)}
+                                className="text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300"
+                              >
+                                Edit
+                              </button>
+                              {iso.is_custom && (
                                 <button
                                   onClick={() => handleDeleteISO(iso.id)}
                                   className="text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300"
                                 >
                                   Delete
                                 </button>
-                              </div>
-                            )}
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}

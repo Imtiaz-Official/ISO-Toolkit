@@ -83,6 +83,7 @@ class UserResponse(BaseModel):
     email: str
     is_admin: bool
     is_active: bool
+    password_changed: bool
     created_at: str
     last_login: Optional[str] = None
 

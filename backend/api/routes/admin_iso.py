@@ -1,6 +1,6 @@
 """
 ISO Management routes for admin panel.
-Allows CRUD operations on ISO entries.
+Allows CRUD operations on ISO entries, including overriding built-in ISOs.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -59,9 +59,12 @@ class ISOResponse(BaseModel):
     checksum: Optional[str] = None
     checksum_type: Optional[str] = None
     created_at: Optional[str] = None
+    is_custom: bool
+    can_edit: bool
 
 
-# In-memory storage for custom ISOs (in production, use database)
+# In-memory storage for custom/overridden ISOs (in production, use database)
+# This includes both user-added ISOs and overrides of built-in ISOs
 custom_isos: List[dict] = []
 
 
@@ -84,8 +87,9 @@ async def fetch_isos_from_category(category: OSCategory) -> List[dict]:
         try:
             os_list = await provider.fetch_available()
             for os_info in os_list:
+                iso_id = f"{os_info.category.value}_{os_info.name.lower()}_{os_info.version.lower()}_{os_info.architecture.value}"
                 all_isos.append({
-                    "id": f"{os_info.category.value}_{os_info.name.lower()}_{os_info.version.lower()}_{os_info.architecture.value}",
+                    "id": iso_id,
                     "name": os_info.name,
                     "version": os_info.version,
                     "category": os_info.category.value,
@@ -98,7 +102,8 @@ async def fetch_isos_from_category(category: OSCategory) -> List[dict]:
                     "checksum": os_info.checksum,
                     "checksum_type": os_info.checksum_type,
                     "created_at": None,
-                    "is_custom": False
+                    "is_custom": False,
+                    "can_edit": True  # All ISOs can now be edited
                 })
         except Exception:
             pass
@@ -114,8 +119,10 @@ async def list_all_isos(
     """
     List all ISOs (admin only).
     Can filter by category.
+    Custom ISOs override built-in ISOs with the same ID.
     """
-    all_isos = []
+    # Use a dictionary to merge ISOs (custom overrides built-in)
+    all_isos_dict = {}
 
     # Get built-in ISOs from providers
     for cat in [OSCategory.WINDOWS, OSCategory.LINUX, OSCategory.MACOS, OSCategory.BSD]:
@@ -123,20 +130,24 @@ async def list_all_isos(
             continue
         try:
             cat_isos = await fetch_isos_from_category(cat)
-            all_isos.extend(cat_isos)
+            for iso in cat_isos:
+                all_isos_dict[iso["id"]] = iso
         except Exception:
             pass
 
-    # Add custom ISOs
+    # Add/override with custom ISOs
     for iso in custom_isos:
         if category and iso["category"] != category:
             continue
-        all_isos.append({
+        # Mark as editable and custom
+        iso_with_flags = {
             **iso,
-            "is_custom": True
-        })
+            "is_custom": True,
+            "can_edit": True
+        }
+        all_isos_dict[iso["id"]] = iso_with_flags
 
-    return all_isos
+    return list(all_isos_dict.values())
 
 
 @router.post("", response_model=ISOResponse)
@@ -145,17 +156,10 @@ async def create_iso(
     current_admin: User = Depends(get_current_admin_user)
 ):
     """
-    Add a new custom ISO (admin only).
+    Add a new custom ISO or override a built-in ISO (admin only).
+    If an ISO with the same ID exists, it will be overridden.
     """
     iso_id = generate_iso_id(iso_data)
-
-    # Check if ISO with this ID already exists
-    for iso in custom_isos:
-        if iso["id"] == iso_id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="ISO with this configuration already exists"
-            )
 
     new_iso = {
         "id": iso_id,
@@ -171,10 +175,24 @@ async def create_iso(
         "checksum": iso_data.checksum,
         "checksum_type": iso_data.checksum_type,
         "created_at": datetime.utcnow().isoformat(),
-        "created_by": current_admin.username
+        "created_by": current_admin.username,
+        "is_custom": True,
+        "can_edit": True
     }
 
-    custom_isos.append(new_iso)
+    # Check if ISO with this ID already exists in custom list and update or add
+    existing_index = None
+    for i, iso in enumerate(custom_isos):
+        if iso["id"] == iso_id:
+            existing_index = i
+            break
+
+    if existing_index is not None:
+        # Update existing custom ISO
+        custom_isos[existing_index] = new_iso
+    else:
+        # Add new custom ISO
+        custom_isos.append(new_iso)
 
     return new_iso
 
@@ -187,42 +205,74 @@ async def update_iso(
 ):
     """
     Update an existing ISO (admin only).
-    Only custom ISOs can be modified.
+    Can update both custom ISOs and create overrides for built-in ISOs.
     """
+    # Check if this ISO already exists in custom list
+    existing_index = None
     for i, iso in enumerate(custom_isos):
         if iso["id"] == iso_id:
-            # Update fields
-            if iso_data.name is not None:
-                iso["name"] = iso_data.name
-            if iso_data.version is not None:
-                iso["version"] = iso_data.version
-            if iso_data.category is not None:
-                iso["category"] = iso_data.category
-            if iso_data.architecture is not None:
-                iso["architecture"] = iso_data.architecture
-            if iso_data.language is not None:
-                iso["language"] = iso_data.language
-            if iso_data.url is not None:
-                iso["url"] = iso_data.url
-            if iso_data.size is not None:
-                iso["size"] = iso_data.size
-            if iso_data.description is not None:
-                iso["description"] = iso_data.description
-            if iso_data.icon is not None:
-                iso["icon"] = iso_data.icon
-            if iso_data.checksum is not None:
-                iso["checksum"] = iso_data.checksum
-            if iso_data.checksum_type is not None:
-                iso["checksum_type"] = iso_data.checksum_type
+            existing_index = i
+            break
 
-            iso["updated_at"] = datetime.utcnow().isoformat()
-            iso["updated_by"] = current_admin.username
+    if existing_index is not None:
+        # Update existing custom ISO
+        iso = custom_isos[existing_index]
+        # Update fields
+        if iso_data.name is not None:
+            iso["name"] = iso_data.name
+        if iso_data.version is not None:
+            iso["version"] = iso_data.version
+        if iso_data.category is not None:
+            iso["category"] = iso_data.category
+        if iso_data.architecture is not None:
+            iso["architecture"] = iso_data.architecture
+        if iso_data.language is not None:
+            iso["language"] = iso_data.language
+        if iso_data.url is not None:
+            iso["url"] = iso_data.url
+        if iso_data.size is not None:
+            iso["size"] = iso_data.size
+        if iso_data.description is not None:
+            iso["description"] = iso_data.description
+        if iso_data.icon is not None:
+            iso["icon"] = iso_data.icon
+        if iso_data.checksum is not None:
+            iso["checksum"] = iso_data.checksum
+        if iso_data.checksum_type is not None:
+            iso["checksum_type"] = iso_data.checksum_type
 
-            return iso
+        iso["updated_at"] = datetime.utcnow().isoformat()
+        iso["updated_by"] = current_admin.username
+        iso["is_custom"] = True
+        iso["can_edit"] = True
+
+        return iso
+    else:
+        # This is a built-in ISO that doesn't exist in custom list yet
+        # Create a custom override for it
+        # First, we need to fetch the original built-in ISO data to use as base
+        for cat in [OSCategory.WINDOWS, OSCategory.LINUX, OSCategory.MACOS, OSCategory.BSD]:
+            try:
+                cat_isos = await fetch_isos_from_category(cat)
+                for built_in_iso in cat_isos:
+                    if built_in_iso["id"] == iso_id:
+                        # Found the built-in ISO, create override
+                        override_iso = {
+                            **built_in_iso,
+                            **{k: v for k, v in iso_data.dict().items() if v is not None},
+                            "updated_at": datetime.utcnow().isoformat(),
+                            "updated_by": current_admin.username,
+                            "is_custom": True,
+                            "can_edit": True
+                        }
+                        custom_isos.append(override_iso)
+                        return override_iso
+            except Exception:
+                pass
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail="Custom ISO not found"
+        detail="ISO not found"
     )
 
 
@@ -232,21 +282,21 @@ async def delete_iso(
     current_admin: User = Depends(get_current_admin_user)
 ):
     """
-    Delete a custom ISO (admin only).
-    Only custom ISOs can be deleted.
+    Delete a custom ISO or remove an override (admin only).
+    Cannot delete built-in ISOs, only removes custom overrides.
     """
     global custom_isos
     for i, iso in enumerate(custom_isos):
         if iso["id"] == iso_id:
             deleted_iso = custom_isos.pop(i)
             return {
-                "message": f"ISO '{deleted_iso['name']}' deleted successfully",
+                "message": f"ISO '{deleted_iso['name']}' deleted successfully. Built-in ISO will be used if available.",
                 "id": iso_id
             }
 
     raise HTTPException(
         status_code=status.HTTP_404_NOT_FOUND,
-        detail="Custom ISO not found"
+        detail="Custom ISO not found (built-in ISOs cannot be deleted, only overridden)"
     )
 
 
@@ -263,7 +313,8 @@ async def get_iso_stats(
         "total_count": len(all_isos),
         "by_category": {},
         "by_architecture": {},
-        "custom_count": len(custom_isos)
+        "custom_count": len(custom_isos),
+        "builtin_count": len(all_isos) - len([iso for iso in all_isos if iso.get("is_custom")])
     }
 
     # Count by category
