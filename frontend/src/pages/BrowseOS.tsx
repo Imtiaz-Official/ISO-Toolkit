@@ -215,6 +215,8 @@ export default function BrowsePage() {
       setLoading(true);
       try {
         const data = await osAPI.getByCategory(selectedCategory, selectedSubcategory || undefined);
+        console.log('[BrowseOS] Loaded ISOs:', data.length, 'items');
+        console.log('[BrowseOS] ISO IDs:', data.map((os: OSInfo) => os.id));
         setOss(data);
         setFilteredOss(data);
       } catch (error) {
@@ -227,6 +229,8 @@ export default function BrowsePage() {
   }, [selectedCategory, selectedSubcategory]);
 
   useEffect(() => {
+    console.log('[BrowseOS] Search effect running. searchQuery:', searchQuery, 'oss.length:', oss.length);
+    console.log('[BrowseOS] oss IDs:', oss.map((os: OSInfo) => os.id));
     if (searchQuery.trim() === '') {
       setFilteredOss(oss);
     } else {
@@ -439,8 +443,10 @@ export default function BrowsePage() {
 
       {/* OS Grid - Mobile Responsive */}
       {!loading && filteredOss.length > 0 && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-          {filteredOss.map((os) => (
+        <>
+          {console.log('[BrowseOS] Rendering', filteredOss.length, 'ISOs. IDs:', filteredOss.map((os: OSInfo) => os.id))}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+            {filteredOss.map((os) => (
             <div key={os.id} className="card hover:shadow-md transition-shadow p-3 sm:p-4">
               {/* Header */}
               <div className="flex items-start justify-between mb-3 sm:mb-4">
@@ -523,6 +529,7 @@ export default function BrowsePage() {
             </div>
           ))}
         </div>
+        </>
       )}
     </div>
   );
