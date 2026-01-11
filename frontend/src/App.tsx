@@ -37,12 +37,12 @@ function Navigation() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const isActive = (path: string) => location.pathname === path;
 
+  // Admin link is hidden from navigation - access via direct URL only
   const navItems = [
     { path: '/', label: 'Home', icon: '🏠' },
     { path: '/browse', label: 'Browse', icon: '🔍' },
     { path: '/downloads', label: 'Downloads', icon: '📥' },
     { path: '/settings', label: 'Settings', icon: '⚙️' },
-    { path: '/admin/login', label: 'Admin', icon: '🔐' },
   ];
 
   return (

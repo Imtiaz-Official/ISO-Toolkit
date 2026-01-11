@@ -2,12 +2,13 @@
 Authentication routes for admin login/logout.
 """
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
-from pydantic import BaseModel, EmailStr
+from pydantic import BaseModel, EmailStr, field_validator
 from typing import Optional
 from datetime import datetime
+import re
 
 from api.database.session import get_db
 from api.database.models import User
@@ -18,6 +19,7 @@ from api.auth.auth_utils import (
     decode_access_token,
     create_refresh_token
 )
+from api.auth.rate_limiter import check_login_rate_limit
 
 router = APIRouter(prefix="/api/auth", tags=["Authentication"])
 
@@ -43,6 +45,33 @@ class RegisterRequest(BaseModel):
     email: EmailStr
     password: str
 
+    @field_validator('username')
+    @classmethod
+    def validate_username(cls, v):
+        if len(v) < 3:
+            raise ValueError('Username must be at least 3 characters')
+        if len(v) > 50:
+            raise ValueError('Username must be less than 50 characters')
+        if not re.match(r'^[a-zA-Z0-9_-]+$', v):
+            raise ValueError('Username can only contain letters, numbers, hyphens, and underscores')
+        return v
+
+    @field_validator('password')
+    @classmethod
+    def validate_password(cls, v):
+        if len(v) < 8:
+            raise ValueError('Password must be at least 8 characters')
+        if len(v) > 128:
+            raise ValueError('Password must be less than 128 characters')
+        # Check for at least one uppercase, one lowercase, one digit
+        if not re.search(r'[A-Z]', v):
+            raise ValueError('Password must contain at least one uppercase letter')
+        if not re.search(r'[a-z]', v):
+            raise ValueError('Password must contain at least one lowercase letter')
+        if not re.search(r'\d', v):
+            raise ValueError('Password must contain at least one digit')
+        return v
+
 
 class UserResponse(BaseModel):
     id: int
@@ -61,6 +90,40 @@ class TokenRefreshRequest(BaseModel):
 class ChangePasswordRequest(BaseModel):
     old_password: str
     new_password: str
+
+    @field_validator('new_password')
+    @classmethod
+    def validate_new_password(cls, v):
+        if len(v) < 8:
+            raise ValueError('Password must be at least 8 characters')
+        if len(v) > 128:
+            raise ValueError('Password must be less than 128 characters')
+        if not re.search(r'[A-Z]', v):
+            raise ValueError('Password must contain at least one uppercase letter')
+        if not re.search(r'[a-z]', v):
+            raise ValueError('Password must contain at least one lowercase letter')
+        if not re.search(r'\d', v):
+            raise ValueError('Password must contain at least one digit')
+        return v
+
+
+def get_client_ip(request: Request) -> str:
+    """Get client IP address from request, handling proxy headers."""
+    # Check for forwarded IP (behind proxy/load balancer)
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+
+    # Check for real IP header
+    real_ip = request.headers.get("X-Real-IP")
+    if real_ip:
+        return real_ip
+
+    # Fall back to direct connection IP
+    if request.client:
+        return request.client.host
+
+    return "unknown"
 
 
 async def get_current_user(
@@ -104,6 +167,7 @@ async def get_current_admin_user(
 
 @router.post("/login", response_model=LoginResponse)
 async def login(
+    request: Request,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: Session = Depends(get_db)
 ):
@@ -111,9 +175,24 @@ async def login(
     Authenticate user and return JWT tokens.
 
     Uses OAuth2 password flow for compatibility with frontend libraries.
+    Includes rate limiting to prevent brute force attacks.
     """
+    # Get client IP for rate limiting
+    client_ip = get_client_ip(request)
+
+    # Check rate limit based on IP
+    allowed, retry_after = check_login_rate_limit(client_ip)
+    if not allowed:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail=f"Too many login attempts. Please try again in {retry_after} seconds.",
+            headers={"Retry-After": str(retry_after)},
+        )
+
     user = db.query(User).filter(User.username == form_data.username).first()
     if not user or not verify_password(form_data.password, user.hashed_password):
+        # Rate limit on failed login (use username as key as well)
+        check_login_rate_limit(f"{client_ip}:{form_data.username}")
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
@@ -129,7 +208,7 @@ async def login(
     user.last_login = datetime.utcnow()
     db.commit()
 
-    # Create tokens
+    # Create tokens with 24 hour expiration
     access_token = create_access_token(data={"sub": user.username})
     refresh_token = create_refresh_token(data={"sub": user.username})
 
@@ -150,6 +229,7 @@ async def register(
     Register a new user account.
 
     Note: Regular users are not admins. Admin status must be set manually.
+    Password must meet strength requirements.
     """
     # Check if username exists
     if db.query(User).filter(User.username == user_data.username).first():
@@ -165,7 +245,7 @@ async def register(
             detail="Email already registered"
         )
 
-    # Create new user
+    # Create new user with strong password hashing
     new_user = User(
         username=user_data.username,
         email=user_data.email,
@@ -234,6 +314,7 @@ async def change_password(
 ):
     """
     Change current user's password.
+    New password must meet strength requirements.
     """
     if not verify_password(password_data.old_password, current_user.hashed_password):
         raise HTTPException(

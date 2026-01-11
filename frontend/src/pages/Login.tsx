@@ -155,7 +155,7 @@ export default function LoginPage() {
             <p className="text-xs text-blue-700 dark:text-blue-300 mt-1">
               Username: <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">admin</code>
               <br />
-              Password: <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">admin123</code>
+              Password: <code className="bg-blue-100 dark:bg-blue-800 px-1 rounded">AdminPass123</code>
             </p>
             <p className="text-xs text-blue-600 dark:text-blue-400 mt-2">
               Please change the password after first login!

@@ -22,7 +22,7 @@ from api.auth.auth_utils import get_password_hash
 from api.database.session import DATABASE_URL
 
 
-def create_admin_user(username: str, password: str, email: str):
+def create_admin_user(username: str, password: str, email: str, force: bool = False):
     """Create an admin user in the database."""
     # Create database engine
     engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
@@ -36,16 +36,24 @@ def create_admin_user(username: str, password: str, email: str):
         # Check if admin already exists
         existing_user = db.query(User).filter(User.username == username).first()
         if existing_user:
-            if existing_user.is_admin:
+            if existing_user.is_admin and not force:
                 print(f"Admin user '{username}' already exists.")
+                print(f"Use --force to update the password.")
                 return
             else:
-                # Upgrade existing user to admin
+                # Upgrade existing user to admin or update password
                 existing_user.is_admin = True
                 existing_user.hashed_password = get_password_hash(password)
                 existing_user.email = email
                 db.commit()
-                print(f"Upgraded existing user '{username}' to admin.")
+                if force:
+                    print(f"Admin user '{username}' password updated successfully!")
+                else:
+                    print(f"Upgraded existing user '{username}' to admin.")
+                print(f"  Username: {username}")
+                print(f"  Email: {email}")
+                print(f"  Password: {'*' * len(password)} (set as provided)")
+                print(f"\nYou can now login at: /admin/login")
                 return
 
         # Create new admin user
@@ -82,13 +90,18 @@ def main():
     )
     parser.add_argument(
         "--password",
-        default="admin123",
-        help="Admin password (default: admin123) - CHANGE THIS IN PRODUCTION!"
+        default="AdminPass123",
+        help="Admin password (default: AdminPass123) - CHANGE THIS IN PRODUCTION!"
     )
     parser.add_argument(
         "--email",
         default="admin@example.com",
         help="Admin email (default: admin@example.com)"
+    )
+    parser.add_argument(
+        "--force",
+        action="store_true",
+        help="Force update password if admin user already exists"
     )
 
     args = parser.parse_args()
@@ -98,12 +111,12 @@ def main():
     print("=" * 60)
     print()
 
-    if args.password == "admin123":
-        print("WARNING: Using default password 'admin123'")
+    if args.password == "AdminPass123":
+        print("WARNING: Using default password 'AdminPass123'")
         print("  Please change this immediately after first login!")
         print()
 
-    create_admin_user(args.username, args.password, args.email)
+    create_admin_user(args.username, args.password, args.email, args.force)
 
 
 if __name__ == "__main__":
