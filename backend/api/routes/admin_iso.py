@@ -13,8 +13,33 @@ from api.database.models import User
 from api.routes.auth import get_current_admin_user
 from core.models import OSInfo, OSCategory, Architecture
 from core.os.base import get_registry
+from core.os.windows import WindowsProvider
+from core.os.linux import LinuxProvider
+from core.os.macos import MacOSProvider
+from core.os.bsd import BSDProvider
 
 router = APIRouter(prefix="/api/admin/iso", tags=["Admin ISO Management"])
+
+# Initialize providers on startup
+_providers_initialized = False
+
+
+def _init_providers():
+    """Initialize OS providers."""
+    global _providers_initialized
+    if not _providers_initialized:
+        registry = get_registry()
+        registry.register(WindowsProvider())
+        registry.register(LinuxProvider())
+        registry.register(MacOSProvider())
+        registry.register(BSDProvider())
+        _providers_initialized = True
+
+
+@router.on_event("startup")
+async def startup():
+    """Initialize providers on startup."""
+    _init_providers()
 
 
 class ISOCreate(BaseModel):
@@ -79,6 +104,7 @@ def generate_iso_id(iso_data: ISOCreate) -> str:
 
 async def fetch_isos_from_category(category: OSCategory) -> List[dict]:
     """Fetch all ISOs from a specific category using the provider registry."""
+    _init_providers()
     registry = get_registry()
     providers = registry.get_by_category(category)
 
