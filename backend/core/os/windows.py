@@ -181,7 +181,7 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_7(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows 7 ISO information from Internet Archive.
+        Fetch Windows 7 ISO information from archive.isdn.network mirror.
         """
         isos = [
             OSInfo(
@@ -190,12 +190,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://archive.org/download/win7pro_x64_sp1/en_windows_7_professional_with_sp1_x64_dvd_u_677056.iso",
+                url="https://archive.isdn.network/windows/en_windows_7_professional_with_sp1_x64_dvd_u_676939.iso",
                 size=3265291264,
                 release_date=datetime(2011, 2, 22),
                 description="Windows 7 Professional SP1 x64",
                 icon="🪟",
-                source="Internet Archive",
+                source="archive.isdn.network",
                 subcategory="Windows 7",
             ),
             OSInfo(
@@ -204,12 +204,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X64,
                 language="en-US",
-                url="https://archive.org/download/win7ult_x64_sp1/en_windows_7_ultimate_with_sp1_x64_dvd_u_677332.iso",
+                url="https://archive.isdn.network/windows/en_windows_7_ultimate_with_sp1_x64_dvd_u_677332.iso",
                 size=3386296320,
                 release_date=datetime(2011, 2, 22),
                 description="Windows 7 Ultimate SP1 x64",
                 icon="🪟",
-                source="Internet Archive",
+                source="archive.isdn.network",
                 subcategory="Windows 7",
             ),
             OSInfo(
@@ -218,12 +218,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X86,
                 language="en-US",
-                url="https://archive.org/download/win7pro_x86_sp1/en_windows_7_professional_with_sp1_x86_dvd_u_676951.iso",
+                url="https://archive.isdn.network/windows/en_windows_7_professional_with_sp1_x86_dvd_u_677056.iso",
                 size=2465423360,
                 release_date=datetime(2011, 2, 22),
                 description="Windows 7 Professional SP1 x86",
                 icon="🪟",
-                source="Internet Archive",
+                source="archive.isdn.network",
                 subcategory="Windows 7",
             ),
         ]
@@ -232,7 +232,7 @@ class WindowsProvider(BaseProvider):
 
     async def _fetch_windows_xp(self, **filters) -> List[OSInfo]:
         """
-        Fetch Windows XP ISO information from Internet Archive.
+        Fetch Windows XP ISO information from archive.isdn.network mirror.
         """
         isos = [
             OSInfo(
@@ -241,12 +241,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X86,
                 language="en-US",
-                url="https://archive.org/download/winxppro_sp3/xp_professional_with_service_pack_3_x86_cd_x14-79513.iso",
+                url="https://archive.isdn.network/windows/xp_professional_with_service_pack_3_x86_cd_x14-79513.iso",
                 size=618459136,
                 release_date=datetime(2008, 4, 21),
                 description="Windows XP Professional SP3",
                 icon="🪟",
-                source="Internet Archive",
+                source="archive.isdn.network",
                 subcategory="Windows XP",
             ),
             OSInfo(
@@ -255,12 +255,12 @@ class WindowsProvider(BaseProvider):
                 category=OSCategory.WINDOWS,
                 architecture=Architecture.X86,
                 language="en-US",
-                url="https://archive.org/download/winxphome_sp3/xp_home_with_service_pack_3_x86_cd_x14-79513.iso",
+                url="https://archive.isdn.network/windows/xp_home_with_service_pack_3_x86_cd_x14-79513.iso",
                 size=630194176,
                 release_date=datetime(2008, 4, 21),
                 description="Windows XP Home SP3",
                 icon="🪟",
-                source="Internet Archive",
+                source="archive.isdn.network",
                 subcategory="Windows XP",
             ),
         ]
